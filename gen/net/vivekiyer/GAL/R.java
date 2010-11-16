@@ -16,10 +16,9 @@ public final class R {
         public static final int ic_dialog_email=0x7f020002;
         public static final int ic_menu_preferences=0x7f020003;
         public static final int icon=0x7f020004;
-        public static final int icon_old=0x7f020005;
-        public static final int sms=0x7f020006;
-        public static final int sms_icon=0x7f020007;
-        public static final int sms_original=0x7f020008;
+        public static final int sms=0x7f020005;
+        public static final int sms_icon=0x7f020006;
+        public static final int sms_original=0x7f020007;
     }
     public static final class id {
         public static final int Button01=0x7f070008;

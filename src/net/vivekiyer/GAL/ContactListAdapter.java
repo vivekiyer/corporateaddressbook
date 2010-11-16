@@ -48,7 +48,7 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 	 * @param textViewResourceId 
 	 * @param kvps The contact details
 	 * 
-	 * Adds the contact details to the arrayadapter
+	 * Adds the contact details to the array adapter
 	 */
 	public ContactListAdapter(Context context, int textViewResourceId,
 			ArrayList<KeyValuePair> kvps) {

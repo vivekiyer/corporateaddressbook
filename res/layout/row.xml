@@ -7,7 +7,7 @@
         android:orientation="vertical"
         android:layout_width="0dip"
         android:layout_weight="0.7"
-        android:layout_height="50px">       
+        android:layout_height="80px">       
         <TextView
             android:id="@+id/toptext"
             android:layout_width="fill_parent"
@@ -30,7 +30,7 @@
     <ImageView
         android:id="@+id/icon1"
         android:layout_width="0dip"
-        android:layout_height="30px"	      
+        android:layout_height="35px"	      
         android:layout_weight="0.15" 
         android:padding="2dip"
         android:visibility="invisible"        
@@ -39,7 +39,7 @@
     <ImageView
         android:id="@+id/icon2"
         android:layout_width="0dip"
-        android:layout_height="30px"	      
+        android:layout_height="35px"	      
         android:layout_weight="0.15" 
         android:padding="2dip"
         android:visibility="invisible"
