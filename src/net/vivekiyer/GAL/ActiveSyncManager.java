@@ -45,7 +45,7 @@ import android.util.Log;
 /**
  * @author Vivek Iyer
  *
- * This class is responsible for implementing the ActiveSync commans that
+ * This class is responsible for implementing the ActiveSync commands that
  * are used to connect to the Exchange server and  query the GAL
  */
 public class ActiveSyncManager {
@@ -299,6 +299,15 @@ public class ActiveSyncManager {
 
 		// Send it to the server
 		String result = sendPostRequest(createHttpPost(uri,xml,true));
+//		String result = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
+//				"<Search xmlns=\"Search\"><Status>1</Status><Response><Store>" +
+//				"<Status>1</Status><Result><Properties><DisplayName>Duck, Donald</DisplayName>" +
+//				"<Phone>1-858-555-1234</Phone><Office>AB-CDEF</Office>" +
+//				"<Title>Engineer, Senior</Title><Company>Big Brother Inc</Company>" +
+//				"<Alias>dduck</Alias><FirstName>Donald</FirstName>" +
+//				"<LastName>Duck</LastName><EmailAddress>dduck@example.com</EmailAddress>" +
+//				"</Properties></Result></Store></Response></Search>";
+		
 		Log.v(TAG,result);
 		
 		// parse and return the results

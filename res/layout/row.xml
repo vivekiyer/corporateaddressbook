@@ -30,7 +30,7 @@
     <ImageView
         android:id="@+id/icon1"
         android:layout_width="0dip"
-        android:layout_height="35px"	      
+        android:layout_height="45px"	      
         android:layout_weight="0.15" 
         android:padding="2dip"
         android:visibility="invisible"        
@@ -39,7 +39,7 @@
     <ImageView
         android:id="@+id/icon2"
         android:layout_width="0dip"
-        android:layout_height="35px"	      
+        android:layout_height="45px"	      
         android:layout_weight="0.15" 
         android:padding="2dip"
         android:visibility="invisible"
