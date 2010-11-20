@@ -41,7 +41,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
@@ -50,7 +49,7 @@ import android.widget.TextView;
  * @author Vivek Iyer 
  * This class is used to display a Contact object in a list.
  * The class takes a parceled Contact object and displays the
- * DisplayName
+ * DisplayName. It also allows the user to save the contact
  */
 public class CorporateContactRecord extends ListActivity implements OnAccountsUpdateListener {
 

@@ -21,7 +21,7 @@
 			android:configChanges="keyboardHidden|orientation">
 		</activity>
 	</application>
-	<uses-sdk android:minSdkVersion="5" />
+	<uses-sdk android:minSdkVersion="7" />
 	<uses-permission android:name="android.permission.SEND_SMS" />
 	<uses-permission android:name="android.permission.CALL_PHONE" />
 	<uses-permission android:name="android.permission.INTERNET" />
