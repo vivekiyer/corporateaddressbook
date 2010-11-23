@@ -134,7 +134,7 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			if(kvp.get_type() == Type.PHONE){
 				Log.v(TAG, "Call "+kvp.getValue());	
 				Intent  intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+kvp.getValue()));
-				startIntent(intent, null);
+				getContext().startActivity(intent);
 			}				
 		}		
 	};
@@ -154,24 +154,16 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 				Intent intent = new Intent(Intent.ACTION_VIEW);
 				intent.putExtra("address", kvp.getValue());
 				intent.setType("vnd.android-dir/mms-sms");
-				startIntent(intent, null);
+				getContext().startActivity(intent);
 				break;
 			case EMAIL:
-				Log.v(TAG, "Email "+kvp.getValue());
-				intent = new Intent(android.content.Intent.ACTION_SEND);
-				intent.setType("plain/text");
+				Log.v(TAG, "Email "+kvp.getValue());				
+				intent = new Intent(android.content.Intent.ACTION_SEND);				
+				intent.setType("text/plain");
 				intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{kvp.getValue()});
 				getContext().startActivity(Intent.createChooser(intent, "Send mail..."));
 				break;
 			}
 		}		
 	};
-
-	public void startIntent(Intent intent, String s){
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		if(s == null)
-			getContext().startActivity(intent);
-		else
-			getContext().startActivity(Intent.createChooser(intent, s));
-	}
 }
