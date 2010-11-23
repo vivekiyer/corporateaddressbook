@@ -310,8 +310,8 @@ public class ActiveSyncManager {
 //				"<Search xmlns=\"Search\"><Status>1</Status><Response><Store>" +
 //				"<Status>1</Status><Result><Properties><DisplayName>Duck, Donald</DisplayName>" +
 //				"<Phone>1-858-555-1234</Phone><Office>AB-CDEF</Office>" +
-//				"<Title>Engineer, Senior</Title><Company>Big Brother Inc</Company>" +
-//				"<Alias>dduck</Alias><FirstName>Donald</FirstName>" +
+//				"<Title>Engineer, Senior</Title><Company>Všichni háček lidé</Company>" +
+//				"<Alias>dduck</Alias><FirstName>Donald kroužek kůl</FirstName>" +
 //				"<LastName>Duck</LastName><EmailAddress>dduck@example.com</EmailAddress>" +
 //				"</Properties></Result></Store></Response></Search>";
 		

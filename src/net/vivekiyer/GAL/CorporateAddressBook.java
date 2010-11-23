@@ -41,6 +41,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 /**
  * @author Vivek Iyer
@@ -313,7 +314,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 					"net.vivekiyer.GAL.Configure");
 			startActivityForResult(myIntent, DISPLAY_CONFIGURATION_REQUEST);
 		}
-	}
+	}	
 	
 	/**
 	 * @author Vivek Iyer
@@ -350,28 +351,50 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 		protected void onPostExecute(Boolean result) {
 			progressdialog.dismiss();
 			
-			// Get the result and sort the alphabetically
-			String[] names = new String[mContacts.size()];
+			switch(mContacts.size()){
+			case 0:		
+				int duration = Toast.LENGTH_SHORT;
+				Toast toast = Toast.makeText(CorporateAddressBook.this, "No matches found", duration);
+				toast.show();
+				break;
+			case 1:
+				// Create a parcel with the associated contact object
+				// This parcel is used to send data to the activity 
+				Bundle b = new Bundle();
+				Contact c = (Contact) mContacts.values().toArray()[0];
+				b.putParcelable("net.vivekiyer.GAL", c);		
+		        
+		        Intent intent = new Intent(CorporateAddressBook.this,CorporateContactRecord.class);
+		        intent.putExtras(b);        
+		        
+		        startActivity(intent);          
+		        
+				break;
+			default:
+				// Get the result and sort the alphabetically
+				String[] names = new String[mContacts.size()];
 
-			int i = 0;
-			for (Enumeration<String> e = mContacts.keys(); e.hasMoreElements();) {
-				names[i++] = e.nextElement();
+				int i = 0;
+				for (Enumeration<String> e = mContacts.keys(); e.hasMoreElements();) {
+					names[i++] = e.nextElement();
+				}
+	
+				Arrays.sort(names);
+				
+				lv1 = (ListView) findViewById(R.id.ListView01);
+	
+				// Create a new array adapter and add the result to this
+				ArrayAdapter<String> listadapter 
+					= new ArrayAdapter<String>(
+							CorporateAddressBook.this,
+							android.R.layout.simple_list_item_1, 
+							names
+							);
+	
+				lv1.setAdapter(listadapter);
+				lv1.setOnItemClickListener(mListViewListener);
+				break;
 			}
-
-			Arrays.sort(names);
-			
-			lv1 = (ListView) findViewById(R.id.ListView01);
-
-			// Create a new array adapter and add the result to this
-			ArrayAdapter<String> listadapter 
-				= new ArrayAdapter<String>(
-						CorporateAddressBook.this,
-						android.R.layout.simple_list_item_1, 
-						names
-						);
-
-			lv1.setAdapter(listadapter);
-			lv1.setOnItemClickListener(mListViewListener);
 		}
 	}
 };
