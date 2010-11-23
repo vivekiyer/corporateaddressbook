@@ -26,10 +26,17 @@ import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -303,8 +310,8 @@ public class ActiveSyncManager {
 //				"<Search xmlns=\"Search\"><Status>1</Status><Response><Store>" +
 //				"<Status>1</Status><Result><Properties><DisplayName>Duck, Donald</DisplayName>" +
 //				"<Phone>1-858-555-1234</Phone><Office>AB-CDEF</Office>" +
-//				"<Title>Engineer, Senior</Title><Company>Big Brother Inc</Company>" +
-//				"<Alias>dduck</Alias><FirstName>Donald</FirstName>" +
+//				"<Title>Engineer, Senior</Title><Company>Všichni háček lidé</Company>" +
+//				"<Alias>dduck</Alias><FirstName>Donald kroužek kůl</FirstName>" +
 //				"<LastName>Duck</LastName><EmailAddress>dduck@example.com</EmailAddress>" +
 //				"</Properties></Result></Store></Response></Search>";
 		
@@ -362,8 +369,22 @@ public class ActiveSyncManager {
 	 * 
 	 * Creates a HttpClient object that is used to POST messages to the Exchange server
 	 */
-	private HttpClient createHttpClient() {
-		HttpClient httpclient = new DefaultHttpClient();
+	private HttpClient createHttpClient() {		
+		HttpParams httpParams = new BasicHttpParams();
+
+        // Turn off stale checking.  Our connections break all the time anyway,
+        // and it's not worth it to pay the penalty of checking every time.
+        HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
+
+        // Default connection and socket timeout of 20 seconds.  Tweak to taste.
+        HttpConnectionParams.setConnectionTimeout(httpParams, 20 * 1000);
+        HttpConnectionParams.setSoTimeout(httpParams, 20 * 1000);
+        HttpConnectionParams.setSocketBufferSize(httpParams, 8192);
+        
+		SchemeRegistry registry = new SchemeRegistry();
+	    registry.register(new Scheme("http", new PlainSocketFactory(), 80));
+	    registry.register(new Scheme("https", new FakeSocketFactory() , 443));
+	    HttpClient httpclient = new DefaultHttpClient(new ThreadSafeClientConnManager(httpParams, registry), httpParams);		
 
 		// Set the headers
 		httpclient.getParams().setParameter(
