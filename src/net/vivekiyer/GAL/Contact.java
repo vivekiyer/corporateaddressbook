@@ -22,19 +22,81 @@ import android.os.Parcelable;
 
 /**
  * @author Vivek Iyer
- *
- * This class parcels up the Contact object so that it can be passed between two activities 
- * without loss of data. It does this by writing the display name followed by all the 
- * contacts details into the parcel
+ * 
+ *         This class parcels up the Contact object so that it can be passed
+ *         between two activities without loss of data. It does this by writing
+ *         the display name followed by all the contacts details into the parcel
  */
-public class Contact implements Parcelable{
+public class Contact implements Parcelable {
 
 	private ArrayList<KeyValuePair> Details;
 
 	private String DisplayName;
+
+	private String workPhone = "";
+
+	private String officeLocation = "";
+
+	private String title = "";
+
+	private String company = "";
+
+	private String alias = "";
+
+	private String firstName = "";
+
+	private String lastName = "";
+
+	private String homePhone = "";
+
+	private String mobilePhone = "";
+
+	private String email = "";
 	
+	private boolean convertedToFields = false;
+
 	public String getDisplayName() {
 		return DisplayName;
+	}
+
+	public String getWorkPhone() {
+		return workPhone;
+	}
+
+	public String getOfficeLocation() {
+		return officeLocation;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getCompany() {
+		return company;
+	}
+
+	public String getAlias() {
+		return alias;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public String getHomePhone() {
+		return homePhone;
+	}
+
+	public String getMobilePhone() {
+		return mobilePhone;
+	}
+
+	public String getEmail() {
+		return email;
 	}
 
 	public void setDisplayName(String displayName) {
@@ -47,45 +109,45 @@ public class Contact implements Parcelable{
 
 	public void setDetails(ArrayList<KeyValuePair> details) {
 		Details = details;
-	}	
-	
-	public Contact(String displayName){
+	}
+
+	public Contact(String displayName) {
 		DisplayName = displayName;
 		Details = new ArrayList<KeyValuePair>();
-	}	
-	
-	public Contact(){
+	}
+
+	public Contact() {
 		Details = new ArrayList<KeyValuePair>();
 	}
-	
+
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public Contact createFromParcel(Parcel in) {
-            return new Contact(in);
-        }
- 
-        public Contact[] newArray(int size) {
-            return new Contact[size];
-        }
-    };
-    
+		public Contact createFromParcel(Parcel in) {
+			return new Contact(in);
+		}
+
+		public Contact[] newArray(int size) {
+			return new Contact[size];
+		}
+	};
+
 	// Load our class from the parcel
-	public Contact(Parcel in){
-		
+	public Contact(Parcel in) {
+
 		// The Display name for the contact
 		DisplayName = in.readString();
-		
+
 		Details = new ArrayList<KeyValuePair>();
-		
+
 		// The number of elements in the array list
-		int size = in.readInt();		
-		
+		int size = in.readInt();
+
 		// Each KVP in the Array List
-		for(int i=0;i<size;i++){
+		for (int i = 0; i < size; i++) {
 			add(in.readString(), in.readString());
 		}
 	}
-	
-	public void add(String key, String value){
+
+	public void add(String key, String value) {
 		Details.add(new KeyValuePair(key, value));
 	}
 
@@ -100,15 +162,52 @@ public class Contact implements Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		// The Display name for the contact
 		dest.writeString(DisplayName);
-		
+
 		// The number of elements in the array list
 		dest.writeInt(Details.size());
-		
+
 		// Each KVP in the Array List
-		for(KeyValuePair kvp : Details){
+		for (KeyValuePair kvp : Details) {
 			dest.writeString(kvp.getKey());
 			dest.writeString(kvp.getValue());
 		}
-	}		
-	
+	}
+
+	public void generateFieldsFromXML() {
+		if (convertedToFields)
+			return;
+		
+		// Get the key value pairs from the contact
+		// and loop over each one		
+
+		for (KeyValuePair kvp : getDetails()) {
+
+			String key = kvp.getKey();
+			String value = kvp.getValue();
+
+			if (key.equalsIgnoreCase("Phone")) {
+				workPhone = value;
+			} else if (key.equalsIgnoreCase("Office")) {
+				officeLocation = value;
+			} else if (key.equalsIgnoreCase("Title")) {
+				title = value;
+			} else if (key.equalsIgnoreCase("Company")) {
+				company = value;
+			} else if (key.equalsIgnoreCase("Alias")) {
+				alias = value;
+			} else if (key.equalsIgnoreCase("FirstName")) {
+				firstName = value;
+			} else if (key.equalsIgnoreCase("LastName")) {
+				lastName = value;
+			} else if (key.equalsIgnoreCase("HomePhone")) {
+				homePhone = value;
+			} else if (key.equalsIgnoreCase("MobilePhone")) {
+				mobilePhone = value;
+			} else if (key.equalsIgnoreCase("EmailAddress")) {
+				email = value;
+			}
+		}
+		
+		convertedToFields = true;
+	}
 }
