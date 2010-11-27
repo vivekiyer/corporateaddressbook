@@ -22,7 +22,6 @@ import net.vivekiyer.GAL.KeyValuePair.Type;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,7 @@ import android.widget.TextView;
  */
 public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {	
 	
-	private static String TAG = "ContactListAdapter";
+	//private static String TAG = "ContactListAdapter";
 	
 	/**
 	 * @param context 
@@ -132,7 +131,7 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			
 			// This can only be a phone
 			if(kvp.get_type() == Type.PHONE){
-				Log.v(TAG, "Call "+kvp.getValue());	
+				//Log.d(TAG, "Call "+kvp.getValue());	
 				Intent  intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+kvp.getValue()));
 				getContext().startActivity(intent);
 			}				
@@ -150,14 +149,14 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			// This can be an email or SMS
 			switch(kvp.get_type()){
 			case PHONE:
-				Log.v(TAG, "SMS "+kvp.getValue());
+				//Log.d(TAG, "SMS "+kvp.getValue());
 				Intent intent = new Intent(Intent.ACTION_VIEW);
 				intent.putExtra("address", kvp.getValue());
 				intent.setType("vnd.android-dir/mms-sms");
 				getContext().startActivity(intent);
 				break;
 			case EMAIL:
-				Log.v(TAG, "Email "+kvp.getValue());				
+				//Log.d(TAG, "Email "+kvp.getValue());				
 				intent = new Intent(android.content.Intent.ACTION_SEND);				
 				intent.setType("text/plain");
 				intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{kvp.getValue()});

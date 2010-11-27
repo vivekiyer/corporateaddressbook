@@ -28,7 +28,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +50,7 @@ public class ContactWriterSdk5 extends ContactWriter implements
 	private Contact mContact;
 
 	// TAG used for logging
-	private static String TAG = "ContactWriterSdk5";
+	//private static String TAG = "ContactWriterSdk5";
 
 	@Override
 	public void Initialize(Context ctx, LayoutInflater lf, Contact contact) {
@@ -67,13 +66,6 @@ public class ContactWriterSdk5 extends ContactWriter implements
 		// an initial callback to pre-populate the account list.
 		AccountManager.get(context).addOnAccountsUpdatedListener(this, null,
 				true);
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		// Remove AccountManager callback
-		AccountManager.get(context).removeOnAccountsUpdatedListener(this);
-		super.finalize();
 	}
 
 	/**
@@ -256,16 +248,16 @@ public class ContactWriterSdk5 extends ContactWriter implements
 		addContactFields(ops);
 
 		// Ask the Contact provider to create a new contact
-		Log.i(TAG, "Selected account: " + selectedAccount.getName() + " ("
-				+ selectedAccount.getType() + ")");
-		Log.i(TAG, "Creating contact: " + mContact.getDisplayName());
+		//Log.i(TAG, "Selected account: " + selectedAccount.getName() + " ("
+		//		+ selectedAccount.getType() + ")");
+		//Log.i(TAG, "Creating contact: " + mContact.getDisplayName());
 
 		try {
 			context.getContentResolver().applyBatch(ContactsContract.AUTHORITY,
 					ops);
 		} catch (Exception e) {
 			// Log exception
-			Log.e(TAG, "Exceptoin encoutered while inserting contact: " + e);
+			//Log.e(TAG, "Exceptoin encoutered while inserting contact: " + e);
 		}
 	}
 
@@ -294,7 +286,7 @@ public class ContactWriterSdk5 extends ContactWriter implements
 
 	@Override
 	public void onAccountsUpdated(Account[] accounts) {
-		Log.i(TAG, "Account list update detected");
+		//Log.i(TAG, "Account list update detected");
 		// Clear out any old data to prevent duplicates
 		mAccounts.clear();
 
@@ -434,4 +426,9 @@ public class ContactWriterSdk5 extends ContactWriter implements
 		}
 	}
 
+	@Override
+	public void cleanUp() {
+		// Remove AccountManager callback
+		AccountManager.get(context).removeOnAccountsUpdatedListener(this);		
+	}
 }

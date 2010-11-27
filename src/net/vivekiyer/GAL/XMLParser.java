@@ -21,7 +21,6 @@ import java.util.Hashtable;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import android.util.Log;
 
 /**
  * @author Vivek Iyer
@@ -30,7 +29,7 @@ import android.util.Log;
  */
 public class XMLParser extends DefaultHandler {
 
-	private static String TAG = "XMLParser";
+	//private static String TAG = "XMLParser";
 	private String mNodeToFind;	
 	private boolean foundNode = false;
 	private boolean createContact = false;
@@ -107,16 +106,14 @@ public class XMLParser extends DefaultHandler {
     	if(foundNode){    		
     		if(!createContact){
     			output.add(value);
-    			Log.v(TAG,"output="+value);
     		}
     		else{
     			if(key.compareToIgnoreCase("displayname") == 0){
     				contact.setDisplayName(value);
-    				Log.v(TAG,"Display name="+value);
+    				//Log.d(TAG,"Display name="+value);
     			}
     			else{
     				contact.add(key, value);
-    				Log.v(TAG,"key="+key+"\n value="+value);
     			}    			
     		}    			
     	}    	

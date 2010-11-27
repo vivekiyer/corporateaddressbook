@@ -21,7 +21,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.provider.Contacts;
 import android.provider.Contacts.People;
-import android.util.Log;
 import android.view.LayoutInflater;
 
 /**
@@ -33,7 +32,7 @@ import android.view.LayoutInflater;
 public class ContactWriterSdk3_4 extends ContactWriter {
 	private Context context;
 	private Contact mContact;
-	private static String TAG = "ContactWriterSdk3_4";
+	//private static String TAG = "ContactWriterSdk3_4";
 	private ContentResolver contentResolver;
 
 	@Override
@@ -53,7 +52,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 				contentResolver, values);
 
 		if (newPerson == null) {
-			Log.v(TAG, "Error creating contact occured");
+			//Log.d(TAG, "Error creating contact occured");
 			return;
 		}
 		addContactFields(values, newPerson);
@@ -78,7 +77,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			Uri phoneUpdate = contentResolver.insert(workPhoneUri,
 					workPhoneValues);
 			if (phoneUpdate == null) {
-				Log.v(TAG, "Failed to insert mobile phone number");
+				//Log.d(TAG, "Failed to insert mobile phone number");
 			}
 		}
 		
@@ -94,7 +93,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			Uri addressUpdate = contentResolver.insert(addressUri,
 					addressValues);
 			if (addressUpdate == null) {
-				Log.v(TAG, "Failed to insert office location");
+				//Log.d(TAG, "Failed to insert office location");
 			}
 		} 
 		
@@ -113,7 +112,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			Uri phoneUpdate = contentResolver.insert(homePhoneUri,
 					homePhoneValues);
 			if (phoneUpdate == null) {
-				Log.v(TAG, "Failed to insert mobile phone number");
+				//Log.d(TAG, "Failed to insert mobile phone number");
 			}
 		} 
 		
@@ -125,7 +124,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			mobileValues.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_MOBILE);
 			Uri phoneUpdate = contentResolver.insert(mobileUri, mobileValues);
 			if (phoneUpdate == null) {
-				Log.v(TAG, "Failed to insert mobile phone number");
+				//Log.d(TAG, "Failed to insert mobile phone number");
 			}
 		} 
 		
@@ -139,7 +138,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			emailValues.put(Contacts.ContactMethods.DATA, mContact.getEmail());
 			Uri emailUpdate = contentResolver.insert(emailUri, emailValues);
 			if (emailUpdate == null) {
-				Log.v(TAG, "Failed to insert email");
+				//Log.d(TAG, "Failed to insert email");
 			}
 		}
 
@@ -152,8 +151,13 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 				Contacts.Organizations.TYPE_WORK);
 		Uri orgUpdate = contentResolver.insert(orgUri, organisationValues);
 		if (orgUpdate == null) {
-			Log.v(TAG, "Could not add organization");
+			//Log.d(TAG, "Could not add organization");
 		}
+	}
+
+	@Override
+	public void cleanUp() {
+		// Nothing to clean up here		
 	}
 
 }

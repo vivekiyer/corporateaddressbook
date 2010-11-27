@@ -37,7 +37,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import android.util.Log;
 
-/**
+/*
  * This class represents an entity for converting between WBXML and XML. The process uses
  * subclasses of the CodePage class that contain data for each code page potentially
  * referenced in the document.

@@ -110,5 +110,6 @@ public class CorporateContactRecord extends ListActivity{
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		contactWriter.cleanUp();		
 	}	
 };
