@@ -21,10 +21,14 @@ import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 /**
  * @author Vivek Iyer 
@@ -36,6 +40,19 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 	private SharedPreferences mPreferences;
 	private ProgressDialog progressdialog;
 	ActiveSyncManager activeSyncManager;
+	private String domain;
+	private String username;
+	
+	public static final String KEY_USERNAME_PREFERENCE = "username";
+	public static final String KEY_PASSWORD_PREFERENCE = "password";
+	public static final String KEY_DOMAIN_PREFERENCE = "domain";
+	public static final String KEY_SERVER_PREFERENCE = "server";
+	public static final String KEY_ACTIVESYNCVERSION_PREFERENCE = "activesyncversion";
+	public static final String KEY_POLICY_KEY_PREFERENCE = "policykey";	
+	public static final String KEY_USE_SSL = "usessl";
+	public static final String KEY_ACCEPT_ALL_CERTS = "acceptallcerts";
+	public static final String KEY_RESULTS_PREFERENCE = "results";
+	public static final String KEY_SEARCH_TERM_PREFERENCE = "searchTerm";
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -54,17 +71,38 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// Get the preferences that were entered by the user and display those to the user 
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);			
 		
+		String splitter = (mPreferences.getString(KEY_DOMAIN_PREFERENCE , "").
+				equalsIgnoreCase("")) ? "" : "\\";
+		
 		setTextForId(
-				R.id.txtUserName, 
-				mPreferences.getString(Preferences.KEY_USERNAME_PREFERENCE, ""));
+				R.id.txtDomainUserName, 
+					mPreferences.getString(KEY_DOMAIN_PREFERENCE , "") + 
+					splitter + 
+					mPreferences.getString(KEY_USERNAME_PREFERENCE, ""));
 		setTextForId(
 				R.id.txtPassword, 
-				mPreferences.getString(Preferences.KEY_PASSWORD_PREFERENCE, ""));
-		setTextForId(
-				R.id.txtDomain, 
-				mPreferences.getString(Preferences.KEY_DOMAIN_PREFERENCE, ""));
+				mPreferences.getString(KEY_PASSWORD_PREFERENCE, ""));
 		setTextForId(R.id.txtServerName, 
-				mPreferences.getString(Preferences.KEY_SERVER_PREFERENCE, ""));
+				mPreferences.getString(KEY_SERVER_PREFERENCE, ""));
+		setValueForCheckbox(
+				R.id.chkUseSSL,
+				mPreferences.getBoolean(KEY_USE_SSL, true));
+		setValueForCheckbox(
+				R.id.chkAcceptAllSSLCert,
+				mPreferences.getBoolean(KEY_ACCEPT_ALL_CERTS, true));
+		
+		EditText text = (EditText) findViewById(R.id.txtServerName);
+		text.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+		   @Override
+			public boolean onEditorAction(TextView arg0, int actionId, KeyEvent arg2) {
+				if (actionId == EditorInfo.IME_ACTION_GO) {
+		            connect();
+		            return true;
+		        }
+		        return false;
+			}
+		});
+		
 	}	
 	
 	/**
@@ -88,7 +126,16 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		EditText text = (EditText) findViewById(id);
 		return text.getText().toString();
 	}
+	
+	private boolean getValueFromCheckbox(int id){
+        final CheckBox checkBox = (CheckBox) findViewById(id);
+        return checkBox.isChecked();
+	}
 
+	private void setValueForCheckbox(int id, boolean value){
+		final CheckBox checkBox = (CheckBox) findViewById(id);
+		checkBox.setChecked(value);
+	}
 	/**
 	 * @param s The alert message
 	 * Displays an alert dialog with the messaged provided
@@ -101,16 +148,28 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		alert.show();
 	}
 	
-	/* (non-Javadoc)
-	 * @see android.view.View.OnClickListener#onClick(android.view.View)
-	 * 
-	 * Called when the user clicks the Log In button
+	
+	/**
+	 * Validates the user entries and connects to the Exchange server 
 	 */
-	@Override
-	public void onClick(View v) {		
+	private void connect(){
 		// Make sure that the user has entered the username
 		// password and the server name
-		if (getTextFromId(R.id.txtUserName) == "") {			
+		if (getTextFromId(R.id.txtDomainUserName) == "") {
+			showAlert("Please provide a valid Domain and username");
+			return;
+		}
+		
+		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");
+		domain = splits[0];
+		username = splits[1];
+
+		if (domain == "") {
+			showAlert("Please provide a valid Domain");
+			return;
+		}
+		
+		if (username == "") {
 			showAlert("Please provide a valid username");
 			return;
 		}
@@ -123,16 +182,19 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		if (getTextFromId(R.id.txtServerName) == "" ){
 			showAlert("Please provide a valid Exchange URL");
 			return;
-		}
+		}		
 		
+	
 		// Now that we have all three
-		// Lets validate it
+		// Lets validate it	
 		
 		activeSyncManager = new ActiveSyncManager(
 				getTextFromId(R.id.txtServerName),
-				getTextFromId(R.id.txtDomain),
-				getTextFromId(R.id.txtUserName),
-				getTextFromId(R.id.txtPassword), 
+				domain,
+				username,
+				getTextFromId(R.id.txtPassword),
+				getValueFromCheckbox(R.id.chkUseSSL),
+				getValueFromCheckbox(R.id.chkAcceptAllSSLCert),
 				"", 
 				"");
 
@@ -145,6 +207,16 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		progressdialog.show();		
 		ConnectionChecker checker = new ConnectionChecker(this);
 		checker.execute(activeSyncManager);
+	}
+	
+	/* (non-Javadoc)
+	 * @see android.view.View.OnClickListener#onClick(android.view.View)
+	 * 
+	 * Called when the user clicks the Log In button
+	 */
+	@Override
+	public void onClick(View v) {		
+		connect();
 	}
 
 	/* (non-Javadoc)
@@ -169,18 +241,21 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// All went well. Store the settings and return to the main page
 		else{
 			SharedPreferences.Editor editor = mPreferences.edit();
-			editor.putString(Preferences.KEY_SERVER_PREFERENCE,
+			editor.putString(KEY_SERVER_PREFERENCE,
 					getTextFromId(R.id.txtServerName));
-			editor.putString(Preferences.KEY_DOMAIN_PREFERENCE,
-					getTextFromId(R.id.txtDomain));
-			editor.putString(Preferences.KEY_USERNAME_PREFERENCE,
-					getTextFromId(R.id.txtUserName));			
-			editor.putString(Preferences.KEY_PASSWORD_PREFERENCE,
+			editor.putString(KEY_DOMAIN_PREFERENCE,
+					domain);
+			editor.putString(KEY_USERNAME_PREFERENCE,
+					username);			
+			editor.putString(KEY_PASSWORD_PREFERENCE,
 					getTextFromId(R.id.txtPassword));
-			
-			editor.putString(Preferences.KEY_ACTIVESYNCVERSION_PREFERENCE,
+			editor.putBoolean(KEY_USE_SSL, 
+					getValueFromCheckbox(R.id.chkUseSSL));
+			editor.putBoolean(KEY_ACCEPT_ALL_CERTS, 
+					getValueFromCheckbox(R.id.chkAcceptAllSSLCert));			
+			editor.putString(KEY_ACTIVESYNCVERSION_PREFERENCE,
 					activeSyncManager.getActiveSyncVersion());
-			editor.putString(Preferences.KEY_POLICY_KEY_PREFERENCE,
+			editor.putString(KEY_POLICY_KEY_PREFERENCE,
 					activeSyncManager.getPolicyKey());
 
 			// Commit the edits!

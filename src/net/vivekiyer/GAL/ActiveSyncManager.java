@@ -46,9 +46,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import net.vivekiyer.GAL.wbxml.WBXML;
 
-import android.util.Log;
-
-
 /**
  * @author Vivek Iyer
  *
@@ -64,9 +61,27 @@ public class ActiveSyncManager {
 	private WBXML wbxml;
 	private String mUsername;
 	private String mPassword;
+	private boolean mUseSSL;
+	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";
-	private static final String TAG = "ActiveSyncManager";
+	//private static final String TAG = "ActiveSyncManager";
 
+
+	public boolean isUseSSLSet() {
+		return mUseSSL;
+	}
+
+	public void setUseSSL(boolean mUseSSL) {
+		this.mUseSSL = mUseSSL;
+	}
+
+	public boolean isAcceptAllCertsSet() {
+		return mAcceptAllCerts;
+	}
+
+	public void setAcceptAllCerts(boolean mAcceptAllCerts) {
+		this.mAcceptAllCerts = mAcceptAllCerts;
+	}		
 	
 	public String getActiveSyncVersion() {
 		return mActiveSyncVersion;
@@ -123,7 +138,8 @@ public class ActiveSyncManager {
 						+ mPassword);
 
 		// this is where we will send it
-		mUri = mServerName + "/Microsoft-Server-Activesync?" + "User="
+		String protocol = (mUseSSL) ? "https://" : "http://";
+		mUri = protocol + mServerName + "/Microsoft-Server-Activesync?" + "User="
 				+ mUsername
 				+ "&DeviceId=490154203237518&DeviceType=PocketPC&Cmd=";
 
@@ -132,8 +148,15 @@ public class ActiveSyncManager {
 	public ActiveSyncManager() {		
 	}
 
-	public ActiveSyncManager(String serverName, String domain, String username,
-			String password, String policyKey, String activeSyncVersion) {
+	public ActiveSyncManager(
+			String serverName, 
+			String domain, 
+			String username,
+			String password,
+			boolean useSSL,
+			boolean acceptAllCerts,
+			String policyKey, 
+			String activeSyncVersion) {
 
 		mServerName = serverName;
 		mDomain = domain;
@@ -141,6 +164,8 @@ public class ActiveSyncManager {
 		mPassword = password;
 		mPolicyKey = policyKey;
 		mActiveSyncVersion = activeSyncVersion;
+		mUseSSL = useSSL;
+		mAcceptAllCerts = acceptAllCerts;
 	}
 
 	/**
@@ -155,7 +180,7 @@ public class ActiveSyncManager {
 
 		if (headers != null) {
 			for (Header header : headers) {
-				Log.v(TAG, (header.toString()));
+				//Log.d(TAG, (header.toString()));
 
 				// Parse out the ActiveSync Protocol version
 				if (header.getName().equalsIgnoreCase("MS-ASProtocolVersions")) {
@@ -165,7 +190,7 @@ public class ActiveSyncManager {
 					// version
 					mActiveSyncVersion = versions.substring(versions
 							.lastIndexOf(",") + 1);
-					Log.v(TAG, "ActiveSync version = " + mActiveSyncVersion);
+					//Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
 					break;
 				}
 			}
@@ -195,14 +220,14 @@ public class ActiveSyncManager {
 		HttpContext localContext = new BasicHttpContext();
 		HttpResponse response = client.execute(httpPost, localContext);
 
-		Log.v(TAG, (response.getStatusLine().toString()));
+		//Log.d(TAG, (response.getStatusLine().toString()));
 		
 		// Log all the headers
 		Header[] headers = response.getAllHeaders();
 
-		for (Header header : headers) {
-			Log.v(TAG, (header.toString()));
-		}
+		//for (Header header : headers) {
+			//Log.d(TAG, (header.toString()));
+		//}
 
 		// Get the content
 		HttpEntity entity = response.getEntity();
@@ -225,7 +250,7 @@ public class ActiveSyncManager {
 				result = EntityUtils.toString(entity);
 			}
 		}
-		Log.v(TAG, (result.toString()));
+		//Log.d(TAG, (result.toString()));
 		return result;
 	}
 
@@ -244,7 +269,7 @@ public class ActiveSyncManager {
 		HttpContext localContext = new BasicHttpContext();
 		HttpResponse response = client.execute(httpOptions, localContext);
 
-		Log.v(TAG, (response.getStatusLine().toString()));
+		//Log.d(TAG, (response.getStatusLine().toString()));
 		Header[] headers = response.getAllHeaders();
 
 		return headers;
@@ -295,7 +320,7 @@ public class ActiveSyncManager {
 	 * 
 	 * This method searches the GAL on the Exchange server
 	 */
-	public Hashtable<String, Contact> searchGAL(String name) throws Exception {
+	public String searchGAL(String name) throws Exception {
 		// Create the request
 		String uri = mUri + "Search";
 
@@ -315,10 +340,10 @@ public class ActiveSyncManager {
 //				"<LastName>Duck</LastName><EmailAddress>dduck@example.com</EmailAddress>" +
 //				"</Properties></Result></Store></Response></Search>";
 		
-		Log.v(TAG,result);
+		//Log.d(TAG,result);
 		
 		// parse and return the results
-		return parseXML(result);
+		return result;		
 	}
 
 	/**
@@ -361,7 +386,7 @@ public class ActiveSyncManager {
 
 		// Get the final policy key
 		mPolicyKey = parseXML(xml, "PolicyKey")[0];
-		Log.v(TAG, "Policy Key: " + mPolicyKey);
+		//Log.d(TAG, "Policy Key: " + mPolicyKey);
 	}
 
 	/**
@@ -382,9 +407,14 @@ public class ActiveSyncManager {
         HttpConnectionParams.setSocketBufferSize(httpParams, 8192);
         
 		SchemeRegistry registry = new SchemeRegistry();
-	    registry.register(new Scheme("http", new PlainSocketFactory(), 80));
-	    registry.register(new Scheme("https", new FakeSocketFactory() , 443));
-	    HttpClient httpclient = new DefaultHttpClient(new ThreadSafeClientConnManager(httpParams, registry), httpParams);		
+	    registry.register(
+	    		new Scheme("http", new PlainSocketFactory(), 80));
+	    registry.register(
+	    		new Scheme(
+	    				"https",mAcceptAllCerts ? new FakeSocketFactory() : SSLSocketFactory.getSocketFactory() , 
+	    				443));
+	    HttpClient httpclient = new DefaultHttpClient(
+	    		new ThreadSafeClientConnManager(httpParams, registry), httpParams);		
 
 		// Set the headers
 		httpclient.getParams().setParameter(
@@ -425,7 +455,7 @@ public class ActiveSyncManager {
 		httpPost.setHeader("Accept", "*/*");
 		httpPost.setHeader("Content-Type", "application/vnd.ms-sync.wbxml");
 		httpPost.setHeader("MS-ASProtocolVersion", mActiveSyncVersion);
-		Log.v(TAG, mActiveSyncVersion);
+		//Log.d(TAG, mActiveSyncVersion);
 		httpPost.setHeader("Accept-Language", "en-us");
 		httpPost.setHeader("Authorization", mAuthString);
 
@@ -435,7 +465,7 @@ public class ActiveSyncManager {
 
 		// Add the XML to the request
 		if (requestXML != null) {
-			Log.v(TAG, requestXML);
+			//Log.d(TAG, requestXML);
 			// Set the body
 			// Convert the XML to WBXML
 			ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(
@@ -450,7 +480,7 @@ public class ActiveSyncManager {
 				s += String.format("%02x ", b);
 			}
 
-			Log.v(TAG, s);
+			//Log.d(TAG, s);
 
 			ByteArrayEntity myEntity = new ByteArrayEntity(bytes);
 			myEntity.setContentType("application/vnd.ms-sync.wbxml");
@@ -487,7 +517,7 @@ public class ActiveSyncManager {
 	 * a hashtable containing the contacts in the XML
 	 * indexed by the DisplayName of the contacts
 	 */
-	private Hashtable<String, Contact> parseXML(String xml) throws Exception {
+	public Hashtable<String, Contact> parseXML(String xml) throws Exception {
 		// Our parser does not handle ampersands too well. So replace these with &amp;
 		xml = Utility.replaceAmpersandWithEntityString(xml);
 		 
