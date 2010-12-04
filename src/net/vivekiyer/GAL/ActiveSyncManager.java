@@ -17,6 +17,7 @@ package net.vivekiyer.GAL;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
 
 import org.apache.http.Header;
@@ -44,6 +45,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import android.util.Log;
+
 import net.vivekiyer.GAL.wbxml.WBXML;
 
 /**
@@ -64,7 +67,7 @@ public class ActiveSyncManager {
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";
-	//private static final String TAG = "ActiveSyncManager";
+	private static final String TAG = "ActiveSyncManager";
 
 
 	public boolean isUseSSLSet() {
@@ -180,7 +183,7 @@ public class ActiveSyncManager {
 
 		if (headers != null) {
 			for (Header header : headers) {
-				//Log.d(TAG, (header.toString()));
+				Log.d(TAG, (header.toString()));
 
 				// Parse out the ActiveSync Protocol version
 				if (header.getName().equalsIgnoreCase("MS-ASProtocolVersions")) {
@@ -190,7 +193,7 @@ public class ActiveSyncManager {
 					// version
 					mActiveSyncVersion = versions.substring(versions
 							.lastIndexOf(",") + 1);
-					//Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
+					Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
 					break;
 				}
 			}
@@ -269,7 +272,7 @@ public class ActiveSyncManager {
 		HttpContext localContext = new BasicHttpContext();
 		HttpResponse response = client.execute(httpOptions, localContext);
 
-		//Log.d(TAG, (response.getStatusLine().toString()));
+		Log.d(TAG, (response.getStatusLine().toString()));
 		Header[] headers = response.getAllHeaders();
 
 		return headers;
@@ -401,10 +404,10 @@ public class ActiveSyncManager {
         // and it's not worth it to pay the penalty of checking every time.
         HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
 
-        // Default connection and socket timeout of 20 seconds.  Tweak to taste.
-        HttpConnectionParams.setConnectionTimeout(httpParams, 20 * 1000);
-        HttpConnectionParams.setSoTimeout(httpParams, 20 * 1000);
-        HttpConnectionParams.setSocketBufferSize(httpParams, 8192);
+        // Default connection and socket timeout of 120 seconds.  Tweak to taste.
+        HttpConnectionParams.setConnectionTimeout(httpParams, 120 * 1000);
+        HttpConnectionParams.setSoTimeout(httpParams, 120 * 1000);
+        HttpConnectionParams.setSocketBufferSize(httpParams, 131072);
         
 		SchemeRegistry registry = new SchemeRegistry();
 	    registry.register(
@@ -475,13 +478,6 @@ public class ActiveSyncManager {
 			wbxml.convertXmlToWbxml(xmlParseInputStream, output);
 			byte[] bytes = output.toByteArray();
 
-			String s = "";
-			for (byte b : bytes) {
-				s += String.format("%02x ", b);
-			}
-
-			//Log.d(TAG, s);
-
 			ByteArrayEntity myEntity = new ByteArrayEntity(bytes);
 			myEntity.setContentType("application/vnd.ms-sync.wbxml");
 			httpPost.setEntity(myEntity);
@@ -489,6 +485,50 @@ public class ActiveSyncManager {
 		return httpPost;
 	}
 
+	public void testXMLtoWBXML() {
+		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+			+ "<Sync xmlns=\"AirSync:\" xmlns:airsyncbase=\"AirSyncBase:\" xmlns:contacts=\"Contacts:\">"
+			+ "<Collections>"
+			+ "<Collection>"
+			+ "<Commands>"
+			+ "<Add>"
+			+ "<ApplicationData>"
+			+ "<airsyncbase:Body>"
+			+ "</airsyncbase:Body>"
+			+ "<contacts:FileAs>háček, Don</contacts:FileAs>"
+			+ "<contacts:FirstName>Don</contacts:FirstName>"
+			+ "<contacts:LastName>háček</contacts:LastName>"
+			+ "<airsyncbase:NativeBodyType>1</airsyncbase:NativeBodyType>"
+			+ "</ApplicationData>" + "</Add>" + "</Commands>"
+			+ "</Collection>" + "</Collections>" + "</Sync>";
+
+		Log.v(TAG, xml);
+
+		try {
+			ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(
+					xml.getBytes("UTF-8"));
+
+			java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
+			wbxml.convertXmlToWbxml(xmlParseInputStream, output);
+			byte[] bytes = output.toByteArray();
+
+			String s = "";
+			for (byte b : bytes) {
+				s += String.format("%02x ", b);
+			}
+
+			Log.v(TAG, s);
+
+			output = new java.io.ByteArrayOutputStream();
+			InputStream is = new ByteArrayInputStream(bytes);
+			wbxml.convertWbxmlToXml(is, output);
+			Log.v(TAG, output.toString());
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+	
 	/**
 	 * @param uri The URI that the request needs to be sent to
 	 * @return The OPTIONS request that can be sent to the server
