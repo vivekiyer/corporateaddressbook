@@ -19,7 +19,10 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -185,15 +188,24 @@ public class WBXML {
                 case 0x02: /* entity */
                     break;
                 case 0x03: /* str_i */
-                    StringBuffer inlineString = new StringBuffer(1024);
-                    int stringByte = 0x00;
+                    ArrayList <Byte> inlineString = new ArrayList <Byte> (); 
+                	//StringBuffer inlineString = new StringBuffer(1024);
+                    byte stringByte = 0x00;
                     /* We need to process an indefinitely long string.  The terminator is
                      * based upon the charset encoding.  We only handle utf-8 right now,
                      * so our terminator is null (ie, 0x00) */
-                    while ((stringByte = istream.read()) > 0) {
-                        inlineString.append((char) stringByte);
+                    while ((stringByte = (byte) istream.read()) != 0) {
+                        inlineString.add(stringByte);
                     }
-                    outputBuffer = inlineString.toString();
+                    
+                    //outputBuffer = inlineString.toString();
+                    byte [] a = new byte[inlineString.size()];
+                    int pos = 0;
+                    
+                    for(Byte b : inlineString)
+                    	a[pos++] = b.byteValue();
+                    
+                    outputBuffer = new String(a, "UTF-8");
                     break;
                 case 0x04: /* literal */
                     break;
@@ -279,7 +291,7 @@ public class WBXML {
             }
 
             if (outputBuffer.length() > 0) {
-                ostream.write(outputBuffer.getBytes(), 0, outputBuffer.length());
+                ostream.write(outputBuffer.getBytes("UTF-8"));
                 ostream.flush();
             }
         
@@ -410,7 +422,10 @@ public class WBXML {
         	XMLReader xr = XMLReaderFactory.createXMLReader();
             XMLHandler handler = new XMLHandler(out);
             xr.setContentHandler(handler);
-            xr.parse(new InputSource(in));
+            Reader reader = new InputStreamReader(in, "UTF-8");
+			InputSource is = new InputSource(reader);
+			is.setEncoding("UTF-8");
+            xr.parse(is);
         } 
         catch (SAXException se) {
             Log.e("WBXML", "SAXException in convertXmlToWbxml: " + se);
@@ -502,7 +517,20 @@ public class WBXML {
 
                 for (Integer i : pendingBuffer) {
                     try {
-                        ostream.write(i.byteValue());
+                    	Integer j = i >> 24;
+                    	if (j > 0) 
+                    		ostream.write(j);
+                    	
+                    	j = i >> 16;
+                    	if (j > 0) 
+                    		ostream.write(j);
+                    	
+                    	j = i >> 8;
+                    	if (j > 0) 
+                    		ostream.write(j);                    	
+                    	
+                    	ostream.write(i.byteValue());
+                    	
                     } catch (IOException ioe) {
                         throw new SAXException("IOException writing buffer: " + ioe);
                     }
@@ -600,7 +628,6 @@ public class WBXML {
         	// Check for whitespace
         	String s = new String(ch, start, length);       	
         	
-        	
         	boolean isWhitespaceOnly = s.matches("\\s*");        	
         	if(isWhitespaceOnly)
         		return;
@@ -639,10 +666,18 @@ public class WBXML {
                 /* Add the tag saying an inline string follows */
                 pendingBuffer.add(0x03);
 
-                /* Add the string */
-                for (int i = 0; i < length; i++) {
-                    pendingBuffer.add((int) ch[start+i]);
-                }
+                try {
+					byte[] bytes = s.getBytes("UTF-8");
+					/* Add the string */
+	                for (byte b : bytes) {                	
+	                    pendingBuffer.add((int)b);
+	                }
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					Log.v(TAG,e.toString());
+				}
+                
+                
                 /* End the string with a null terminator since we only support UTF-8 */
                 pendingBuffer.add(0x00);
             }

@@ -401,10 +401,10 @@ public class ActiveSyncManager {
         // and it's not worth it to pay the penalty of checking every time.
         HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
 
-        // Default connection and socket timeout of 20 seconds.  Tweak to taste.
-        HttpConnectionParams.setConnectionTimeout(httpParams, 20 * 1000);
-        HttpConnectionParams.setSoTimeout(httpParams, 20 * 1000);
-        HttpConnectionParams.setSocketBufferSize(httpParams, 8192);
+        // Default connection and socket timeout of 120 seconds.  Tweak to taste.
+        HttpConnectionParams.setConnectionTimeout(httpParams, 120 * 1000);
+        HttpConnectionParams.setSoTimeout(httpParams, 120 * 1000);
+        HttpConnectionParams.setSocketBufferSize(httpParams, 131072);
         
 		SchemeRegistry registry = new SchemeRegistry();
 	    registry.register(
@@ -475,20 +475,13 @@ public class ActiveSyncManager {
 			wbxml.convertXmlToWbxml(xmlParseInputStream, output);
 			byte[] bytes = output.toByteArray();
 
-			String s = "";
-			for (byte b : bytes) {
-				s += String.format("%02x ", b);
-			}
-
-			//Log.d(TAG, s);
-
 			ByteArrayEntity myEntity = new ByteArrayEntity(bytes);
 			myEntity.setContentType("application/vnd.ms-sync.wbxml");
 			httpPost.setEntity(myEntity);
 		}
 		return httpPost;
 	}
-
+	
 	/**
 	 * @param uri The URI that the request needs to be sent to
 	 * @return The OPTIONS request that can be sent to the server

@@ -182,6 +182,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 		progressdialog.setMessage("Retrieving results");
 		progressdialog.show();
 
+		//activeSyncManager.testXMLtoWBXML();
+		
 		// Retrieve the results via an AsyncTask
 		new GALSearch().execute(name.toString());
 		
@@ -457,6 +459,11 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 				searchResultXML = activeSyncManager.searchGAL(params[0]);
 				mContacts = activeSyncManager.parseXML(searchResultXML);
 			} catch (Exception e) {
+				Toast toast = Toast.makeText(
+						CorporateAddressBook.this, 
+						"Error while retrieving results." + e.toString(), 
+						Toast.LENGTH_SHORT);
+				toast.show();
 				Log.e(TAG,e.toString());
 			}
 			return null;			
@@ -478,6 +485,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 						"Error while retrieving results. Please try again", 
 						duration);
 				toast.show();
+				return;
 			}
 				
 			switch(mContacts.size()){

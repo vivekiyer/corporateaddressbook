@@ -160,26 +160,27 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 			return;
 		}
 		
-		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");
-		domain = splits[0];
-		username = splits[1];
-
-		if (domain == "") {
-			showAlert("Please provide a valid Domain");
+		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");		
+		
+		if(splits.length != 2){
+			showAlert("Domain name and username must be in the format DOMAIN\\Username");
 			return;
 		}
+			
+		domain = splits[0];
+		username = splits[1];
 		
-		if (username == "") {
+		if (username.equalsIgnoreCase("")) {
 			showAlert("Please provide a valid username");
 			return;
 		}
 		
-		if (getTextFromId(R.id.txtPassword) == ""){
+		if (getTextFromId(R.id.txtPassword).equalsIgnoreCase("")){
 			showAlert("Please provide a valid password");
 			return;			
 		}
 			
-		if (getTextFromId(R.id.txtServerName) == "" ){
+		if (getTextFromId(R.id.txtServerName).equalsIgnoreCase("") ){
 			showAlert("Please provide a valid Exchange URL");
 			return;
 		}		
