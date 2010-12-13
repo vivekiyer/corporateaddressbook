@@ -20,6 +20,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -421,6 +422,19 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 	}
 	
 	/**
+	 * @param s The alert message
+	 * Displays an alert dialog with the messaged provided
+	 */
+	private void showAlert(String s){
+		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
+		alt_bld.setMessage(s)
+				.setPositiveButton("Ok", null);
+		AlertDialog alert = alt_bld.create();
+		alert.show();
+	}
+	
+	
+	/**
 	 * Clear the results from the listview
 	 */
 	private void clearResult(){
@@ -446,6 +460,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 	 */
 	class GALSearch extends AsyncTask <String, Void, Boolean> {
 		
+		private String errorMesg = "";
 		/* (non-Javadoc)
 		 * @see android.os.AsyncTask#doInBackground(Params[])
 		 * 
@@ -456,14 +471,12 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 			try {
 				// Search the GAL
 				mContacts = null;
-				searchResultXML = activeSyncManager.searchGAL(params[0]);
-				mContacts = activeSyncManager.parseXML(searchResultXML);
+				//searchResultXML = activeSyncManager.searchGAL(params[0]);
+				//mContacts = activeSyncManager.parseXML(searchResultXML);
+				mContacts.clear();
 			} catch (Exception e) {
-				Toast toast = Toast.makeText(
-						CorporateAddressBook.this, 
-						"Error while retrieving results." + e.toString(), 
-						Toast.LENGTH_SHORT);
-				toast.show();
+				errorMesg += "ActiveSync version=" +activeSyncManager.getActiveSyncVersion() + "\n";
+				errorMesg += e.toString();
 				Log.e(TAG,e.toString());
 			}
 			return null;			
@@ -476,15 +489,9 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 		 */
 		@Override
 		protected void onPostExecute(Boolean result) {
-			progressdialog.dismiss();
-			
+			progressdialog.dismiss();			
 			if(mContacts == null){
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(
-						CorporateAddressBook.this, 
-						"Error while retrieving results. Please try again", 
-						duration);
-				toast.show();
+				CorporateAddressBook.this.showAlert(errorMesg);
 				return;
 			}
 				
