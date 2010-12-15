@@ -44,6 +44,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import android.util.Log;
+
 import net.vivekiyer.GAL.wbxml.WBXML;
 
 /**
@@ -64,7 +66,7 @@ public class ActiveSyncManager {
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";
-	//private static final String TAG = "ActiveSyncManager";
+	private static final String TAG = "ActiveSyncManager";
 
 
 	public boolean isUseSSLSet() {
@@ -174,9 +176,17 @@ public class ActiveSyncManager {
 	 * Connects to the Exchange server and obtains the version of ActiveSync supported 
 	 * by the server 
 	 */
-	public void getExchangeServerVersion() throws Exception {
+	public int getExchangeServerVersion() throws Exception {
 		// First get the options from the server
-		Header[] headers = getOptions();
+		 HttpResponse response = getOptions();
+		 
+		 // Get the response code. If it is not 200, there has been an error
+		 int statusCode = response.getStatusLine().getStatusCode();
+		 if ( statusCode != 200)
+			 return statusCode;
+		 
+		 Header[] headers = response.getAllHeaders();
+		 
 
 		if (headers != null) {
 			for (Header header : headers) {
@@ -261,18 +271,13 @@ public class ActiveSyncManager {
 	 * 
 	 * Sends an OPTIONS request to the Exchange server
 	 */
-	private Header[] sendOptionsRequest(HttpOptions httpOptions)
+	private HttpResponse sendOptionsRequest(HttpOptions httpOptions)
 			throws Exception {
 
 		// Send the OPTIONS message
 		HttpClient client = createHttpClient();
 		HttpContext localContext = new BasicHttpContext();
-		HttpResponse response = client.execute(httpOptions, localContext);
-
-		//Log.d(TAG, (response.getStatusLine().toString()));
-		Header[] headers = response.getAllHeaders();
-
-		return headers;
+		return client.execute(httpOptions, localContext);
 	}
 
 	/**
@@ -282,7 +287,7 @@ public class ActiveSyncManager {
 	 * Get the options that are supported by the Exchange server. 
 	 * This is accomplished by sending an OPTIONS request with the Cmd set to SYNC
 	 */
-	public Header[] getOptions() throws Exception {
+	public HttpResponse getOptions() throws Exception {
 		String uri = mUri + "Sync";
 		return sendOptionsRequest(createHttpOptions(uri));
 
