@@ -135,6 +135,11 @@ public class ActiveSyncManager {
 	public void Initialize() {
 		wbxml = new WBXML();
 
+		// For BPOS the DOMAIN is not required, so remove the blackslash
+		if(mDomain.equalsIgnoreCase(""))
+			mAuthString = "Basic "
+				+ Utility.base64Encode(mUsername + ":" + mPassword);
+		else
 		mAuthString = "Basic "
 				+ Utility.base64Encode(mDomain + "\\" + mUsername + ":"
 						+ mPassword);
@@ -176,17 +181,9 @@ public class ActiveSyncManager {
 	 * Connects to the Exchange server and obtains the version of ActiveSync supported 
 	 * by the server 
 	 */
-	public int getExchangeServerVersion() throws Exception {
+	public void getExchangeServerVersion() throws Exception {
 		// First get the options from the server
-		 HttpResponse response = getOptions();
-		 
-		 // Get the response code. If it is not 200, there has been an error
-		 int statusCode = response.getStatusLine().getStatusCode();
-		 if ( statusCode != 200)
-			 return statusCode;
-		 
-		 Header[] headers = response.getAllHeaders();
-		 
+		Header[] headers = getOptions();
 
 		if (headers != null) {
 			for (Header header : headers) {
@@ -271,13 +268,18 @@ public class ActiveSyncManager {
 	 * 
 	 * Sends an OPTIONS request to the Exchange server
 	 */
-	private HttpResponse sendOptionsRequest(HttpOptions httpOptions)
+	private Header[] sendOptionsRequest(HttpOptions httpOptions)
 			throws Exception {
 
 		// Send the OPTIONS message
 		HttpClient client = createHttpClient();
 		HttpContext localContext = new BasicHttpContext();
-		return client.execute(httpOptions, localContext);
+		HttpResponse response = client.execute(httpOptions, localContext);
+
+		//Log.d(TAG, (response.getStatusLine().toString()));
+		Header[] headers = response.getAllHeaders();
+
+		return headers;
 	}
 
 	/**
@@ -287,7 +289,7 @@ public class ActiveSyncManager {
 	 * Get the options that are supported by the Exchange server. 
 	 * This is accomplished by sending an OPTIONS request with the Cmd set to SYNC
 	 */
-	public HttpResponse getOptions() throws Exception {
+	public Header[] getOptions() throws Exception {
 		String uri = mUri + "Sync";
 		return sendOptionsRequest(createHttpOptions(uri));
 
@@ -325,7 +327,7 @@ public class ActiveSyncManager {
 	 * 
 	 * This method searches the GAL on the Exchange server
 	 */
-	public String searchGAL(String name) throws Exception {
+	public String[] searchGAL(String name) throws Exception {
 		// Create the request
 		String uri = mUri + "Search";
 
@@ -347,8 +349,11 @@ public class ActiveSyncManager {
 		
 		//Log.d(TAG,result);
 		
+		String[] response = new String[2];
+		response[0] = xml;
+		response[1] = result;
 		// parse and return the results
-		return result;		
+		return response;		
 	}
 
 	/**
