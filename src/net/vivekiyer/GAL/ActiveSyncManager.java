@@ -65,8 +65,10 @@ public class ActiveSyncManager {
 	private String mPassword;
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
-	private String mActiveSyncVersion = "";
+	private String mActiveSyncVersion = "";	
 	private static final String TAG = "ActiveSyncManager";
+	
+	public String debugString = "";
 
 
 	public boolean isUseSSLSet() {
@@ -185,10 +187,17 @@ public class ActiveSyncManager {
 		// First get the options from the server
 		Header[] headers = getOptions();
 
+		
 		if (headers != null) {
 			for (Header header : headers) {
 				//Log.d(TAG, (header.toString()));
-
+				debugString += header.toString();
+				debugString += "\n";
+			}
+			
+			for (Header header : headers) {
+				//Log.d(TAG, (header.toString()));
+				
 				// Parse out the ActiveSync Protocol version
 				if (header.getName().equalsIgnoreCase("MS-ASProtocolVersions")) {
 					String versions = header.getValue();
