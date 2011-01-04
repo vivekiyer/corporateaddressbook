@@ -63,10 +63,9 @@ public class ActiveSyncManager {
 	private String mPassword;
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
-	private String mActiveSyncVersion = "";
+	private String mActiveSyncVersion = "";	
 	//private static final String TAG = "ActiveSyncManager";
-
-
+	
 	public boolean isUseSSLSet() {
 		return mUseSSL;
 	}
@@ -133,6 +132,11 @@ public class ActiveSyncManager {
 	public void Initialize() {
 		wbxml = new WBXML();
 
+		// For BPOS the DOMAIN is not required, so remove the blackslash
+		if(mDomain.equalsIgnoreCase(""))
+			mAuthString = "Basic "
+				+ Utility.base64Encode(mUsername + ":" + mPassword);
+		else
 		mAuthString = "Basic "
 				+ Utility.base64Encode(mDomain + "\\" + mUsername + ":"
 						+ mPassword);
@@ -178,10 +182,12 @@ public class ActiveSyncManager {
 		// First get the options from the server
 		Header[] headers = getOptions();
 
+		
 		if (headers != null) {
+			
 			for (Header header : headers) {
 				//Log.d(TAG, (header.toString()));
-
+				
 				// Parse out the ActiveSync Protocol version
 				if (header.getName().equalsIgnoreCase("MS-ASProtocolVersions")) {
 					String versions = header.getValue();
@@ -190,17 +196,14 @@ public class ActiveSyncManager {
 					// version
 					mActiveSyncVersion = versions.substring(versions
 							.lastIndexOf(",") + 1);
+
+					// Provision the device if necessary
+					provisionDevice();
+
 					//Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
 					break;
 				}
-			}
-
-			// If the exchange version is 12.0 or above (Exchange 2007 and
-			// above), lets try
-			if (Float.parseFloat(mActiveSyncVersion) >= 12.0) {
-				// Get the policy key
-				provisionDevice();
-			}
+			}			
 		}
 	}
 
@@ -223,7 +226,7 @@ public class ActiveSyncManager {
 		//Log.d(TAG, (response.getStatusLine().toString()));
 		
 		// Log all the headers
-		Header[] headers = response.getAllHeaders();
+		//Header[] headers = response.getAllHeaders();
 
 		//for (Header header : headers) {
 			//Log.d(TAG, (header.toString()));
@@ -355,20 +358,30 @@ public class ActiveSyncManager {
 
 		// Create the request
 		String uri = mUri + "Provision";
-
+		String policyType;
+		
+		if (Float.parseFloat(mActiveSyncVersion) >= 12.0)
+			policyType = "MS-EAS-Provisioning-WBXML";		
+		else
+			policyType =  "MS-WAP-Provisioning-XML";
+		
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 				+ "<Provision xmlns=\"Provision:\">\n" + "\t<Policies>\n"
 				+ "\t\t<Policy>\n"
-				+ "\t\t\t<PolicyType>MS-EAS-Provisioning-WBXML</PolicyType>\n"
+				+ "\t\t\t<PolicyType>" 
+				+ policyType 
+				+ "</PolicyType>\n"
 				+ "\t\t</Policy>\n" + "\t</Policies>\n" + "</Provision>";
 
 		xml = sendPostRequest(createHttpPost(uri, xml, true));
-
+		
 		// Get the temporary policy key from the server
 		String[] result = parseXML(xml, "PolicyKey");
-
-		if (result == null) {
-			throw new Exception("Error provisioning device");
+		
+		if (result == null ) {
+			//  This implies that there is no policy key
+			// So return
+			return;
 		}
 
 		// Now that we have the temporary policy key,
@@ -377,7 +390,9 @@ public class ActiveSyncManager {
 		xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 				+ "<Provision xmlns=\"Provision:\">\n" + "\t<Policies>\n"
 				+ "\t\t<Policy>\n"
-				+ "\t\t\t<PolicyType>MS-EAS-Provisioning-WBXML</PolicyType>\n"
+				+ "\t\t\t<PolicyType>" 
+				+ policyType 
+				+ "</PolicyType>\n"
 				+ "\t\t\t<PolicyKey>" + result[0] + "</PolicyKey>\n"
 				+ "\t\t\t<Status>1</Status>\n" + "\t\t</Policy>\n"
 				+ "\t</Policies>\n" + "</Provision>";

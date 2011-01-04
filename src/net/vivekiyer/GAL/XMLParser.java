@@ -46,6 +46,9 @@ public class XMLParser extends DefaultHandler {
      * Returns the values that are contained in the input nodes
      */
     public String[] getOutput() throws Exception {
+    	if(output.isEmpty())
+    		return null;
+    	
     	return output.toArray(new String[output.size()]);
 	}
     

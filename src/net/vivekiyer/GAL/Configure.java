@@ -71,13 +71,10 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// Get the preferences that were entered by the user and display those to the user 
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);			
 		
-		String splitter = (mPreferences.getString(KEY_DOMAIN_PREFERENCE , "").
-				equalsIgnoreCase("")) ? "" : "\\";
-		
 		setTextForId(
 				R.id.txtDomainUserName, 
 					mPreferences.getString(KEY_DOMAIN_PREFERENCE , "") + 
-					splitter + 
+					"\\" + 
 					mPreferences.getString(KEY_USERNAME_PREFERENCE, ""));
 		setTextForId(
 				R.id.txtPassword, 
@@ -207,7 +204,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		progressdialog.setCancelable(false);
 		progressdialog.show();		
 		ConnectionChecker checker = new ConnectionChecker(this);
-		checker.execute(activeSyncManager);
+		checker.execute(activeSyncManager);		
 	}
 	
 	/* (non-Javadoc)
@@ -260,7 +257,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 					activeSyncManager.getPolicyKey());
 
 			// Commit the edits!
-			editor.commit();
+			editor.commit();			
 			
 			// Close the activity
 			finish();
