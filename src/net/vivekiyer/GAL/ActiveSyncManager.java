@@ -44,8 +44,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import android.util.Log;
-
 import net.vivekiyer.GAL.wbxml.WBXML;
 
 /**
@@ -66,11 +64,8 @@ public class ActiveSyncManager {
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";	
-	private static final String TAG = "ActiveSyncManager";
+	//private static final String TAG = "ActiveSyncManager";
 	
-	public String debugString = "";
-
-
 	public boolean isUseSSLSet() {
 		return mUseSSL;
 	}
@@ -189,11 +184,6 @@ public class ActiveSyncManager {
 
 		
 		if (headers != null) {
-			for (Header header : headers) {
-				//Log.d(TAG, (header.toString()));
-				debugString += header.toString();
-				debugString += "\n";
-			}
 			
 			for (Header header : headers) {
 				//Log.d(TAG, (header.toString()));
@@ -206,17 +196,14 @@ public class ActiveSyncManager {
 					// version
 					mActiveSyncVersion = versions.substring(versions
 							.lastIndexOf(",") + 1);
+
+					// Provision the device if necessary
+					provisionDevice();
+
 					//Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
 					break;
 				}
-			}
-
-			// If the exchange version is 12.0 or above (Exchange 2007 and
-			// above), lets try
-			if (Float.parseFloat(mActiveSyncVersion) >= 12.0) {
-				// Get the policy key
-				provisionDevice();
-			}
+			}			
 		}
 	}
 
@@ -239,7 +226,7 @@ public class ActiveSyncManager {
 		//Log.d(TAG, (response.getStatusLine().toString()));
 		
 		// Log all the headers
-		Header[] headers = response.getAllHeaders();
+		//Header[] headers = response.getAllHeaders();
 
 		//for (Header header : headers) {
 			//Log.d(TAG, (header.toString()));
@@ -385,9 +372,11 @@ public class ActiveSyncManager {
 
 		// Get the temporary policy key from the server
 		String[] result = parseXML(xml, "PolicyKey");
-
-		if (result == null) {
-			throw new Exception("Error provisioning device");
+		
+		if (result == null ) {
+			//  This implies that there is no policy key
+			// So return
+			return;
 		}
 
 		// Now that we have the temporary policy key,

@@ -18,7 +18,6 @@ package net.vivekiyer.GAL;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -261,21 +260,8 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 					activeSyncManager.getPolicyKey());
 
 			// Commit the edits!
-			editor.commit();
+			editor.commit();			
 			
-			// Generate an email with the appropriate data				
-			Intent intent = new Intent(android.content.Intent.ACTION_SEND);				
-			intent.setType("text/plain");
-			String[] recipients = new String[]{"vivekiyer@gmail.com", "",};
-			intent.putExtra(android.content.Intent.EXTRA_EMAIL, recipients);
-			intent.putExtra(android.content.Intent.EXTRA_SUBJECT,"GAL log");
-			intent.putExtra(
-					android.content.Intent.EXTRA_TEXT,
-					activeSyncManager.debugString
-			);
-			
-			startActivity(Intent.createChooser(intent, "Send mail..."));
-
 			// Close the activity
 			finish();
 		}
