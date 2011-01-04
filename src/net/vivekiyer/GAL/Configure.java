@@ -71,13 +71,10 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// Get the preferences that were entered by the user and display those to the user 
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);			
 		
-		String splitter = (mPreferences.getString(KEY_DOMAIN_PREFERENCE , "").
-				equalsIgnoreCase("")) ? "" : "\\";
-		
 		setTextForId(
 				R.id.txtDomainUserName, 
 					mPreferences.getString(KEY_DOMAIN_PREFERENCE , "") + 
-					splitter + 
+					"\\" + 
 					mPreferences.getString(KEY_USERNAME_PREFERENCE, ""));
 		setTextForId(
 				R.id.txtPassword, 

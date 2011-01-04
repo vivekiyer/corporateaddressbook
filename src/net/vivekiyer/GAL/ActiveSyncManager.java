@@ -323,7 +323,7 @@ public class ActiveSyncManager {
 	 * 
 	 * This method searches the GAL on the Exchange server
 	 */
-	public String[] searchGAL(String name) throws Exception {
+	public String searchGAL(String name) throws Exception {
 		// Create the request
 		String uri = mUri + "Search";
 
@@ -345,11 +345,8 @@ public class ActiveSyncManager {
 		
 		//Log.d(TAG,result);
 		
-		String[] response = new String[2];
-		response[0] = xml;
-		response[1] = result;
 		// parse and return the results
-		return response;		
+		return result;		
 	}
 
 	/**
@@ -377,7 +374,7 @@ public class ActiveSyncManager {
 				+ "\t\t</Policy>\n" + "\t</Policies>\n" + "</Provision>";
 
 		xml = sendPostRequest(createHttpPost(uri, xml, true));
-
+		
 		// Get the temporary policy key from the server
 		String[] result = parseXML(xml, "PolicyKey");
 		
@@ -393,7 +390,9 @@ public class ActiveSyncManager {
 		xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 				+ "<Provision xmlns=\"Provision:\">\n" + "\t<Policies>\n"
 				+ "\t\t<Policy>\n"
-				+ "\t\t\t<PolicyType>MS-EAS-Provisioning-WBXML</PolicyType>\n"
+				+ "\t\t\t<PolicyType>" 
+				+ policyType 
+				+ "</PolicyType>\n"
 				+ "\t\t\t<PolicyKey>" + result[0] + "</PolicyKey>\n"
 				+ "\t\t\t<Status>1</Status>\n" + "\t\t</Policy>\n"
 				+ "\t</Policies>\n" + "</Provision>";

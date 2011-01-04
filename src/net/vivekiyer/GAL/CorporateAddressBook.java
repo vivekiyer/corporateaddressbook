@@ -84,8 +84,6 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 	// List of names in the list view control
 	private String[] names;
 	
-	private String[] searchResponse;
-	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 * 
@@ -462,6 +460,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 	 */
 	class GALSearch extends AsyncTask <String, Void, Boolean> {
 		
+		private String errorMesg = "";
+		
 		/* (non-Javadoc)
 		 * @see android.os.AsyncTask#doInBackground(Params[])
 		 * 
@@ -472,17 +472,11 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 			try {
 				// Search the GAL
 				mContacts = null;
-				searchResponse = activeSyncManager.searchGAL(params[0]);
-				searchResultXML = searchResponse[1]; 
-				//searchResultXML = activeSyncManager.searchGAL(params[0]);
+				searchResultXML = activeSyncManager.searchGAL(params[0]);
 				mContacts = activeSyncManager.parseXML(searchResultXML);
 			} catch (Exception e) {
-				Toast toast = Toast.makeText(
-						CorporateAddressBook.this, 
-						"Error while retrieving results." + e.toString(), 
-						Toast.LENGTH_SHORT);
-				toast.show();
-				Log.e(TAG,e.toString());
+				errorMesg += "ActiveSync version=" +activeSyncManager.getActiveSyncVersion() + "\n";
+				errorMesg += e.toString();
 			}
 			return null;			
 		}
@@ -497,33 +491,15 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 			progressdialog.dismiss();			
 			
 			if(mContacts == null){
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(
-						CorporateAddressBook.this, 
-						"Error while retrieving results. Please try again", 
-						duration);
-				toast.show();
+				CorporateAddressBook.this.showAlert(errorMesg);
 				return;
 			}
 				
 			switch(mContacts.size()){
-			case 0:		
-				
-				// Generate an email with the appropriate data				
-				Intent intent = new Intent(android.content.Intent.ACTION_SEND);				
-				intent.setType("text/plain");
-				String[] recipients = new String[]{"vivekiyer@gmail.com", "",};
-				intent.putExtra(android.content.Intent.EXTRA_EMAIL, recipients);
-				intent.putExtra(android.content.Intent.EXTRA_SUBJECT,"GAL log");
-				intent.putExtra(
-						android.content.Intent.EXTRA_TEXT,
-						searchResponse[0] +
-						"\n" + 
-						searchResponse[1]
-				);
-				
-				startActivity(Intent.createChooser(intent, "Send mail..."));
-				
+			case 0:						
+				int duration = Toast.LENGTH_SHORT;
+				Toast toast = Toast.makeText(CorporateAddressBook.this, "No matches found", duration);
+				toast.show();				
 				break;
 			case 1:
 				// Create a parcel with the associated contact object
@@ -532,7 +508,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 				Contact c = (Contact) mContacts.values().toArray()[0];
 				b.putParcelable("net.vivekiyer.GAL", c);		
 		        
-		        intent = new Intent(CorporateAddressBook.this,CorporateContactRecord.class);
+		        Intent intent = new Intent(CorporateAddressBook.this,CorporateContactRecord.class);
 		        intent.putExtras(b);        
 		        
 		        startActivity(intent);          
