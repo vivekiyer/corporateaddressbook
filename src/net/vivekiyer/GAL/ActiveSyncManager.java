@@ -361,11 +361,19 @@ public class ActiveSyncManager {
 
 		// Create the request
 		String uri = mUri + "Provision";
-
+		String policyType;
+		
+		if (Float.parseFloat(mActiveSyncVersion) >= 12.0)
+			policyType = "MS-EAS-Provisioning-WBXML";		
+		else
+			policyType =  "MS-WAP-Provisioning-XML";
+		
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 				+ "<Provision xmlns=\"Provision:\">\n" + "\t<Policies>\n"
 				+ "\t\t<Policy>\n"
-				+ "\t\t\t<PolicyType>MS-EAS-Provisioning-WBXML</PolicyType>\n"
+				+ "\t\t\t<PolicyType>" 
+				+ policyType 
+				+ "</PolicyType>\n"
 				+ "\t\t</Policy>\n" + "\t</Policies>\n" + "</Provision>";
 
 		xml = sendPostRequest(createHttpPost(uri, xml, true));
