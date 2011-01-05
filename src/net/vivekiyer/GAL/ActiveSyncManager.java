@@ -132,7 +132,7 @@ public class ActiveSyncManager {
 	public void Initialize() {
 		wbxml = new WBXML();
 
-		// For BPOS the DOMAIN is not required, so remove the blackslash
+		// For BPOS the DOMAIN is not required, so remove the backslash
 		if(mDomain.equalsIgnoreCase(""))
 			mAuthString = "Basic "
 				+ Utility.base64Encode(mUsername + ":" + mPassword);
@@ -178,33 +178,42 @@ public class ActiveSyncManager {
 	 * Connects to the Exchange server and obtains the version of ActiveSync supported 
 	 * by the server 
 	 */
-	public void getExchangeServerVersion() throws Exception {
-		// First get the options from the server
-		Header[] headers = getOptions();
-
+	public int getExchangeServerVersion() throws Exception {
 		
-		if (headers != null) {
+		// First get the options from the server
+		HttpResponse response = getOptions(); 
+		
+		// 200 indicates a success
+		int statusCode = response.getStatusLine().getStatusCode() ; 
+		
+		if( response.getStatusLine().getStatusCode()  == 200){
 			
-			for (Header header : headers) {
-				//Log.d(TAG, (header.toString()));
+			Header [] headers = response.getAllHeaders();
+			
+			if (headers != null) {
 				
-				// Parse out the ActiveSync Protocol version
-				if (header.getName().equalsIgnoreCase("MS-ASProtocolVersions")) {
-					String versions = header.getValue();
-
-					// Look for the last comma, and parse out the highest
-					// version
-					mActiveSyncVersion = versions.substring(versions
-							.lastIndexOf(",") + 1);
-
-					// Provision the device if necessary
-					provisionDevice();
-
-					//Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
-					break;
-				}
-			}			
+				for (Header header : headers) {
+					//Log.d(TAG, (header.toString()));
+					
+					// Parse out the ActiveSync Protocol version
+					if (header.getName().equalsIgnoreCase("MS-ASProtocolVersions")) {
+						String versions = header.getValue();
+	
+						// Look for the last comma, and parse out the highest
+						// version
+						mActiveSyncVersion = versions.substring(versions
+								.lastIndexOf(",") + 1);
+	
+						// Provision the device if necessary
+						provisionDevice();
+	
+						//Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
+						break;
+					}
+				}			
+			}
 		}
+		return statusCode;
 	}
 
 	/**
@@ -264,18 +273,13 @@ public class ActiveSyncManager {
 	 * 
 	 * Sends an OPTIONS request to the Exchange server
 	 */
-	private Header[] sendOptionsRequest(HttpOptions httpOptions)
+	private HttpResponse sendOptionsRequest(HttpOptions httpOptions)
 			throws Exception {
 
 		// Send the OPTIONS message
 		HttpClient client = createHttpClient();
 		HttpContext localContext = new BasicHttpContext();
-		HttpResponse response = client.execute(httpOptions, localContext);
-
-		//Log.d(TAG, (response.getStatusLine().toString()));
-		Header[] headers = response.getAllHeaders();
-
-		return headers;
+		return client.execute(httpOptions, localContext);
 	}
 
 	/**
@@ -285,10 +289,9 @@ public class ActiveSyncManager {
 	 * Get the options that are supported by the Exchange server. 
 	 * This is accomplished by sending an OPTIONS request with the Cmd set to SYNC
 	 */
-	public Header[] getOptions() throws Exception {
-		String uri = mUri + "Sync";
+	public HttpResponse getOptions() throws Exception {
+		String uri = mUri; 
 		return sendOptionsRequest(createHttpOptions(uri));
-
 	}
 
 	/**
@@ -507,10 +510,6 @@ public class ActiveSyncManager {
 	private HttpOptions createHttpOptions(String uri) {
 		HttpOptions httpOptions = new HttpOptions(uri);
 		httpOptions.setHeader("User-Agent", "Android");
-		httpOptions.setHeader("Accept", "*/*");
-		httpOptions.setHeader("Content-Type", "application/vnd.ms-sync.wbxml");
-		httpOptions.setHeader("MS-ASProtocolVersion", mActiveSyncVersion);
-		httpOptions.setHeader("Accept-Language", "en-us");
 		httpOptions.setHeader("Authorization", mAuthString);
 
 		return httpOptions;

@@ -21,5 +21,7 @@ package net.vivekiyer.GAL;
  * Interface that is used to implement callbacks 
  */
 public interface TaskCompleteCallback {
-	public void taskComplete(boolean taskStatus);
+	public void taskComplete(
+			boolean taskStatus, 
+			int statusCode);
 }

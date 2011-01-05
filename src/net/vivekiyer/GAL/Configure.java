@@ -224,14 +224,17 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 	 * either quit this activity, or ask the user to fix the issue
 	 */
 	@Override
-	public void taskComplete(boolean taskStatus) {		
+	public void taskComplete(
+			boolean taskStatus, 
+			int statusCode) {		
 		progressdialog.dismiss();
 		
 		// Looks like there was an error in the settings
 		if (!taskStatus) {
 			AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
 			alt_bld.setMessage(
-					"Error connecting to server. Please check your settings")
+					"Error connecting to server. Please check your settings \n"+
+					"Error code = " + statusCode)
 					.setPositiveButton("Ok", null);
 			AlertDialog alert = alt_bld.create();
 			alert.show();
