@@ -52,7 +52,7 @@ import android.widget.Toast;
  *  
  * This class is the main entry point to the application
  */
-public class CorporateAddressBook extends Activity implements OnClickListener, TaskCompleteCallback {	
+public class CorporateAddressBook extends Activity implements OnClickListener{	
 	
 	// TAG used for logging
 	private static String TAG = "CorporateAddressBook";
@@ -372,28 +372,6 @@ public class CorporateAddressBook extends Activity implements OnClickListener, T
 		// Commit the edits!
 		editor.commit();
 	}
-
-	/* (non-Javadoc)
-	 * @see net.vivekiyer.GAL.TaskCompleteCallback#taskComplete(boolean)
-	 * 
-	 * Callback function that gets called after the 
-	 * Connection checker checks the server settings
-	 */
-	@Override
-	public void taskComplete(boolean taskStatus) {
-		progressdialog.dismiss();		
-		
-		// If the server settings are not correct
-		// Launch the config pane and ask the user to fix
-		// the problem
-		if (!taskStatus) {	
-			Intent myIntent = new Intent();
-			myIntent.setClassName("net.vivekiyer.GAL",
-					"net.vivekiyer.GAL.Configure");
-			startActivityForResult(myIntent, DISPLAY_CONFIGURATION_REQUEST);
-		}
-	}	
-	
 	
 	/**
 	 * Displays the search results in the Listview 

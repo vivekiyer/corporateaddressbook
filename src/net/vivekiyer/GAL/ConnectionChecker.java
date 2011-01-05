@@ -30,6 +30,8 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	// Callback to call once the check is complete
 	private TaskCompleteCallback callback;	
 	
+	// variable that stores the status of the connect
+	private int statusCode = 0;
 	
 	/**
 	 * @param callback Callback to call once the task is complete
@@ -49,7 +51,11 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	protected Boolean doInBackground(ActiveSyncManager... params) {
 		try {
 			// Let's try to connect to the server
-			params[0].getExchangeServerVersion();
+			statusCode = params[0].getExchangeServerVersion();
+			
+			if(statusCode != 200)
+				return false;
+			
 		} catch (Exception e) {
 			return false;
 		}
@@ -60,6 +66,6 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	protected void onPostExecute(Boolean result) {		
 		// now that the task is complete
 		// call the callback with the status
-		callback.taskComplete(result);
+		callback.taskComplete(result, statusCode);
 	}
 }
