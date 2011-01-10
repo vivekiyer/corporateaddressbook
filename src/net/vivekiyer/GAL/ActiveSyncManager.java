@@ -64,6 +64,10 @@ public class ActiveSyncManager {
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";	
+	
+	// DEBUG strings
+	private String mDebugHeaders = "";
+	
 	//private static final String TAG = "ActiveSyncManager";
 	
 	public boolean isUseSSLSet() {
@@ -120,6 +124,10 @@ public class ActiveSyncManager {
 
 	public void setPassword(String password) {
 		this.mPassword = password;
+	}
+
+	public String getDebugHeaders() {
+		return mDebugHeaders;
 	}
 
 	public WBXML getWbxml() {
@@ -185,6 +193,10 @@ public class ActiveSyncManager {
 		
 		// 200 indicates a success
 		int statusCode = response.getStatusLine().getStatusCode() ; 
+		if(Debug.Enabled){
+			mDebugHeaders += response.getStatusLine().toString();
+			mDebugHeaders += "\n";
+		}
 		
 		if( response.getStatusLine().getStatusCode()  == 200){
 			
@@ -193,7 +205,13 @@ public class ActiveSyncManager {
 			if (headers != null) {
 				
 				for (Header header : headers) {
-					//Log.d(TAG, (header.toString()));
+					
+					// Log the headers
+					//Log.d(TAG, (header.toString()));					
+					if(Debug.Enabled){
+						mDebugHeaders += header.toString();
+						mDebugHeaders += "\n";
+					}
 					
 					// Parse out the ActiveSync Protocol version
 					if (header.getName().equalsIgnoreCase("MS-ASProtocolVersions")) {
