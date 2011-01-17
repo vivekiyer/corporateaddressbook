@@ -16,7 +16,6 @@
 package net.vivekiyer.GAL;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 
@@ -65,10 +64,7 @@ public class ActiveSyncManager {
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";	
-	
-	// DEBUG strings
-	private String mDebugString = "";
-	
+		
 	//private static final String TAG = "ActiveSyncManager";
 	
 	public boolean isUseSSLSet() {
@@ -127,10 +123,6 @@ public class ActiveSyncManager {
 		this.mPassword = password;
 	}
 
-	public String getDebugString() {
-		return mDebugString;
-	}
-
 	public WBXML getWbxml() {
 		return wbxml;
 	}
@@ -155,7 +147,6 @@ public class ActiveSyncManager {
 		mUri = protocol + mServerName + "/Microsoft-Server-Activesync?" + "User="
 				+ mUsername
 				+ "&DeviceId=490154203237518&DeviceType=PocketPC&Cmd=";
-
 	}
 
 	public ActiveSyncManager() {		
@@ -203,9 +194,6 @@ public class ActiveSyncManager {
 
 				Header header = headers[0];
 				
-				// Log the headers
-				//Log.d(TAG, (header.toString()));					
-				
 				// Parse out the ActiveSync Protocol version
 				String versions = header.getValue();
 
@@ -217,35 +205,10 @@ public class ActiveSyncManager {
 				// Provision the device if necessary
 				provisionDevice();
 
-				//Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
+				if(Debug.Enabled)
+					Debug.Log("ActiveSync version = " + mActiveSyncVersion);
 			
 			}
-			
-			// If we did not find the activesync version
-			// in the header, lets try to continue anyway and see if things
-			// work out ...
-			else
-			{
-				// Lets try the sync command
-				response = sync();
-				
-				// Check the response code (for 200)
-				statusCode = response.getStatusLine().getStatusCode();
-				
-				headers = response.getHeaders("Content-Type");
-				
-				if(headers.length != 0){
-					String contentType = headers[0].getValue();
-					
-					if(contentType.equalsIgnoreCase(
-							"application/vnd.ms-sync.wbxml")){
-						// Lets assign the activeSync version to 12.1
-						// and try to provision the device
-						mActiveSyncVersion = "12.1";
-						provisionDevice();
-					}
-				}
-			}				
 		}
 		return statusCode;
 	}
@@ -375,18 +338,14 @@ public class ActiveSyncManager {
 		HttpResponse response = sendPostRequest(createHttpPost(uri,xml,true));	
 		
 		// Lets get the headers
-		if(Debug.Enabled){
-			mDebugString += response.getStatusLine().toString();
-			mDebugString += "\n";
-		}
+		if(Debug.Enabled)
+			Debug.Log(response.getStatusLine().toString());
 		
 		// Decode the XML content
 		String result = decodeContent(response.getEntity()); 
 
-		if(Debug.Enabled){
-			mDebugString += result;
-			mDebugString += "\n";
-		}		
+		if(Debug.Enabled)
+			Debug.Log(result);
 
 		// parse and return the results
 		return result;		
@@ -415,12 +374,18 @@ public class ActiveSyncManager {
 				+ policyType 
 				+ "</PolicyType>\n"
 				+ "\t\t</Policy>\n" + "\t</Policies>\n" + "</Provision>";
+		
+		if(Debug.Enabled)
+			Debug.Log("Provision Request: \n" + xml);
 
 		HttpResponse response = sendPostRequest(createHttpPost(uri, xml, true));
 		xml = decodeContent(response.getEntity());
 		
+		if(Debug.Enabled)
+			Debug.Log("Provision Response: \n" + xml);
+
 		// Get the temporary policy key from the server
-		String[] result = parseXML(xml, "PolicyKey");
+		String[] result = parseXML(xml, "PolicyKey");		
 		
 		if (result == null ) {
 			//  This implies that there is no policy key
@@ -440,13 +405,21 @@ public class ActiveSyncManager {
 				+ "\t\t\t<PolicyKey>" + result[0] + "</PolicyKey>\n"
 				+ "\t\t\t<Status>1</Status>\n" + "\t\t</Policy>\n"
 				+ "\t</Policies>\n" + "</Provision>";
+	
+		if(Debug.Enabled)
+			Debug.Log("Provision Request: \n" + xml);
 
 		response = sendPostRequest(createHttpPost(uri, xml, false));
-		decodeContent(response.getEntity());
+		xml = decodeContent(response.getEntity());
 		
+		if(Debug.Enabled)
+			Debug.Log("Provision Response: \n" + xml);
+
 		// Get the final policy key
 		mPolicyKey = parseXML(xml, "PolicyKey")[0];
-		//Log.d(TAG, "Policy Key: " + mPolicyKey);
+
+		if(Debug.Enabled)
+			Debug.Log("Policy Key: \n" + mPolicyKey);
 	}
 
 	/**

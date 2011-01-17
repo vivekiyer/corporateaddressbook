@@ -15,9 +15,14 @@ public class Debug {
 	// Set this to true to enable DEBUG messages
 	public static boolean Enabled = true;
 	
-	public static void sendDebugEmail(
-			Context context,
-			String text){
+	// StringBuffer that stores logs
+	private static final StringBuffer logger = new StringBuffer();
+	
+	public static void Log(String s){
+		logger.append(s+"\n");
+	}
+	
+	public static void sendDebugEmail(Context context){
 		// Generate an email with the appropriate data
 		Intent intent = new Intent(android.content.Intent.ACTION_SEND);
 		intent.setType("text/plain");
@@ -26,7 +31,7 @@ public class Debug {
 		intent.putExtra(android.content.Intent.EXTRA_SUBJECT,"GAL log");
 		intent.putExtra(
 				android.content.Intent.EXTRA_TEXT,
-				text
+				logger.toString()
 		);
 
 		context.startActivity(Intent.createChooser(intent, "Send mail..."));	
