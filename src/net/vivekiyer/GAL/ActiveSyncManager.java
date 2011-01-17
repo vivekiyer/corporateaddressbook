@@ -16,6 +16,7 @@
 package net.vivekiyer.GAL;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 
@@ -66,7 +67,7 @@ public class ActiveSyncManager {
 	private String mActiveSyncVersion = "";	
 	
 	// DEBUG strings
-	private String mDebugHeaders = "";
+	private String mDebugString = "";
 	
 	//private static final String TAG = "ActiveSyncManager";
 	
@@ -126,8 +127,8 @@ public class ActiveSyncManager {
 		this.mPassword = password;
 	}
 
-	public String getDebugHeaders() {
-		return mDebugHeaders;
+	public String getDebugString() {
+		return mDebugString;
 	}
 
 	public WBXML getWbxml() {
@@ -193,74 +194,74 @@ public class ActiveSyncManager {
 		
 		// 200 indicates a success
 		int statusCode = response.getStatusLine().getStatusCode() ; 
-		if(Debug.Enabled){
-			mDebugHeaders += response.getStatusLine().toString();
-			mDebugHeaders += "\n";
-		}
 		
 		if( response.getStatusLine().getStatusCode()  == 200){
 			
-			Header [] headers = response.getAllHeaders();
+			Header [] headers = response.getHeaders("MS-ASProtocolVersions");
 			
-			if (headers != null) {
+			if (headers.length != 0) {
+
+				Header header = headers[0];
 				
-				for (Header header : headers) {
-					
-					// Log the headers
-					//Log.d(TAG, (header.toString()));					
-					if(Debug.Enabled){
-						mDebugHeaders += header.toString();
-						mDebugHeaders += "\n";
-					}
-					
-					// Parse out the ActiveSync Protocol version
-					if (header.getName().equalsIgnoreCase("MS-ASProtocolVersions")) {
-						String versions = header.getValue();
-	
-						// Look for the last comma, and parse out the highest
-						// version
-						mActiveSyncVersion = versions.substring(versions
-								.lastIndexOf(",") + 1);
-	
-						// Provision the device if necessary
-						provisionDevice();
-	
-						//Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
-						break;
-					}
-				}			
+				// Log the headers
+				//Log.d(TAG, (header.toString()));					
+				
+				// Parse out the ActiveSync Protocol version
+				String versions = header.getValue();
+
+				// Look for the last comma, and parse out the highest
+				// version
+				mActiveSyncVersion = versions.substring(versions
+						.lastIndexOf(",") + 1);
+
+				// Provision the device if necessary
+				provisionDevice();
+
+				//Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
+			
 			}
+			
+			// If we did not find the activesync version
+			// in the header, lets try to continue anyway and see if things
+			// work out ...
+			else
+			{
+				// Lets try the sync command
+				response = sync();
+				
+				// Check the response code (for 200)
+				statusCode = response.getStatusLine().getStatusCode();
+				
+				headers = response.getHeaders("Content-Type");
+				
+				if(headers.length != 0){
+					String contentType = headers[0].getValue();
+					
+					if(contentType.equalsIgnoreCase(
+							"application/vnd.ms-sync.wbxml")){
+						// Lets assign the activeSync version to 12.1
+						// and try to provision the device
+						mActiveSyncVersion = "12.1";
+						provisionDevice();
+					}
+				}
+			}				
 		}
 		return statusCode;
 	}
 
+	
 	/**
-	 * @param httpPost The request to POST to the Exchange sever
-	 * @return The response to the POST message
-	 * @throws Exception
+	 * @param entity The entity to decode
+	 * @return The decoded WBXML or text/HTML entity
 	 * 
-	 * POSTs a message to the Exchange server. Any WBXML or String entities that are 
-	 * returned by the server are parsed and returned to the callee
+	 * Decodes the entity that is returned from the Exchange server
+	 * @throws Exception 
+	 * @throws  
 	 */
-	private String sendPostRequest(HttpPost httpPost) throws Exception {
-		
-		// POST the request to the server
+	private String decodeContent(HttpEntity entity) throws Exception{
 		String result = "";
-		HttpClient client = createHttpClient();
-		HttpContext localContext = new BasicHttpContext();
-		HttpResponse response = client.execute(httpPost, localContext);
-
-		//Log.d(TAG, (response.getStatusLine().toString()));
 		
-		// Log all the headers
-		//Header[] headers = response.getAllHeaders();
-
-		//for (Header header : headers) {
-			//Log.d(TAG, (header.toString()));
-		//}
-
-		// Get the content
-		HttpEntity entity = response.getEntity();
 		if (entity != null) {
 			java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
 			
@@ -282,6 +283,23 @@ public class ActiveSyncManager {
 		}
 		//Log.d(TAG, (result.toString()));
 		return result;
+		
+	}
+	
+	/**
+	 * @param httpPost The request to POST to the Exchange sever
+	 * @return The response to the POST message
+	 * @throws Exception
+	 * 
+	 * POSTs a message to the Exchange server. Any WBXML or String entities that are 
+	 * returned by the server are parsed and returned to the callee
+	 */
+	private HttpResponse sendPostRequest(HttpPost httpPost) throws Exception {
+		
+		// POST the request to the server
+		HttpClient client = createHttpClient();
+		HttpContext localContext = new BasicHttpContext();
+		return client.execute(httpPost, localContext);
 	}
 
 	/**
@@ -317,16 +335,16 @@ public class ActiveSyncManager {
 	 * 
 	 * Send a Sync command to the Exchange server
 	 */
-	public void sync() throws Exception {
+	public HttpResponse sync() throws Exception {
 		String uri = mUri + "Sync";
-		sendPostRequest(createHttpPost(uri, null));
+		return sendPostRequest(createHttpPost(uri, null));
 	}
 
 	/**
 	 * @throws Exception
 	 * Send a FolderSync command to the Exchange server
 	 */
-	public void folderSync() throws Exception {
+	public HttpResponse folderSync() throws Exception {
 		// Create the request
 		String uri = mUri + "FolderSync";
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -334,7 +352,7 @@ public class ActiveSyncManager {
 				+ "\t<SyncKey>0</SyncKey>\n" + "</FolderSync>";
 
 		// Send it to the server
-		sendPostRequest(createHttpPost(uri, xml, true));
+		return sendPostRequest(createHttpPost(uri, xml, true));
 	}
 
 	/**
@@ -354,18 +372,22 @@ public class ActiveSyncManager {
 				+ "</Query>\n" + "\t</Store>\n" + "</Search>";
 
 		// Send it to the server
-		String result = sendPostRequest(createHttpPost(uri,xml,true));
-//		String result = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
-//				"<Search xmlns=\"Search\"><Status>1</Status><Response><Store>" +
-//				"<Status>1</Status><Result><Properties><DisplayName>Duck, Donald</DisplayName>" +
-//				"<Phone>1-858-555-1234</Phone><Office>AB-CDEF</Office>" +
-//				"<Title>Engineer, Senior</Title><Company>Všichni háček lidé</Company>" +
-//				"<Alias>dduck</Alias><FirstName>Donald kroužek kůl</FirstName>" +
-//				"<LastName>Duck</LastName><EmailAddress>dduck@example.com</EmailAddress>" +
-//				"</Properties></Result></Store></Response></Search>";
+		HttpResponse response = sendPostRequest(createHttpPost(uri,xml,true));	
 		
-		//Log.d(TAG,result);
+		// Lets get the headers
+		if(Debug.Enabled){
+			mDebugString += response.getStatusLine().toString();
+			mDebugString += "\n";
+		}
 		
+		// Decode the XML content
+		String result = decodeContent(response.getEntity()); 
+
+		if(Debug.Enabled){
+			mDebugString += result;
+			mDebugString += "\n";
+		}		
+
 		// parse and return the results
 		return result;		
 	}
@@ -394,7 +416,8 @@ public class ActiveSyncManager {
 				+ "</PolicyType>\n"
 				+ "\t\t</Policy>\n" + "\t</Policies>\n" + "</Provision>";
 
-		xml = sendPostRequest(createHttpPost(uri, xml, true));
+		HttpResponse response = sendPostRequest(createHttpPost(uri, xml, true));
+		xml = decodeContent(response.getEntity());
 		
 		// Get the temporary policy key from the server
 		String[] result = parseXML(xml, "PolicyKey");
@@ -418,8 +441,9 @@ public class ActiveSyncManager {
 				+ "\t\t\t<Status>1</Status>\n" + "\t\t</Policy>\n"
 				+ "\t</Policies>\n" + "</Provision>";
 
-		xml = sendPostRequest(createHttpPost(uri, xml, false));
-
+		response = sendPostRequest(createHttpPost(uri, xml, false));
+		decodeContent(response.getEntity());
+		
 		// Get the final policy key
 		mPolicyKey = parseXML(xml, "PolicyKey")[0];
 		//Log.d(TAG, "Policy Key: " + mPolicyKey);

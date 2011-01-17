@@ -450,11 +450,11 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			try {
 				// Search the GAL
 				mContacts = null;
+				errorMesg += "Search text =" + params[0] + "\n";
 				searchResultXML = activeSyncManager.searchGAL(params[0]);
 				mContacts = activeSyncManager.parseXML(searchResultXML);
 			} catch (Exception e) {
-				errorMesg += "ActiveSync version=" +activeSyncManager.getActiveSyncVersion() + "\n";
-				errorMesg += e.toString();
+				errorMesg += activeSyncManager.getDebugString();
 			}
 			return null;			
 		}
@@ -469,7 +469,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			progressdialog.dismiss();			
 			
 			if(mContacts == null){
-				CorporateAddressBook.this.showAlert(errorMesg);
+				//CorporateAddressBook.this.showAlert(errorMesg);
+				Debug.sendDebugEmail(CorporateAddressBook.this, errorMesg);
 				return;
 			}
 				

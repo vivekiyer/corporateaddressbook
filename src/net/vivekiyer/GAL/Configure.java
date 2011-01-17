@@ -262,19 +262,10 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 
 			// Commit the edits!
 			editor.commit();		
-			
-			// Generate an email with the appropriate data
-			Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-			intent.setType("text/plain");
-			String[] recipients = new String[]{"vivekiyer@gmail.com", "",};
-			intent.putExtra(android.content.Intent.EXTRA_EMAIL, recipients);
-			intent.putExtra(android.content.Intent.EXTRA_SUBJECT,"GAL log");
-			intent.putExtra(
-					android.content.Intent.EXTRA_TEXT,
-					activeSyncManager.getDebugHeaders()
-			);
 
-			startActivity(Intent.createChooser(intent, "Send mail..."));
+			// Send the exchange settings (Debug only)
+			//if(Debug.Enabled)
+				//Debug.sendDebugEmail(this, activeSyncManager.getDebugHeaders());
 			
 			// Close the activity
 			finish();
