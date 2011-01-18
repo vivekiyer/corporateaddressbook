@@ -515,16 +515,10 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 				
 			switch(mContacts.size()){
 			case 0:						
-				if(Debug.Enabled)
-					Debug.sendDebugEmail(CorporateAddressBook.this);
-				else
-				{
-					Toast.makeText(
-							CorporateAddressBook.this, 
-							"No matches found", 
-							Toast.LENGTH_SHORT).show();
-				}
-				break;
+				Toast.makeText(
+						CorporateAddressBook.this, 
+						"No matches found", 
+						Toast.LENGTH_SHORT).show();
 			case 1:
 				// Create a parcel with the associated contact object
 				// This parcel is used to send data to the activity 
