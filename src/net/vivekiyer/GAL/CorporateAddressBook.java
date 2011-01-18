@@ -225,6 +225,9 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			EditText text = (EditText) findViewById(R.id.Name);
 			text.setText("");
 			return true;
+		case R.id.debug:
+			Debug.sendDebugEmail(this);
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
