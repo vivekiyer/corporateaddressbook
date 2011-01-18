@@ -398,20 +398,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		lv1.setAdapter(listadapter);
 		lv1.setOnItemClickListener(mListViewListener);
 	}
-	
-	/**
-	 * @param s The alert message
-	 * Displays an alert dialog with the messaged provided
-	 */
-	private void showAlert(String s){
-		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
-		alt_bld.setMessage(s)
-				.setPositiveButton("Ok", null);
-		AlertDialog alert = alt_bld.create();
-		alert.show();
-	}
-	
-	
+		
 	/**
 	 * Clear the results from the listview
 	 */
@@ -481,15 +468,20 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 				if(Debug.Enabled)
 					Debug.sendDebugEmail(CorporateAddressBook.this);
 				else
-					CorporateAddressBook.this.showAlert(errorMesg);	
+					Utility.showAlert(CorporateAddressBook.this, errorMesg);	
 				return;
 			}
 				
 			switch(mContacts.size()){
 			case 0:						
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(CorporateAddressBook.this, "No matches found", duration);
-				toast.show();				
+				if(Debug.Enabled)
+					Debug.sendDebugEmail(CorporateAddressBook.this);
+				else
+				{
+					int duration = Toast.LENGTH_SHORT;
+					Toast toast = Toast.makeText(CorporateAddressBook.this, "No matches found", duration);
+					toast.show();
+				}
 				break;
 			case 1:
 				// Create a parcel with the associated contact object
