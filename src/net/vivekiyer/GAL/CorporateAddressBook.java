@@ -439,11 +439,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 				// Search the GAL
 				mContacts = null;
 				
-				if(Debug.Enabled)
-					Debug.Log("Search text =" + params[0]);
-				
-				StringBuffer sb = new StringBuffer();
-				
+				StringBuffer sb = new StringBuffer();				
 				int statusCode = 0;
 				
 				do{
@@ -519,6 +515,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 						CorporateAddressBook.this, 
 						"No matches found", 
 						Toast.LENGTH_SHORT).show();
+				break;
 			case 1:
 				// Create a parcel with the associated contact object
 				// This parcel is used to send data to the activity 
