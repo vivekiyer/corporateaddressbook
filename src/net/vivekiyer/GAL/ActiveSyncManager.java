@@ -52,6 +52,10 @@ import net.vivekiyer.GAL.wbxml.WBXML;
  * This class is responsible for implementing the ActiveSync commands that
  * are used to connect to the Exchange server and  query the GAL
  */
+/**
+ * @author vivek
+ *
+ */
 public class ActiveSyncManager {
 	private String mPolicyKey = "0";
 	private String mAuthString;
@@ -127,12 +131,11 @@ public class ActiveSyncManager {
 		return wbxml;
 	}
 	
+	
 	/**
-	 * Initializes the class by assigning the Exchange URL and the AuthString  
+	 * Generates the auth string from the username, password and domain
 	 */
-	public void Initialize() {
-		wbxml = new WBXML();
-
+	private void generateAuthString(){
 		// For BPOS the DOMAIN is not required, so remove the backslash
 		if(mDomain.equalsIgnoreCase(""))
 			mAuthString = "Basic "
@@ -141,7 +144,16 @@ public class ActiveSyncManager {
 		mAuthString = "Basic "
 				+ Utility.base64Encode(mDomain + "\\" + mUsername + ":"
 						+ mPassword);
+	}
+	
+	/**
+	 * Initializes the class by assigning the Exchange URL and the AuthString  
+	 */
+	public void Initialize() {
+		wbxml = new WBXML();
 
+		generateAuthString();
+		
 		// this is where we will send it
 		String protocol = (mUseSSL) ? "https://" : "http://";
 		mUri = protocol + mServerName + "/Microsoft-Server-Activesync?" + "User="
@@ -174,6 +186,7 @@ public class ActiveSyncManager {
 
 	/**
 	 * @throws Exception
+	 * @return Status code returned from the Exchange server
 	 * 
 	 * Connects to the Exchange server and obtains the version of ActiveSync supported 
 	 * by the server 
@@ -319,36 +332,42 @@ public class ActiveSyncManager {
 	}
 
 	/**
-	 * @param name The name to search the GAL for
-	 * @return The list of contacts that match the query
+	 * @param query The name to search the GAL for
+	 * @param result The XML contacts returned by the Exchange server
+	 * 
+	 * @return The status code returned from the Exchange server
 	 * @throws Exception
 	 * 
 	 * This method searches the GAL on the Exchange server
 	 */
-	public String searchGAL(String name) throws Exception {
+	public int searchGAL(
+			String query, 
+			StringBuffer result) throws Exception 
+	{
 		// Create the request
 		String uri = mUri + "Search";
 
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 				+ "<Search xmlns=\"Search:\">\n" + "\t<Store>\n"
-				+ "\t\t<Name>GAL</Name>\n" + "\t\t<Query>" + name
+				+ "\t\t<Name>GAL</Name>\n" + "\t\t<Query>" + query
 				+ "</Query>\n" + "\t</Store>\n" + "</Search>";
 
 		// Send it to the server
 		HttpResponse response = sendPostRequest(createHttpPost(uri,xml,true));	
 		
-		// Lets get the headers
-		if(Debug.Enabled)
-			Debug.Log(response.getStatusLine().toString());
+		// Check the response code to see if the result was 200
+		// Only then try to decode the content
 		
-		// Decode the XML content
-		String result = decodeContent(response.getEntity()); 
-
-		if(Debug.Enabled)
-			Debug.Log(result);
-
+		int statusCode = response.getStatusLine().getStatusCode();
+		
+		if(statusCode == 200)
+		{
+			// Decode the XML content
+			result.append(decodeContent(response.getEntity())); 
+		}
+		
 		// parse and return the results
-		return result;		
+		return statusCode;		
 	}
 
 	/**

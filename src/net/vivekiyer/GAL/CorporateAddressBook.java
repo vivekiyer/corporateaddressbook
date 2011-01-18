@@ -20,7 +20,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -183,11 +182,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		progressdialog.setMessage("Retrieving results");
 		progressdialog.show();
 
-		//activeSyncManager.testXMLtoWBXML();
-		
 		// Retrieve the results via an AsyncTask
-		new GALSearch().execute(name.toString());
-		
+		new GALSearch().execute(name.toString());		
 	}
 	
 	/* (non-Javadoc)
@@ -427,6 +423,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		
 		private String errorMesg = "";
 		
+		private int errorCode = 0;
+		
 		/* (non-Javadoc)
 		 * @see android.os.AsyncTask#doInBackground(Params[])
 		 * 
@@ -441,18 +439,48 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 				if(Debug.Enabled)
 					Debug.Log("Search text =" + params[0]);
 				
-				searchResultXML = activeSyncManager.searchGAL(params[0]);
-				mContacts = activeSyncManager.parseXML(searchResultXML);
-			} catch (Exception e) {
+				StringBuffer sb = new StringBuffer();
+				
+				int statusCode = 0;
+				
+				do{
+					statusCode = activeSyncManager.searchGAL(params[0], sb); 
+					switch(statusCode)
+					{
+					case 200: // HTTP_OK
+						// All went well, lets display the result
+						searchResultXML = sb.toString() ;
+						mContacts = activeSyncManager.parseXML(searchResultXML);
+						break;
+					case 449: // RETRY AFTER PROVISIONING
+						// Looks like we need to provision again
+						activeSyncManager.provisionDevice();
+						break;
+					case 401: // UNAUTHORIZED
+						// Looks like the password expired
+						errorCode = 401;
+						errorMesg = "Authentication failed. Please check your credentials";
+						return false;
+					default:
+						errorCode = statusCode;
+						errorMesg = "Exchange server rejected request with error" + errorCode;
+						return false;
+					}
+				}while(statusCode != 200);
+				
+			} catch (Exception e) {				
 				if(Debug.Enabled)
 					Debug.Log(e.toString());
 				else
+				{
 					errorMesg = "Activesync version= "
 						+ activeSyncManager.getActiveSyncVersion()
 						+ "\n"
 						+ e.toString();
+					return false;
+				}
 			}
-			return null;			
+			return true;		
 		}
 		
 		/* (non-Javadoc)
@@ -465,10 +493,20 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			progressdialog.dismiss();			
 			
 			if(mContacts == null){
-				if(Debug.Enabled)
+				
+				Toast.makeText(
+						CorporateAddressBook.this, 
+						errorMesg, 
+						Toast.LENGTH_LONG).show();	
+			
+				// Check if the password did not validate
+				if(errorCode == 401)
+					showConfiguration();
+				
+				// If this is not a 401 error, send a debug email
+				else if(Debug.Enabled)
 					Debug.sendDebugEmail(CorporateAddressBook.this);
-				else
-					Utility.showAlert(CorporateAddressBook.this, errorMesg);	
+				
 				return;
 			}
 				
@@ -478,9 +516,10 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 					Debug.sendDebugEmail(CorporateAddressBook.this);
 				else
 				{
-					int duration = Toast.LENGTH_SHORT;
-					Toast toast = Toast.makeText(CorporateAddressBook.this, "No matches found", duration);
-					toast.show();
+					Toast.makeText(
+							CorporateAddressBook.this, 
+							"No matches found", 
+							Toast.LENGTH_SHORT).show();
 				}
 				break;
 			case 1:

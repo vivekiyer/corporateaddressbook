@@ -264,8 +264,8 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 			editor.commit();		
 
 			// Send the exchange settings (Debug only)
-			//if(Debug.Enabled)
-				//Debug.sendDebugEmail(this, activeSyncManager.getDebugHeaders());
+			if(Debug.Enabled)
+				Debug.sendDebugEmail(this);
 			
 			// Close the activity
 			finish();
