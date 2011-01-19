@@ -9,7 +9,7 @@
 			android:layout_weight=".70" 
 			android:layout_width="0dip"
 			android:inputType="textPersonName" 
-			android:textSize="12sp"			 
+			android:textSize="18sp"			 
 			android:imeOptions="actionSearch"
 			android:hint="Enter search term"/>
 		<ImageButton 

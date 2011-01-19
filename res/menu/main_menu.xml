@@ -4,4 +4,5 @@
           android:icon="@drawable/ic_menu_preferences"
           android:title="Settings" />
 <item android:id="@+id/clear" android:title="Clear Results" android:icon="@drawable/ic_menu_clear"></item>
+<!-- item android:id="@+id/debug" android:title="Send Debug Log" android:icon="@drawable/ic_menu_debug"></item> -->
 </menu>

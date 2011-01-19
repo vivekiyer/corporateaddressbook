@@ -48,6 +48,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 	public static final String KEY_DOMAIN_PREFERENCE = "domain";
 	public static final String KEY_SERVER_PREFERENCE = "server";
 	public static final String KEY_ACTIVESYNCVERSION_PREFERENCE = "activesyncversion";
+	public static final String KEY_DEVICE_ID = "deviceid";
 	public static final String KEY_POLICY_KEY_PREFERENCE = "policykey";	
 	public static final String KEY_USE_SSL = "usessl";
 	public static final String KEY_ACCEPT_ALL_CERTS = "acceptallcerts";
@@ -194,7 +195,8 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 				getValueFromCheckbox(R.id.chkUseSSL),
 				getValueFromCheckbox(R.id.chkAcceptAllSSLCert),
 				"", 
-				"");
+				"",
+				0);
 
 		activeSyncManager.Initialize();
 		
@@ -256,11 +258,13 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 					getValueFromCheckbox(R.id.chkAcceptAllSSLCert));			
 			editor.putString(KEY_ACTIVESYNCVERSION_PREFERENCE,
 					activeSyncManager.getActiveSyncVersion());
+			editor.putInt(KEY_DEVICE_ID,
+					activeSyncManager.getDeviceId());
 			editor.putString(KEY_POLICY_KEY_PREFERENCE,
 					activeSyncManager.getPolicyKey());
 
 			// Commit the edits!
-			editor.commit();			
+			editor.commit();		
 			
 			// Close the activity
 			finish();

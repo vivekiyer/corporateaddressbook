@@ -15,12 +15,16 @@
 
 package net.vivekiyer.GAL;
 
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -183,11 +187,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		progressdialog.setMessage("Retrieving results");
 		progressdialog.show();
 
-		//activeSyncManager.testXMLtoWBXML();
-		
 		// Retrieve the results via an AsyncTask
-		new GALSearch().execute(name.toString());
-		
+		new GALSearch().execute(name.toString());		
 	}
 	
 	/* (non-Javadoc)
@@ -229,7 +230,10 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			EditText text = (EditText) findViewById(R.id.Name);
 			text.setText("");
 			return true;
-		default:
+/*		case R.id.debug:
+			Debug.sendDebugEmail(this);
+			return true;
+*/		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
@@ -293,6 +297,32 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 	}
 
 	/**
+	 * @param xml The XML to parse for contacts
+	 * @return List of contacts tagged with the Display name
+	 * @throws Exception
+	 * 
+	 * This method parses an XML containing a list of contacts and returns 
+	 * a hashtable containing the contacts in the XML
+	 * indexed by the DisplayName of the contacts
+	 */
+	public int parseXML(String xml) throws Exception {
+		// Our parser does not handle ampersands too well. So replace these with &amp;
+		xml = Utility.replaceAmpersandWithEntityString(xml);
+		 
+		//Parse the XML
+		ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xml
+				.toString().getBytes());
+		XMLReader xr = XMLReaderFactory.createXMLReader();
+
+		XMLParser parser = null;
+		parser = new XMLParser();
+		xr.setContentHandler(parser);
+		xr.parse(new InputSource(xmlParseInputStream));
+		mContacts = parser.getContacts();
+		return parser.getStatus();
+	}
+
+	/**
 	 * Reads the stored preferences and initializes the  
 	 * @return True if a valid Exchange server settings was saved during the previous launch. False otherwise * 			   
 	 * 
@@ -307,7 +337,6 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 
 		// Clean up server name from previous version of the app
 		cleanUpServerName();
-		
 	
 		activeSyncManager.setActiveSyncVersion(
 				mPreferences.getString(Configure.KEY_ACTIVESYNCVERSION_PREFERENCE, ""));
@@ -317,6 +346,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 				mPreferences.getBoolean(Configure.KEY_ACCEPT_ALL_CERTS, true));
 		activeSyncManager.setUseSSL(
 				mPreferences.getBoolean(Configure.KEY_USE_SSL, true));
+		activeSyncManager.setDeviceId(
+				mPreferences.getInt(Configure.KEY_DEVICE_ID, 0));
 
 		activeSyncManager.Initialize();
 
@@ -330,7 +361,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			if(searchResultXML.equalsIgnoreCase(""))
 				return true;
 			
-			mContacts = activeSyncManager.parseXML(searchResultXML);		
+			parseXML(searchResultXML);		
 			
 			EditText text = (EditText) findViewById(R.id.Name);		
 			text.setText(mPreferences.getString(Configure.KEY_SEARCH_TERM_PREFERENCE, "" ));
@@ -362,6 +393,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putString(Configure.KEY_ACTIVESYNCVERSION_PREFERENCE,
 				activeSyncManager.getActiveSyncVersion());
+		editor.putInt(Configure.KEY_DEVICE_ID,
+				activeSyncManager.getDeviceId());
 		editor.putString(Configure.KEY_POLICY_KEY_PREFERENCE,
 				activeSyncManager.getPolicyKey());
 		editor.putString(Configure.KEY_RESULTS_PREFERENCE,
@@ -398,20 +431,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		lv1.setAdapter(listadapter);
 		lv1.setOnItemClickListener(mListViewListener);
 	}
-	
-	/**
-	 * @param s The alert message
-	 * Displays an alert dialog with the messaged provided
-	 */
-	private void showAlert(String s){
-		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
-		alt_bld.setMessage(s)
-				.setPositiveButton("Ok", null);
-		AlertDialog alert = alt_bld.create();
-		alert.show();
-	}
-	
-	
+		
 	/**
 	 * Clear the results from the listview
 	 */
@@ -440,6 +460,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		
 		private String errorMesg = "";
 		
+		private int errorCode = 0;
+		
 		/* (non-Javadoc)
 		 * @see android.os.AsyncTask#doInBackground(Params[])
 		 * 
@@ -450,13 +472,49 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			try {
 				// Search the GAL
 				mContacts = null;
-				searchResultXML = activeSyncManager.searchGAL(params[0]);
-				mContacts = activeSyncManager.parseXML(searchResultXML);
-			} catch (Exception e) {
-				errorMesg += "ActiveSync version=" +activeSyncManager.getActiveSyncVersion() + "\n";
-				errorMesg += e.toString();
+				
+				StringBuffer sb = new StringBuffer();				
+				int statusCode = 0;
+				
+				do{
+					statusCode = activeSyncManager.searchGAL(params[0], sb); 
+					switch(statusCode)
+					{
+					case 200: // HTTP_OK
+						// All went well, lets display the result
+						searchResultXML = sb.toString() ;
+						statusCode = parseXML(searchResultXML);
+						break;
+					case 449: // RETRY AFTER PROVISIONING
+					case 142: // RETRY AFTER PROVISIONING
+						// Looks like we need to provision again
+						activeSyncManager.provisionDevice();
+						break;
+					case 401: // UNAUTHORIZED
+						// Looks like the password expired
+						errorCode = 401;
+						errorMesg = "Authentication failed. Please check your credentials";
+						return false;
+					default:
+						errorCode = statusCode;
+						errorMesg = "Exchange server rejected request with error" + errorCode;
+						return false;
+					}
+				}while(statusCode != 200);
+				
+			} catch (Exception e) {				
+				if(Debug.Enabled)
+					Debug.Log(e.toString());
+				else
+				{
+					errorMesg = "Activesync version= "
+						+ activeSyncManager.getActiveSyncVersion()
+						+ "\n"
+						+ e.toString();
+					return false;
+				}
 			}
-			return null;			
+			return true;		
 		}
 		
 		/* (non-Javadoc)
@@ -469,15 +527,29 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			progressdialog.dismiss();			
 			
 			if(mContacts == null){
-				CorporateAddressBook.this.showAlert(errorMesg);
+				
+				Toast.makeText(
+						CorporateAddressBook.this, 
+						errorMesg, 
+						Toast.LENGTH_LONG).show();	
+			
+				// Check if the password did not validate
+				if(errorCode == 401)
+					showConfiguration();
+				
+				// If this is not a 401 error, send a debug email
+				else if(Debug.Enabled)
+					Debug.sendDebugEmail(CorporateAddressBook.this);
+				
 				return;
 			}
 				
 			switch(mContacts.size()){
 			case 0:						
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(CorporateAddressBook.this, "No matches found", duration);
-				toast.show();				
+				Toast.makeText(
+						CorporateAddressBook.this, 
+						"No matches found", 
+						Toast.LENGTH_SHORT).show();
 				break;
 			case 1:
 				// Create a parcel with the associated contact object

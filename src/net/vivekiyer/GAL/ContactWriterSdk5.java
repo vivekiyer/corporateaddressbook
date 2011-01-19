@@ -22,12 +22,14 @@ import android.accounts.AuthenticatorDescription;
 import android.accounts.OnAccountsUpdateListener;
 import android.app.AlertDialog;
 import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +52,7 @@ public class ContactWriterSdk5 extends ContactWriter implements
 	private Contact mContact;
 
 	// TAG used for logging
-	//private static String TAG = "ContactWriterSdk5";
+	private static String TAG = "ContactWriterSdk5";
 
 	@Override
 	public void Initialize(Context ctx, LayoutInflater lf, Contact contact) {
@@ -253,8 +255,13 @@ public class ContactWriterSdk5 extends ContactWriter implements
 		//Log.i(TAG, "Creating contact: " + mContact.getDisplayName());
 
 		try {
-			context.getContentResolver().applyBatch(ContactsContract.AUTHORITY,
+			ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY,
 					ops);
+			
+			for(ContentProviderResult result : results){
+				Log.i(TAG, result.uri.toString());
+			}
+			
 		} catch (Exception e) {
 			// Log exception
 			//Log.e(TAG, "Exceptoin encoutered while inserting contact: " + e);

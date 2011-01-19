@@ -22,9 +22,9 @@ package net.vivekiyer.GAL;
  */
 public class KeyValuePair {
 	public enum Type{
+		MOBILE,
 		PHONE,
 		EMAIL,
-		SMS,
 		OTHER
 	}
 	private Type _type;

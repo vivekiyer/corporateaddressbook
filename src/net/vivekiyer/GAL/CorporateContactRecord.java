@@ -16,13 +16,19 @@
 package net.vivekiyer.GAL;
 
 import android.app.ListActivity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.ClipboardManager;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView;
 
 
@@ -32,11 +38,23 @@ import android.widget.TextView;
  * The class takes a parceled Contact object and displays the
  * DisplayName. It also allows the user to save the contact
  */
+/**
+ * @author vivek
+ *
+ */
 public class CorporateContactRecord extends ListActivity{
 
 	private Contact mContact;
 	private ContactListAdapter m_adapter;
 	private ContactWriter contactWriter;
+	
+	// Menu ids
+	private static final int MENU_ID_COPY_TO_CLIPBOARD = 0;
+	private static final int MENU_ID_EMAIL = 1;
+	private static final int MENU_ID_CALL = 2;
+	private static final int MENU_ID_EDIT_BEFORE_CALL = 3;
+	private static final int MENU_ID_SMS = 4;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,21 +72,120 @@ public class CorporateContactRecord extends ListActivity{
 		TextView tv1 = (TextView) findViewById(R.id.displayName);
 		tv1.setText(mContact.getDisplayName());
 
-		getListView().setOnItemClickListener(mListViewListener);		
+		//getListView().setOnItemLongClickListener(mListViewLongClickListener);		
 		contactWriter = ContactWriter.getInstance();
-		contactWriter.Initialize(this, getLayoutInflater(), mContact);
+		contactWriter.Initialize(this, getLayoutInflater(), mContact);		
 		
+		registerForContextMenu(getListView());
 	}
 
-	// Create an anonymous implementation of OnItemClickListener
-	private OnItemClickListener mListViewListener = new OnItemClickListener() {
+	
+	/**
+	 * @param menu
+	 * @param v
+	 * @param menuInfo
+	 * 
+	 * Create a context menu for the list view
+	 * Depending upon the item selected, shows the user
+	 * different options
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	                                ContextMenuInfo menuInfo) {
+	  super.onCreateContextMenu(menu, v, menuInfo);  
+	  
+	  AdapterView.AdapterContextMenuInfo info 
+	  		= (AdapterView.AdapterContextMenuInfo)menuInfo;
+	  
+	  // Get the selected item from the listview adapter
+	  KeyValuePair kvp = m_adapter.getItem(info.position);
+	  
+	  // Set the header to the selected text
+	  menu.setHeaderTitle(kvp.getValue());
 
-		@Override
-		public void onItemClick(AdapterView<?> a, View v, int position, long id) {
+	  // Add the default options (copy to clipboard)
+	  menu.add(
+			  Menu.NONE, 
+			  MENU_ID_COPY_TO_CLIPBOARD, 
+			  Menu.NONE, 
+			  "Copy to clipboard");
+	  
+	  // Handle the special cases
+	  switch(kvp.get_type()){
+	  case EMAIL:
+		  menu.add(
+				  Menu.NONE, 
+				  MENU_ID_EMAIL, 
+				  Menu.NONE, 
+				  "Send email");
+		  break;
+	  case MOBILE:
+	  case PHONE:
+		  menu.add(
+				  Menu.NONE, 
+				  MENU_ID_CALL, 
+				  Menu.NONE, 
+				  "Call " + kvp.getValue());
+		  menu.add(
+				  Menu.NONE, 
+				  MENU_ID_EDIT_BEFORE_CALL, 
+				  Menu.NONE, 
+				  "Edit number before call");
+		  menu.add(
+				  Menu.NONE, 
+				  MENU_ID_SMS, 
+				  Menu.NONE, 
+				  "Send text message");
+		  break;
+	  }
+	}	
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	  AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+	  
+	  // Get the selected item from the listview adapter
+	  KeyValuePair kvp = m_adapter.getItem(info.position);
 
+		switch (item.getItemId()) {
+		case MENU_ID_CALL:
+			Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"
+					+ kvp.getValue()));
+			startActivity(intent);
+			break;
+		case MENU_ID_COPY_TO_CLIPBOARD:
+			ClipboardManager clipboard 
+				= (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			clipboard.setText(kvp.getValue());
+			Toast.makeText(
+					this, 
+					"Text copied to clipboard", 
+					Toast.LENGTH_SHORT).show();			
+			break;
+		case MENU_ID_EDIT_BEFORE_CALL:
+			intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"
+					+ kvp.getValue()));
+			startActivity(intent);
+			break;
+		case MENU_ID_EMAIL:
+			intent = new Intent(android.content.Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.putExtra(android.content.Intent.EXTRA_EMAIL,
+					new String[] { kvp.getValue() });
+			startActivity(Intent.createChooser(intent, "Send mail..."));
+			break;
+		case MENU_ID_SMS:
+			intent = new Intent(Intent.ACTION_VIEW);
+			intent.putExtra("address", kvp.getValue());
+			intent.setType("vnd.android-dir/mms-sms");
+			startActivity(intent);
+			break;
+		default:
+			return super.onContextItemSelected(item);
 		}
-	};
-
+		return true;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -17,7 +17,7 @@ package net.vivekiyer.GAL;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Hashtable;
+import java.util.Random;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -52,6 +52,10 @@ import net.vivekiyer.GAL.wbxml.WBXML;
  * This class is responsible for implementing the ActiveSync commands that
  * are used to connect to the Exchange server and  query the GAL
  */
+/**
+ * @author vivek
+ *
+ */
 public class ActiveSyncManager {
 	private String mPolicyKey = "0";
 	private String mAuthString;
@@ -64,6 +68,8 @@ public class ActiveSyncManager {
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";	
+	private int mDeviceId = 0;
+		
 	//private static final String TAG = "ActiveSyncManager";
 	
 	public boolean isUseSSLSet() {
@@ -126,12 +132,19 @@ public class ActiveSyncManager {
 		return wbxml;
 	}
 	
+	public int getDeviceId(){
+		return mDeviceId;
+	}
+	
+	public void setDeviceId(int deviceId){
+		mDeviceId = deviceId;
+	}
+	
+	
 	/**
-	 * Initializes the class by assigning the Exchange URL and the AuthString  
+	 * Generates the auth string from the username, password and domain
 	 */
-	public void Initialize() {
-		wbxml = new WBXML();
-
+	private void generateAuthString(){
 		// For BPOS the DOMAIN is not required, so remove the backslash
 		if(mDomain.equalsIgnoreCase(""))
 			mAuthString = "Basic "
@@ -140,13 +153,29 @@ public class ActiveSyncManager {
 		mAuthString = "Basic "
 				+ Utility.base64Encode(mDomain + "\\" + mUsername + ":"
 						+ mPassword);
+	}
+	
+	/**
+	 * Initializes the class by assigning the Exchange URL and the AuthString  
+	 */
+	public void Initialize() {
+		wbxml = new WBXML();
 
+		generateAuthString();
+
+		Random rand = new Random();
+		
+		// Generate a random deviceId that is greater than 0
+		while(mDeviceId <= 0)
+			mDeviceId = rand.nextInt();
+		
 		// this is where we will send it
 		String protocol = (mUseSSL) ? "https://" : "http://";
 		mUri = protocol + mServerName + "/Microsoft-Server-Activesync?" + "User="
 				+ mUsername
-				+ "&DeviceId=490154203237518&DeviceType=PocketPC&Cmd=";
-
+				+ "&DeviceId=" 
+				+ mDeviceId
+				+ "&DeviceType=Android&Cmd=";
 	}
 
 	public ActiveSyncManager() {		
@@ -160,7 +189,8 @@ public class ActiveSyncManager {
 			boolean useSSL,
 			boolean acceptAllCerts,
 			String policyKey, 
-			String activeSyncVersion) {
+			String activeSyncVersion,
+			int deviceId) {
 
 		mServerName = serverName;
 		mDomain = domain;
@@ -170,10 +200,12 @@ public class ActiveSyncManager {
 		mActiveSyncVersion = activeSyncVersion;
 		mUseSSL = useSSL;
 		mAcceptAllCerts = acceptAllCerts;
+		mDeviceId = deviceId;
 	}
 
 	/**
 	 * @throws Exception
+	 * @return Status code returned from the Exchange server
 	 * 
 	 * Connects to the Exchange server and obtains the version of ActiveSync supported 
 	 * by the server 
@@ -188,61 +220,43 @@ public class ActiveSyncManager {
 		
 		if( response.getStatusLine().getStatusCode()  == 200){
 			
-			Header [] headers = response.getAllHeaders();
+			Header [] headers = response.getHeaders("MS-ASProtocolVersions");
 			
-			if (headers != null) {
+			if (headers.length != 0) {
+
+				Header header = headers[0];
 				
-				for (Header header : headers) {
-					//Log.d(TAG, (header.toString()));
-					
-					// Parse out the ActiveSync Protocol version
-					if (header.getName().equalsIgnoreCase("MS-ASProtocolVersions")) {
-						String versions = header.getValue();
-	
-						// Look for the last comma, and parse out the highest
-						// version
-						mActiveSyncVersion = versions.substring(versions
-								.lastIndexOf(",") + 1);
-	
-						// Provision the device if necessary
-						provisionDevice();
-	
-						//Log.d(TAG, "ActiveSync version = " + mActiveSyncVersion);
-						break;
-					}
-				}			
+				// Parse out the ActiveSync Protocol version
+				String versions = header.getValue();
+
+				// Look for the last comma, and parse out the highest
+				// version
+				mActiveSyncVersion = versions.substring(versions
+						.lastIndexOf(",") + 1);
+
+				// Provision the device if necessary
+				provisionDevice();
+
+				if(Debug.Enabled)
+					Debug.Log("ActiveSync version = " + mActiveSyncVersion);
+			
 			}
 		}
 		return statusCode;
 	}
 
+	
 	/**
-	 * @param httpPost The request to POST to the Exchange sever
-	 * @return The response to the POST message
-	 * @throws Exception
+	 * @param entity The entity to decode
+	 * @return The decoded WBXML or text/HTML entity
 	 * 
-	 * POSTs a message to the Exchange server. Any WBXML or String entities that are 
-	 * returned by the server are parsed and returned to the callee
+	 * Decodes the entity that is returned from the Exchange server
+	 * @throws Exception 
+	 * @throws  
 	 */
-	private String sendPostRequest(HttpPost httpPost) throws Exception {
-		
-		// POST the request to the server
+	private String decodeContent(HttpEntity entity) throws Exception{
 		String result = "";
-		HttpClient client = createHttpClient();
-		HttpContext localContext = new BasicHttpContext();
-		HttpResponse response = client.execute(httpPost, localContext);
-
-		//Log.d(TAG, (response.getStatusLine().toString()));
 		
-		// Log all the headers
-		//Header[] headers = response.getAllHeaders();
-
-		//for (Header header : headers) {
-			//Log.d(TAG, (header.toString()));
-		//}
-
-		// Get the content
-		HttpEntity entity = response.getEntity();
 		if (entity != null) {
 			java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
 			
@@ -264,6 +278,23 @@ public class ActiveSyncManager {
 		}
 		//Log.d(TAG, (result.toString()));
 		return result;
+		
+	}
+	
+	/**
+	 * @param httpPost The request to POST to the Exchange sever
+	 * @return The response to the POST message
+	 * @throws Exception
+	 * 
+	 * POSTs a message to the Exchange server. Any WBXML or String entities that are 
+	 * returned by the server are parsed and returned to the callee
+	 */
+	private HttpResponse sendPostRequest(HttpPost httpPost) throws Exception {
+		
+		// POST the request to the server
+		HttpClient client = createHttpClient();
+		HttpContext localContext = new BasicHttpContext();
+		return client.execute(httpPost, localContext);
 	}
 
 	/**
@@ -299,16 +330,16 @@ public class ActiveSyncManager {
 	 * 
 	 * Send a Sync command to the Exchange server
 	 */
-	public void sync() throws Exception {
+	public HttpResponse sync() throws Exception {
 		String uri = mUri + "Sync";
-		sendPostRequest(createHttpPost(uri, null));
+		return sendPostRequest(createHttpPost(uri, null));
 	}
 
 	/**
 	 * @throws Exception
 	 * Send a FolderSync command to the Exchange server
 	 */
-	public void folderSync() throws Exception {
+	public HttpResponse folderSync() throws Exception {
 		// Create the request
 		String uri = mUri + "FolderSync";
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -316,40 +347,46 @@ public class ActiveSyncManager {
 				+ "\t<SyncKey>0</SyncKey>\n" + "</FolderSync>";
 
 		// Send it to the server
-		sendPostRequest(createHttpPost(uri, xml, true));
+		return sendPostRequest(createHttpPost(uri, xml, true));
 	}
 
 	/**
-	 * @param name The name to search the GAL for
-	 * @return The list of contacts that match the query
+	 * @param query The name to search the GAL for
+	 * @param result The XML contacts returned by the Exchange server
+	 * 
+	 * @return The status code returned from the Exchange server
 	 * @throws Exception
 	 * 
 	 * This method searches the GAL on the Exchange server
 	 */
-	public String searchGAL(String name) throws Exception {
+	public int searchGAL(
+			String query, 
+			StringBuffer result) throws Exception 
+	{
 		// Create the request
 		String uri = mUri + "Search";
 
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 				+ "<Search xmlns=\"Search:\">\n" + "\t<Store>\n"
-				+ "\t\t<Name>GAL</Name>\n" + "\t\t<Query>" + name
+				+ "\t\t<Name>GAL</Name>\n" + "\t\t<Query>" + query
 				+ "</Query>\n" + "\t</Store>\n" + "</Search>";
 
 		// Send it to the server
-		String result = sendPostRequest(createHttpPost(uri,xml,true));
-//		String result = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
-//				"<Search xmlns=\"Search\"><Status>1</Status><Response><Store>" +
-//				"<Status>1</Status><Result><Properties><DisplayName>Duck, Donald</DisplayName>" +
-//				"<Phone>1-858-555-1234</Phone><Office>AB-CDEF</Office>" +
-//				"<Title>Engineer, Senior</Title><Company>Všichni háček lidé</Company>" +
-//				"<Alias>dduck</Alias><FirstName>Donald kroužek kůl</FirstName>" +
-//				"<LastName>Duck</LastName><EmailAddress>dduck@example.com</EmailAddress>" +
-//				"</Properties></Result></Store></Response></Search>";
+		HttpResponse response = sendPostRequest(createHttpPost(uri,xml,true));	
 		
-		//Log.d(TAG,result);
+		// Check the response code to see if the result was 200
+		// Only then try to decode the content
+		
+		int statusCode = response.getStatusLine().getStatusCode();
+		
+		if(statusCode == 200)
+		{
+			// Decode the XML content
+			result.append(decodeContent(response.getEntity())); 
+		}
 		
 		// parse and return the results
-		return result;		
+		return statusCode;		
 	}
 
 	/**
@@ -375,11 +412,18 @@ public class ActiveSyncManager {
 				+ policyType 
 				+ "</PolicyType>\n"
 				+ "\t\t</Policy>\n" + "\t</Policies>\n" + "</Provision>";
-
-		xml = sendPostRequest(createHttpPost(uri, xml, true));
 		
+		if(Debug.Enabled)
+			Debug.Log("Provision Request: \n" + xml);
+
+		HttpResponse response = sendPostRequest(createHttpPost(uri, xml, true));
+		xml = decodeContent(response.getEntity());
+		
+		if(Debug.Enabled)
+			Debug.Log("Provision Response: \n" + xml);
+
 		// Get the temporary policy key from the server
-		String[] result = parseXML(xml, "PolicyKey");
+		String[] result = parseXML(xml, "PolicyKey");		
 		
 		if (result == null ) {
 			//  This implies that there is no policy key
@@ -399,12 +443,21 @@ public class ActiveSyncManager {
 				+ "\t\t\t<PolicyKey>" + result[0] + "</PolicyKey>\n"
 				+ "\t\t\t<Status>1</Status>\n" + "\t\t</Policy>\n"
 				+ "\t</Policies>\n" + "</Provision>";
+	
+		if(Debug.Enabled)
+			Debug.Log("Provision Request: \n" + xml);
 
-		xml = sendPostRequest(createHttpPost(uri, xml, false));
+		response = sendPostRequest(createHttpPost(uri, xml, false));
+		xml = decodeContent(response.getEntity());
+		
+		if(Debug.Enabled)
+			Debug.Log("Provision Response: \n" + xml);
 
 		// Get the final policy key
 		mPolicyKey = parseXML(xml, "PolicyKey")[0];
-		//Log.d(TAG, "Policy Key: " + mPolicyKey);
+
+		if(Debug.Enabled)
+			Debug.Log("Policy Key: \n" + mPolicyKey);
 	}
 
 	/**
@@ -513,31 +566,6 @@ public class ActiveSyncManager {
 		httpOptions.setHeader("Authorization", mAuthString);
 
 		return httpOptions;
-	}
-
-	/**
-	 * @param xml The XML to parse for contacts
-	 * @return List of contacts tagged with the Display name
-	 * @throws Exception
-	 * 
-	 * This method parses an XML containing a list of contacts and returns 
-	 * a hashtable containing the contacts in the XML
-	 * indexed by the DisplayName of the contacts
-	 */
-	public Hashtable<String, Contact> parseXML(String xml) throws Exception {
-		// Our parser does not handle ampersands too well. So replace these with &amp;
-		xml = Utility.replaceAmpersandWithEntityString(xml);
-		 
-		//Parse the XML
-		ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xml
-				.toString().getBytes());
-		XMLReader xr = XMLReaderFactory.createXMLReader();
-
-		XMLParser parser = null;
-		parser = new XMLParser();
-		xr.setContentHandler(parser);
-		xr.parse(new InputSource(xmlParseInputStream));
-		return parser.getContacts();
 	}
 
 	/**
