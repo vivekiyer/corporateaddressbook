@@ -1,6 +1,5 @@
 package net.vivekiyer.GAL;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 
@@ -14,7 +13,7 @@ import android.content.Intent;
 public class Debug {
 	
 	// Set this to true to enable DEBUG messages
-	public static boolean Enabled = true;
+	public static boolean Enabled = false;
 	
 	// StringBuffer that stores logs
 	private static final StringBuffer logger = new StringBuffer();
@@ -24,6 +23,10 @@ public class Debug {
 	}
 	
 	public static void sendDebugEmail(Context context){
+		// Do not send any emails unless Debugging is enabled
+		if(Enabled == false)
+			return;
+			
 		// Generate an email with the appropriate data
 		Intent intent = new Intent(android.content.Intent.ACTION_SEND);
 		intent.setType("text/plain");

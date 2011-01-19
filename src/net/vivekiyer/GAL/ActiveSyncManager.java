@@ -17,7 +17,7 @@ package net.vivekiyer.GAL;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Hashtable;
+import java.util.Random;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -68,6 +68,7 @@ public class ActiveSyncManager {
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";	
+	private int mDeviceId = 0;
 		
 	//private static final String TAG = "ActiveSyncManager";
 	
@@ -131,6 +132,14 @@ public class ActiveSyncManager {
 		return wbxml;
 	}
 	
+	public int getDeviceId(){
+		return mDeviceId;
+	}
+	
+	public void setDeviceId(int deviceId){
+		mDeviceId = deviceId;
+	}
+	
 	
 	/**
 	 * Generates the auth string from the username, password and domain
@@ -153,12 +162,20 @@ public class ActiveSyncManager {
 		wbxml = new WBXML();
 
 		generateAuthString();
+
+		Random rand = new Random();
+		
+		// Generate a random deviceId that is greater than 0
+		while(mDeviceId <= 0)
+			mDeviceId = rand.nextInt();
 		
 		// this is where we will send it
 		String protocol = (mUseSSL) ? "https://" : "http://";
 		mUri = protocol + mServerName + "/Microsoft-Server-Activesync?" + "User="
 				+ mUsername
-				+ "&DeviceId=490154203237518&DeviceType=PocketPC&Cmd=";
+				+ "&DeviceId=" 
+				+ mDeviceId
+				+ "&DeviceType=Android&Cmd=";
 	}
 
 	public ActiveSyncManager() {		
@@ -172,7 +189,8 @@ public class ActiveSyncManager {
 			boolean useSSL,
 			boolean acceptAllCerts,
 			String policyKey, 
-			String activeSyncVersion) {
+			String activeSyncVersion,
+			int deviceId) {
 
 		mServerName = serverName;
 		mDomain = domain;
@@ -182,6 +200,7 @@ public class ActiveSyncManager {
 		mActiveSyncVersion = activeSyncVersion;
 		mUseSSL = useSSL;
 		mAcceptAllCerts = acceptAllCerts;
+		mDeviceId = deviceId;
 	}
 
 	/**
@@ -547,31 +566,6 @@ public class ActiveSyncManager {
 		httpOptions.setHeader("Authorization", mAuthString);
 
 		return httpOptions;
-	}
-
-	/**
-	 * @param xml The XML to parse for contacts
-	 * @return List of contacts tagged with the Display name
-	 * @throws Exception
-	 * 
-	 * This method parses an XML containing a list of contacts and returns 
-	 * a hashtable containing the contacts in the XML
-	 * indexed by the DisplayName of the contacts
-	 */
-	public Hashtable<String, Contact> parseXML(String xml) throws Exception {
-		// Our parser does not handle ampersands too well. So replace these with &amp;
-		xml = Utility.replaceAmpersandWithEntityString(xml);
-		 
-		//Parse the XML
-		ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xml
-				.toString().getBytes());
-		XMLReader xr = XMLReaderFactory.createXMLReader();
-
-		XMLParser parser = null;
-		parser = new XMLParser();
-		xr.setContentHandler(parser);
-		xr.parse(new InputSource(xmlParseInputStream));
-		return parser.getContacts();
 	}
 
 	/**

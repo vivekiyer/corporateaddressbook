@@ -32,13 +32,15 @@ public class XMLParser extends DefaultHandler {
 	//private static String TAG = "XMLParser";
 	private String mNodeToFind;	
 	private boolean foundNode = false;
+	private boolean foundStatus = false;
 	private boolean createContact = false;
 	private ArrayList<String> output;
 	private Hashtable <String, Contact> contacts;
 	private Contact contact;
 	
-	String key;
-	String value;
+	private String key;
+	private String value;
+	private String status = "1";
 	
     /**
      * @return The matched values
@@ -51,6 +53,12 @@ public class XMLParser extends DefaultHandler {
     	
     	return output.toArray(new String[output.size()]);
 	}
+    
+    public int getStatus(){
+    	int statusCode = Integer.parseInt(status); 
+    	// Set this to 200 to indicate a success
+    	return (statusCode == 1)? 200: statusCode;
+    }
     
     /**
      * @return Contacts
@@ -82,8 +90,13 @@ public class XMLParser extends DefaultHandler {
     @Override
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes atts) throws SAXException {
+    	// Lets see if we got the status element
+    	if (localName.compareToIgnoreCase("status") == 0)
+    		foundStatus = true;
+    	
     	// Grab control when we reach the required node
-    	if(localName.compareToIgnoreCase(mNodeToFind) == 0){
+    	if( localName.compareToIgnoreCase(mNodeToFind) == 0)
+    	{
     		foundNode = true;
     		
     		if(createContact)
@@ -93,8 +106,12 @@ public class XMLParser extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String namespaceURI, String localName, String qName) {;
-		// Grab control when we the required node ends
+    public void endElement(String namespaceURI, String localName, String qName) {
+    	// Check for the end of the status element
+    	if(localName.compareToIgnoreCase("status") == 0)
+    		foundStatus = false;
+		
+    	// Grab control when we the required node ends
 		if(localName.compareToIgnoreCase(mNodeToFind) == 0){
 			foundNode = false;
 			
@@ -106,6 +123,14 @@ public class XMLParser extends DefaultHandler {
     @Override
     public void characters(char ch[], int start, int length) {
     	value = new String(ch, start, length);
+    	// Get the status value
+    	if(foundStatus)
+    	{
+    		// We only care for erroneous status
+    		if(value.equalsIgnoreCase("1") == false)
+    			status = value;
+    	}
+    	
     	if(foundNode){    		
     		if(!createContact){
     			output.add(value);

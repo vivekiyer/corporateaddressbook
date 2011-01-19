@@ -15,7 +15,6 @@
 
 package net.vivekiyer.GAL;
 
-import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.net.Uri;
@@ -27,12 +26,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.widget.AdapterView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.TextView;
 
 
@@ -124,6 +120,7 @@ public class CorporateContactRecord extends ListActivity{
 				  "Send email");
 		  break;
 	  case MOBILE:
+	  case PHONE:
 		  menu.add(
 				  Menu.NONE, 
 				  MENU_ID_CALL, 
@@ -139,18 +136,6 @@ public class CorporateContactRecord extends ListActivity{
 				  MENU_ID_SMS, 
 				  Menu.NONE, 
 				  "Send text message");
-		  break;
-	  case PHONE:
-		  menu.add(
-				  Menu.NONE, 
-				  MENU_ID_CALL, 
-				  Menu.NONE, 
-				  "Call " + kvp.getValue());
-		  menu.add(
-				  Menu.NONE, 
-				  MENU_ID_EDIT_BEFORE_CALL, 
-				  Menu.NONE, 
-				  "Edit number before call");
 		  break;
 	  }
 	}	

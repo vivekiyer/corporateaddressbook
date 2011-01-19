@@ -15,9 +15,14 @@
 
 package net.vivekiyer.GAL;
 
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -225,10 +230,10 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			EditText text = (EditText) findViewById(R.id.Name);
 			text.setText("");
 			return true;
-		case R.id.debug:
+/*		case R.id.debug:
 			Debug.sendDebugEmail(this);
 			return true;
-		default:
+*/		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
@@ -292,6 +297,32 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 	}
 
 	/**
+	 * @param xml The XML to parse for contacts
+	 * @return List of contacts tagged with the Display name
+	 * @throws Exception
+	 * 
+	 * This method parses an XML containing a list of contacts and returns 
+	 * a hashtable containing the contacts in the XML
+	 * indexed by the DisplayName of the contacts
+	 */
+	public int parseXML(String xml) throws Exception {
+		// Our parser does not handle ampersands too well. So replace these with &amp;
+		xml = Utility.replaceAmpersandWithEntityString(xml);
+		 
+		//Parse the XML
+		ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xml
+				.toString().getBytes());
+		XMLReader xr = XMLReaderFactory.createXMLReader();
+
+		XMLParser parser = null;
+		parser = new XMLParser();
+		xr.setContentHandler(parser);
+		xr.parse(new InputSource(xmlParseInputStream));
+		mContacts = parser.getContacts();
+		return parser.getStatus();
+	}
+
+	/**
 	 * Reads the stored preferences and initializes the  
 	 * @return True if a valid Exchange server settings was saved during the previous launch. False otherwise * 			   
 	 * 
@@ -306,7 +337,6 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 
 		// Clean up server name from previous version of the app
 		cleanUpServerName();
-		
 	
 		activeSyncManager.setActiveSyncVersion(
 				mPreferences.getString(Configure.KEY_ACTIVESYNCVERSION_PREFERENCE, ""));
@@ -316,6 +346,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 				mPreferences.getBoolean(Configure.KEY_ACCEPT_ALL_CERTS, true));
 		activeSyncManager.setUseSSL(
 				mPreferences.getBoolean(Configure.KEY_USE_SSL, true));
+		activeSyncManager.setDeviceId(
+				mPreferences.getInt(Configure.KEY_DEVICE_ID, 0));
 
 		activeSyncManager.Initialize();
 
@@ -329,7 +361,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			if(searchResultXML.equalsIgnoreCase(""))
 				return true;
 			
-			mContacts = activeSyncManager.parseXML(searchResultXML);		
+			parseXML(searchResultXML);		
 			
 			EditText text = (EditText) findViewById(R.id.Name);		
 			text.setText(mPreferences.getString(Configure.KEY_SEARCH_TERM_PREFERENCE, "" ));
@@ -361,6 +393,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putString(Configure.KEY_ACTIVESYNCVERSION_PREFERENCE,
 				activeSyncManager.getActiveSyncVersion());
+		editor.putInt(Configure.KEY_DEVICE_ID,
+				activeSyncManager.getDeviceId());
 		editor.putString(Configure.KEY_POLICY_KEY_PREFERENCE,
 				activeSyncManager.getPolicyKey());
 		editor.putString(Configure.KEY_RESULTS_PREFERENCE,
@@ -449,9 +483,10 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 					case 200: // HTTP_OK
 						// All went well, lets display the result
 						searchResultXML = sb.toString() ;
-						mContacts = activeSyncManager.parseXML(searchResultXML);
+						statusCode = parseXML(searchResultXML);
 						break;
 					case 449: // RETRY AFTER PROVISIONING
+					case 142: // RETRY AFTER PROVISIONING
 						// Looks like we need to provision again
 						activeSyncManager.provisionDevice();
 						break;
