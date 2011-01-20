@@ -90,19 +90,19 @@ public class XMLParser extends DefaultHandler {
     @Override
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes atts) throws SAXException {
-    	// Lets see if we got the status element
-    	if (localName.compareToIgnoreCase("status") == 0)
-    		foundStatus = true;
-    	
-    	// Grab control when we reach the required node
-    	if( localName.compareToIgnoreCase(mNodeToFind) == 0)
-    	{
-    		foundNode = true;
-    		
-    		if(createContact)
-    			contact = new Contact();
-    	}
-    	key = localName;    	    		
+		// Lets see if we got the status element
+		if (localName.compareToIgnoreCase("status") == 0)
+			foundStatus = true;
+		
+		// Grab control when we reach the required node
+		if( localName.compareToIgnoreCase(mNodeToFind) == 0)
+		{
+			foundNode = true;
+			
+			if(createContact)
+				contact = new Contact();
+		}
+		key = localName;    
     }
 
     @Override
@@ -144,6 +144,6 @@ public class XMLParser extends DefaultHandler {
     				contact.add(key, value);
     			}    			
     		}    			
-    	}    	
+    	} 
     }    
 }
