@@ -504,7 +504,10 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 				
 			} catch (Exception e) {				
 				if(Debug.Enabled)
+				{
 					Debug.Log(e.toString());
+					Debug.Log(searchResultXML);
+				}
 				else
 				{
 					errorMesg = "Activesync version= "
@@ -527,7 +530,6 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			progressdialog.dismiss();			
 			
 			if(mContacts == null){
-				
 				Toast.makeText(
 						CorporateAddressBook.this, 
 						errorMesg, 

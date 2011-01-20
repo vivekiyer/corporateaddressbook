@@ -171,7 +171,7 @@ public class ActiveSyncManager {
 		
 		// this is where we will send it
 		String protocol = (mUseSSL) ? "https://" : "http://";
-		mUri = protocol + mServerName + "/Microsoft-Server-Activesync?" + "User="
+		mUri = protocol + mServerName + "/Microsoft-Server-ActiveSync?" + "User="
 				+ mUsername
 				+ "&DeviceId=" 
 				+ mDeviceId
@@ -413,15 +413,9 @@ public class ActiveSyncManager {
 				+ "</PolicyType>\n"
 				+ "\t\t</Policy>\n" + "\t</Policies>\n" + "</Provision>";
 		
-		if(Debug.Enabled)
-			Debug.Log("Provision Request: \n" + xml);
-
 		HttpResponse response = sendPostRequest(createHttpPost(uri, xml, true));
 		xml = decodeContent(response.getEntity());
 		
-		if(Debug.Enabled)
-			Debug.Log("Provision Response: \n" + xml);
-
 		// Get the temporary policy key from the server
 		String[] result = parseXML(xml, "PolicyKey");		
 		
@@ -444,20 +438,11 @@ public class ActiveSyncManager {
 				+ "\t\t\t<Status>1</Status>\n" + "\t\t</Policy>\n"
 				+ "\t</Policies>\n" + "</Provision>";
 	
-		if(Debug.Enabled)
-			Debug.Log("Provision Request: \n" + xml);
-
 		response = sendPostRequest(createHttpPost(uri, xml, false));
 		xml = decodeContent(response.getEntity());
 		
-		if(Debug.Enabled)
-			Debug.Log("Provision Response: \n" + xml);
-
 		// Get the final policy key
 		mPolicyKey = parseXML(xml, "PolicyKey")[0];
-
-		if(Debug.Enabled)
-			Debug.Log("Policy Key: \n" + mPolicyKey);
 	}
 
 	/**
@@ -525,7 +510,10 @@ public class ActiveSyncManager {
 		httpPost.setHeader("User-Agent", "Android");
 		httpPost.setHeader("Accept", "*/*");
 		httpPost.setHeader("Content-Type", "application/vnd.ms-sync.wbxml");
-		httpPost.setHeader("MS-ASProtocolVersion", mActiveSyncVersion);
+		
+		// Lets tell the Exchange server that we are a 12.1 client
+		httpPost.setHeader("MS-ASProtocolVersion", "12.1");
+		
 		//Log.d(TAG, mActiveSyncVersion);
 		httpPost.setHeader("Accept-Language", "en-us");
 		httpPost.setHeader("Authorization", mAuthString);
