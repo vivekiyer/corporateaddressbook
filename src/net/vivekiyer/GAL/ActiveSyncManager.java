@@ -44,6 +44,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import android.util.Log;
+
 import net.vivekiyer.GAL.wbxml.WBXML;
 
 /**
@@ -386,13 +388,13 @@ public class ActiveSyncManager {
 		}
 		
 		// parse and return the results
-		return statusCode;		
+		return statusCode;
 	}
 
 	/**
 	 * @throws Exception
 	 * 
-	 * Sends a Provision comand to the Exchange server. Only needed for Exchange 2007 and above 
+	 * Sends a Provision command to the Exchange server. Only needed for Exchange 2007 and above 
 	 */
 	public void provisionDevice() throws Exception {
 
@@ -567,7 +569,7 @@ public class ActiveSyncManager {
 	 */
 	private String[] parseXML(String xml, String nodeName) throws Exception {
 		// Our parser does not handle ampersands too well. Replace with &amp;
-		xml = Utility.replaceAmpersandWithEntityString(xml);
+		xml = xml.replaceAll("&", "&amp;");
 		
 		// Parse the XML
 		ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xml

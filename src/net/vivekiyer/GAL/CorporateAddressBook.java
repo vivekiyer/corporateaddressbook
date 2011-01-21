@@ -33,7 +33,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,7 +58,7 @@ import android.widget.Toast;
 public class CorporateAddressBook extends Activity implements OnClickListener{	
 	
 	// TAG used for logging
-	private static String TAG = "CorporateAddressBook";
+	//private static String TAG = "CorporateAddressBook";
 	
 	// Object that performs all the ActiveSync magic 
 	private ActiveSyncManager activeSyncManager;	
@@ -307,9 +306,9 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 	 */
 	public int parseXML(String xml) throws Exception {
 		// Our parser does not handle ampersands too well. So replace these with &amp;
-		xml = Utility.replaceAmpersandWithEntityString(xml);
-		 
-		//Parse the XML
+		xml = xml.replaceAll("&", "&amp;");
+		
+			//Parse the XML
 		ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xml
 				.toString().getBytes());
 		XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -373,7 +372,10 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
 
 		} catch (Exception e) {
-			Log.e(TAG,e.toString());
+			Toast.makeText(
+					CorporateAddressBook.this, 
+					e.toString(), 
+					Toast.LENGTH_LONG).show();	
 		}
 		
 		return true;
