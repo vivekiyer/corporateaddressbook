@@ -15,9 +15,6 @@
 
 package net.vivekiyer.GAL;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.app.AlertDialog;
 import android.content.Context;
 
@@ -53,28 +50,6 @@ public class Utility {
         return new String(encoded);
     }
      
-	/**
-	 * @param xml The input XML string
-	 * @return The XML string with the ampersands replaced with entity strings (&smp;)
-	 */
-	public static String replaceAmpersandWithEntityString(String xml) {
-		
-		Pattern p = Pattern.compile("&([^;]{6})");
-		Matcher m = p.matcher(xml);
-		boolean result = m.find();
-
-		StringBuffer sb = new StringBuffer();
-
-		while (result) {
-			m.appendReplacement(sb, "&amp;" + m.group().substring(1));
-			result = m.find();
-		}
-
-		// Add the last segment of input to the new String
-		m.appendTail(sb);
-		return sb.toString();
-	}
-
 	/**
 	 * @param s The alert message
 	 * Displays an alert dialog with the messaged provided
