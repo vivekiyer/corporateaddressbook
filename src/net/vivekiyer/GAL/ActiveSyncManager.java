@@ -44,8 +44,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import android.util.Log;
-
 import net.vivekiyer.GAL.wbxml.WBXML;
 
 /**
