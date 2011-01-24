@@ -69,9 +69,14 @@ public class ActiveSyncManager {
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";	
 	private int mDeviceId = 0;
-		
-	//private static final String TAG = "ActiveSyncManager";
+	private float mActiveSyncVersionFloat = 0.0F;
 	
+	//private static final String TAG = "ActiveSyncManager";
+	private float getActiveSyncVersionFloat(){
+		if(mActiveSyncVersionFloat == 0.0F)
+			mActiveSyncVersionFloat = Float.parseFloat(mActiveSyncVersion);
+		return mActiveSyncVersionFloat;
+	}
 	public boolean isUseSSLSet() {
 		return mUseSSL;
 	}
@@ -234,6 +239,8 @@ public class ActiveSyncManager {
 				mActiveSyncVersion = versions.substring(versions
 						.lastIndexOf(",") + 1);
 
+				mActiveSyncVersionFloat = Float.parseFloat(mActiveSyncVersion);
+				
 				// Provision the device if necessary
 				provisionDevice();
 
@@ -400,7 +407,7 @@ public class ActiveSyncManager {
 		String uri = mUri + "Provision";
 		String policyType;
 		
-		if (Float.parseFloat(mActiveSyncVersion) >= 12.0)
+		if (getActiveSyncVersionFloat() >= 12.0)
 			policyType = "MS-EAS-Provisioning-WBXML";		
 		else
 			policyType =  "MS-WAP-Provisioning-XML";
@@ -511,8 +518,17 @@ public class ActiveSyncManager {
 		httpPost.setHeader("Accept", "*/*");
 		httpPost.setHeader("Content-Type", "application/vnd.ms-sync.wbxml");
 		
+		// If we are connecting to Exchange 2010 or above
 		// Lets tell the Exchange server that we are a 12.1 client
-		httpPost.setHeader("MS-ASProtocolVersion", "12.1");
+		// This is so we don't have to support sending of additional
+		// information in the provision method
+		if(getActiveSyncVersionFloat() >= 14.0)
+			httpPost.setHeader("MS-ASProtocolVersion", "12.1");
+		// Else set the version to the highest version returned by the
+		// Exchange server
+		else
+			httpPost.setHeader("MS-ASProtocolVersion", getActiveSyncVersion());
+			
 		
 		//Log.d(TAG, mActiveSyncVersion);
 		httpPost.setHeader("Accept-Language", "en-us");
