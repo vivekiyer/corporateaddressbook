@@ -404,6 +404,10 @@ public class ActiveSyncManager {
 			// Decode the XML content
 			result.append(decodeContent(response.getEntity())); 
 		}
+		else if( (Debug.Enabled) && response.getEntity().getContentLength() != 0 )
+		{
+			Debug.Log(decodeContent(response.getEntity()));
+		}
 		
 		// parse and return the results
 		return statusCode;
