@@ -220,8 +220,21 @@ public class ActiveSyncManager {
 		// First get the options from the server
 		HttpResponse response = getOptions(); 
 		
+		if(Debug.Enabled){
+			// Log all the headers and content received
+			Debug.Log("Response to OPTIONS request");
+			for(Header header: response.getAllHeaders())
+				Debug.Log(header.toString());
+			
+			// Log the actual response as well
+			HttpEntity entity = response.getEntity();
+			if(entity.getContentLength() != 0)
+				Debug.Log(decodeContent(entity));
+		}			
+
 		// 200 indicates a success
 		int statusCode = response.getStatusLine().getStatusCode() ; 
+		Debug.Log("Status code="+statusCode);
 		
 		if( response.getStatusLine().getStatusCode()  == 200){
 			

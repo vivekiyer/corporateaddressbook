@@ -231,15 +231,22 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 			int statusCode) {		
 		progressdialog.dismiss();
 		
-		// Looks like there was an error in the settings
+		// Looks like there was an error in the settings		
 		if (!taskStatus) {
-			AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
-			alt_bld.setMessage(
-					"Error connecting to server. Please check your settings \n"+
-					"Error code = " + statusCode)
-					.setPositiveButton("Ok", null);
-			AlertDialog alert = alt_bld.create();
-			alert.show();
+			if(Debug.Enabled){
+				// Send the error message via email				
+				Debug.sendDebugEmail(this);
+			}
+			else
+			{
+				AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
+				alt_bld.setMessage(
+						"Error connecting to server. Please check your settings \n"+
+						"Error code = " + statusCode)
+						.setPositiveButton("Ok", null);
+				AlertDialog alert = alt_bld.create();
+				alert.show();
+			}
 		}
 		// All went well. Store the settings and return to the main page
 		else{
