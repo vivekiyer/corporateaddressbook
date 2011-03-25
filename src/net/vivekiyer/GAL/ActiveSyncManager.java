@@ -382,34 +382,37 @@ public class ActiveSyncManager {
 		
 		int statusCode = response.getStatusLine().getStatusCode();
 		
-		if(Debug.Enabled){
-			Debug.Log("Status code from search:" + statusCode);
-			
-			// Log all headers
-			for (Header header:response.getAllHeaders()){
-				Debug.Log(header.toString());
-			}
-			
-			// Log the length of the entity
-			
-			HttpEntity entity = response.getEntity();
-			if(entity != null){
-				Debug.Log("Entity length:"+entity.getContentLength());
-				Debug.Log("Entity type:"+entity.getContentType().getValue());
-			}
-			else{
-				Debug.Log("Entity was null");
-			}
-		}
-		
 		if(statusCode == 200)
 		{
 			// Decode the XML content
 			String content = decodeContent(response.getEntity());
 			result.append(content);
-			
-			if(Debug.Enabled)
-				Debug.Log(content);
+		}
+		else 
+		{
+			if(Debug.Enabled){
+				Debug.Log("Status code from search:" + statusCode);
+				
+				// Log all headers
+				for (Header header:response.getAllHeaders()){
+					Debug.Log(header.toString());
+				}
+				
+				// Log the length of the entity
+				HttpEntity entity = response.getEntity();
+				if(entity != null){
+					long length = entity.getContentLength();
+					Debug.Log("Entity length:"+length);
+					Debug.Log("Entity type:"+entity.getContentType().getValue());
+					
+					if(length != 0){
+						Debug.Log(decodeContent(entity));
+					}
+				}
+				else{
+					Debug.Log("Entity was null");
+				}
+			}	
 		}
 		
 		// parse and return the results
