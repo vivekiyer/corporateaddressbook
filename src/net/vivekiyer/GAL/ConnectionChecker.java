@@ -57,6 +57,9 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 				return false;
 			
 		} catch (Exception e) {
+			if(Debug.Enabled){
+				Debug.Log(e.toString());
+			}
 			return false;
 		}
 		return true;

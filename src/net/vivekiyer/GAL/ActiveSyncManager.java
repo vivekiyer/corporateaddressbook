@@ -236,7 +236,7 @@ public class ActiveSyncManager {
 		int statusCode = response.getStatusLine().getStatusCode() ; 
 		Debug.Log("Status code="+statusCode);
 		
-		if( response.getStatusLine().getStatusCode()  == 200){
+		if( statusCode == 200){
 			
 			Header [] headers = response.getHeaders("MS-ASProtocolVersions");
 			
@@ -403,11 +403,7 @@ public class ActiveSyncManager {
 		{
 			// Decode the XML content
 			result.append(decodeContent(response.getEntity())); 
-		}
-		else if( (Debug.Enabled) && response.getEntity().getContentLength() != 0 )
-		{
-			Debug.Log(decodeContent(response.getEntity()));
-		}
+		}		
 		
 		// parse and return the results
 		return statusCode;
