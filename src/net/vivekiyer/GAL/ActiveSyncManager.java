@@ -218,25 +218,12 @@ public class ActiveSyncManager {
 	public int getExchangeServerVersion() throws Exception {
 		
 		// First get the options from the server
-		HttpResponse response = getOptions(); 
-		
-		if(Debug.Enabled){
-			// Log all the headers and content received
-			Debug.Log("Response to OPTIONS request");
-			for(Header header: response.getAllHeaders())
-				Debug.Log(header.toString());
-			
-			// Log the actual response as well
-			HttpEntity entity = response.getEntity();
-			if(entity.getContentLength() != 0)
-				Debug.Log(decodeContent(entity));
-		}			
+		HttpResponse response = getOptions();		
 
 		// 200 indicates a success
 		int statusCode = response.getStatusLine().getStatusCode() ; 
-		Debug.Log("Status code="+statusCode);
 		
-		if( response.getStatusLine().getStatusCode()  == 200){
+		if( statusCode  == 200){
 			
 			Header [] headers = response.getHeaders("MS-ASProtocolVersions");
 			
@@ -256,12 +243,8 @@ public class ActiveSyncManager {
 				
 				// Provision the device if necessary
 				provisionDevice();
-
-				if(Debug.Enabled)
-					Debug.Log("ActiveSync version = " + mActiveSyncVersion);
-			
 			}
-		}
+		}		
 		return statusCode;
 	}
 
@@ -399,14 +382,34 @@ public class ActiveSyncManager {
 		
 		int statusCode = response.getStatusLine().getStatusCode();
 		
+		if(Debug.Enabled){
+			Debug.Log("Status code from search:" + statusCode);
+			
+			// Log all headers
+			for (Header header:response.getAllHeaders()){
+				Debug.Log(header.toString());
+			}
+			
+			// Log the length of the entity
+			
+			HttpEntity entity = response.getEntity();
+			if(entity != null){
+				Debug.Log("Entity length:"+entity.getContentLength());
+				Debug.Log("Entity type:"+entity.getContentType().getValue());
+			}
+			else{
+				Debug.Log("Entity was null");
+			}
+		}
+		
 		if(statusCode == 200)
 		{
 			// Decode the XML content
-			result.append(decodeContent(response.getEntity())); 
-		}
-		else if( (Debug.Enabled) && response.getEntity().getContentLength() != 0 )
-		{
-			Debug.Log(decodeContent(response.getEntity()));
+			String content = decodeContent(response.getEntity());
+			result.append(content);
+			
+			if(Debug.Enabled)
+				Debug.Log(content);
 		}
 		
 		// parse and return the results
@@ -446,6 +449,10 @@ public class ActiveSyncManager {
 		if (result == null ) {
 			//  This implies that there is no policy key
 			// So return
+			if(Debug.Enabled)
+			{
+				Debug.Log("No policy key found");				
+			}
 			return;
 		}
 
@@ -467,6 +474,12 @@ public class ActiveSyncManager {
 		
 		// Get the final policy key
 		mPolicyKey = parseXML(xml, "PolicyKey")[0];
+		
+		if(Debug.Enabled)
+		{
+			Debug.Log("Policy Key");
+			Debug.Log(mPolicyKey);
+		}
 	}
 
 	/**
@@ -528,7 +541,7 @@ public class ActiveSyncManager {
 	 */
 	private HttpPost createHttpPost(String uri, String requestXML,
 			boolean includePolicyKey) throws Exception {
-
+		
 		// Set the common headers
 		HttpPost httpPost = new HttpPost(uri);
 		httpPost.setHeader("User-Agent", "Android");
