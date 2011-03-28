@@ -370,9 +370,14 @@ public class ActiveSyncManager {
 		String uri = mUri + "Search";
 
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-				+ "<Search xmlns=\"Search:\">\n" + "\t<Store>\n"
-				+ "\t\t<Name>GAL</Name>\n" + "\t\t<Query>" + query
-				+ "</Query>\n" + "\t</Store>\n" + "</Search>";
+				+ "<Search xmlns=\"Search:\">\n" + 
+				"\t<Store>\n"
+				+ "\t\t<Name>GAL</Name>\n" 
+				+ "\t\t<Query>" + query + "</Query>\n" 
+				+ "\t\t<Options>\n"
+				+ "\t\t</Options>\n"
+				+ "\t</Store>\n"
+				+ "</Search>";
 
 		// Send it to the server
 		HttpResponse response = sendPostRequest(createHttpPost(uri,xml,true));	
