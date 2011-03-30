@@ -375,6 +375,7 @@ public class ActiveSyncManager {
 				+ "\t\t<Name>GAL</Name>\n" 
 				+ "\t\t<Query>" + query + "</Query>\n" 
 				+ "\t\t<Options>\n"
+				+ "\t\t\t<Range>0-99</Range>\n"
 				+ "\t\t</Options>\n"
 				+ "\t</Store>\n"
 				+ "</Search>";
@@ -389,9 +390,8 @@ public class ActiveSyncManager {
 		
 		if(statusCode == 200)
 		{
-			// Decode the XML content
-			String content = decodeContent(response.getEntity());
-			result.append(content);
+			// Decode the XML content and append it to the response			
+			result.append(decodeContent(response.getEntity()));
 		}
 		else 
 		{
