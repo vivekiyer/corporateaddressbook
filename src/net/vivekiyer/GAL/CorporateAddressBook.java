@@ -348,7 +348,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		activeSyncManager.setDeviceId(
 				mPreferences.getInt(Configure.KEY_DEVICE_ID, 0));
 
-		activeSyncManager.Initialize();
+		if(activeSyncManager.Initialize() == false)
+			return false;
 
 		// Check to see if we have successfully connected to an Exchange server
 		if (activeSyncManager.getActiveSyncVersion().equalsIgnoreCase(""))

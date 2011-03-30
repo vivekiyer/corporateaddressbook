@@ -17,6 +17,8 @@ package net.vivekiyer.GAL;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Random;
 
 import org.apache.http.Header;
@@ -43,6 +45,8 @@ import org.apache.http.util.EntityUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import android.util.Log;
 
 import net.vivekiyer.GAL.wbxml.WBXML;
 
@@ -162,8 +166,9 @@ public class ActiveSyncManager {
 	
 	/**
 	 * Initializes the class by assigning the Exchange URL and the AuthString  
+	 * @throws URISyntaxException 
 	 */
-	public void Initialize() {
+	public boolean Initialize() {
 		wbxml = new WBXML();
 
 		generateAuthString();
@@ -174,13 +179,40 @@ public class ActiveSyncManager {
 		while(mDeviceId <= 0)
 			mDeviceId = rand.nextInt();
 		
+		// If we don't have a server name, 
+		// there is no way we can proceed
+		if(mServerName.compareToIgnoreCase("") == 0)
+			return false;
+		
 		// this is where we will send it
-		String protocol = (mUseSSL) ? "https://" : "http://";
-		mUri = protocol + mServerName + "/Microsoft-Server-ActiveSync?" + "User="
+/*		String protocol = (mUseSSL) ? "https://" : "http://";
+		String uri = protocol + mServerName + "/Microsoft-Server-ActiveSync?" + "User="
 				+ mUsername
 				+ "&DeviceId=" 
 				+ mDeviceId
 				+ "&DeviceType=Android&Cmd=";
+*/				
+		try {
+			URI uri = new URI(
+					(mUseSSL) ? "https" : "http", 	// Scheme					
+					mServerName ,					// Authority
+					"/Microsoft-Server-ActiveSync", // path
+					"User="							// query
+					+ mUsername
+					+ "&DeviceId=" 
+					+ mDeviceId
+					+ "&DeviceType=Android" 
+					+ "&Cmd=",
+					null							// fragment
+			);
+			
+			mUri = uri.toString();
+		} catch (URISyntaxException e) {
+			// This really should not occur
+			Log.d("ActiveSyncManager",e.toString());
+			return false;
+		}
+		return true;
 	}
 
 	public ActiveSyncManager() {		
