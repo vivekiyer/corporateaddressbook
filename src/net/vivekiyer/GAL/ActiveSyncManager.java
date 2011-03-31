@@ -244,23 +244,10 @@ public class ActiveSyncManager {
 	public int getExchangeServerVersion() throws Exception {
 		
 		// First get the options from the server
-		HttpResponse response = getOptions(); 
-		
-		if(Debug.Enabled){
-			// Log all the headers and content received
-			Debug.Log("Response to OPTIONS request");
-			for(Header header: response.getAllHeaders())
-				Debug.Log(header.toString());
-			
-			// Log the actual response as well
-			HttpEntity entity = response.getEntity();
-			if(entity.getContentLength() != 0)
-				Debug.Log(decodeContent(entity));
-		}			
+		HttpResponse response = getOptions();		
 
 		// 200 indicates a success
 		int statusCode = response.getStatusLine().getStatusCode() ; 
-		Debug.Log("Status code="+statusCode);
 		
 		if( statusCode == 200){
 			
@@ -282,10 +269,6 @@ public class ActiveSyncManager {
 				
 				// Provision the device if necessary
 				provisionDevice();
-
-				if(Debug.Enabled)
-					Debug.Log("ActiveSync version = " + mActiveSyncVersion);
-			
 			}
 		}
 		return statusCode;
@@ -413,9 +396,15 @@ public class ActiveSyncManager {
 		String uri = mUri + "Search";
 
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-				+ "<Search xmlns=\"Search:\">\n" + "\t<Store>\n"
-				+ "\t\t<Name>GAL</Name>\n" + "\t\t<Query>" + query
-				+ "</Query>\n" + "\t</Store>\n" + "</Search>";
+				+ "<Search xmlns=\"Search:\">\n" + 
+				"\t<Store>\n"
+				+ "\t\t<Name>GAL</Name>\n" 
+				+ "\t\t<Query>" + query + "</Query>\n" 
+				+ "\t\t<Options>\n"
+				+ "\t\t\t<Range>0-99</Range>\n"
+				+ "\t\t</Options>\n"
+				+ "\t</Store>\n"
+				+ "</Search>";
 
 		// Send it to the server
 		HttpResponse response = sendPostRequest(createHttpPost(uri,xml,true));	

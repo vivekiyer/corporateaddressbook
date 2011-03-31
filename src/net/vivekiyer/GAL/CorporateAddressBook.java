@@ -500,7 +500,7 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 						return false;
 					default:
 						errorCode = statusCode;
-						errorMesg = "Exchange server rejected request with error" + errorCode;
+						errorMesg = "Exchange server rejected request with error:" + errorCode;
 						return false;
 					}
 				}while(statusCode != 200);
