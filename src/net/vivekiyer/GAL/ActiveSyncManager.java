@@ -185,13 +185,6 @@ public class ActiveSyncManager {
 			return false;
 		
 		// this is where we will send it
-/*		String protocol = (mUseSSL) ? "https://" : "http://";
-		String uri = protocol + mServerName + "/Microsoft-Server-ActiveSync?" + "User="
-				+ mUsername
-				+ "&DeviceId=" 
-				+ mDeviceId
-				+ "&DeviceType=Android&Cmd=";
-*/				
 		try {
 			URI uri = new URI(
 					(mUseSSL) ? "https" : "http", 	// Scheme					
@@ -212,6 +205,7 @@ public class ActiveSyncManager {
 			Log.d("ActiveSyncManager",e.toString());
 			return false;
 		}
+
 		return true;
 	}
 

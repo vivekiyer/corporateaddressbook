@@ -198,7 +198,13 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 				"",
 				0);
 
-		activeSyncManager.Initialize();
+		// If we get an error from Initialize
+		// That means the URL is just bad
+		// display an error
+		if(!activeSyncManager.Initialize()){
+			showAlert("Error connecting to server. Please check your settings");
+			return;
+		}
 		
 		progressdialog = new ProgressDialog(this);
 		progressdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -219,6 +225,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		connect();
 	}
 
+	
 	/* (non-Javadoc)
 	 * @see net.vivekiyer.GAL.TaskCompleteCallback#taskComplete(boolean)
 	 * 
@@ -228,7 +235,8 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 	@Override
 	public void taskComplete(
 			boolean taskStatus, 
-			int statusCode) {		
+			int statusCode,
+			String errorString) {		
 		progressdialog.dismiss();
 		
 		// Looks like there was an error in the settings		
@@ -238,14 +246,27 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 				Debug.sendDebugEmail(this);
 			}
 			else
-			{
-				AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
-				alt_bld.setMessage(
-						"Error connecting to server. Please check your settings \n"+
-						"Error code = " + statusCode)
-						.setPositiveButton("Ok", null);
-				AlertDialog alert = alt_bld.create();
-				alert.show();
+			{				
+				// We can only handle 401 at this point
+				// All other error codes are unknown
+				switch (statusCode){
+				case 401: // UNAUTHORIZED
+					showAlert("Authentication failed. Please check your credentials");
+					break;
+				default:
+					StringBuilder sb = new StringBuilder();
+					sb.append("Connection to server failed with error code:");
+					sb.append(statusCode);
+					
+					if(errorString.compareToIgnoreCase("") != 0){
+						sb.append("\n");
+						sb.append("Error Detail:\n");
+						sb.append(errorString);
+					}
+					
+					showAlert(sb.toString());
+					break;				 
+				}
 			}
 		}
 		// All went well. Store the settings and return to the main page
@@ -275,7 +296,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 			
 			// Close the activity
 			finish();
-		}
-			
+		}			
 	}
+
 }
