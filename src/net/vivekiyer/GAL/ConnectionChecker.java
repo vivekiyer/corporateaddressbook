@@ -33,6 +33,9 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	// variable that stores the status of the connect
 	private int statusCode = 0;
 	
+	// variable that stores the error string
+	private String errorString = "";
+	
 	/**
 	 * @param callback Callback to call once the task is complete
 	 */
@@ -57,6 +60,7 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 				return false;
 			
 		} catch (Exception e) {
+			errorString = e.toString();
 			return false;
 		}
 		return true;
@@ -66,6 +70,6 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	protected void onPostExecute(Boolean result) {		
 		// now that the task is complete
 		// call the callback with the status
-		callback.taskComplete(result, statusCode);
+		callback.taskComplete(result, statusCode, errorString);
 	}
 }

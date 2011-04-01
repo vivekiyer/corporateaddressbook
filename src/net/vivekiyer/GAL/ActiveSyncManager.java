@@ -17,6 +17,8 @@ package net.vivekiyer.GAL;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Random;
 
 import org.apache.http.Header;
@@ -43,7 +45,6 @@ import org.apache.http.util.EntityUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-
 import net.vivekiyer.GAL.wbxml.WBXML;
 
 /**
@@ -162,8 +163,9 @@ public class ActiveSyncManager {
 	
 	/**
 	 * Initializes the class by assigning the Exchange URL and the AuthString  
+	 * @throws URISyntaxException 
 	 */
-	public void Initialize() {
+	public boolean Initialize() {
 		wbxml = new WBXML();
 
 		generateAuthString();
@@ -174,13 +176,32 @@ public class ActiveSyncManager {
 		while(mDeviceId <= 0)
 			mDeviceId = rand.nextInt();
 		
+		// If we don't have a server name, 
+		// there is no way we can proceed
+		if(mServerName.compareToIgnoreCase("") == 0)
+			return false;
+		
 		// this is where we will send it
-		String protocol = (mUseSSL) ? "https://" : "http://";
-		mUri = protocol + mServerName + "/Microsoft-Server-ActiveSync?" + "User="
-				+ mUsername
-				+ "&DeviceId=" 
-				+ mDeviceId
-				+ "&DeviceType=Android&Cmd=";
+		try {
+			URI uri = new URI(
+					(mUseSSL) ? "https" : "http", 	// Scheme					
+					mServerName ,					// Authority
+					"/Microsoft-Server-ActiveSync", // path
+					"User="							// query
+					+ mUsername
+					+ "&DeviceId=" 
+					+ mDeviceId
+					+ "&DeviceType=Android" 
+					+ "&Cmd=",
+					null							// fragment
+			);
+			
+			mUri = uri.toString();
+		} catch (URISyntaxException e) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public ActiveSyncManager() {		
@@ -218,12 +239,12 @@ public class ActiveSyncManager {
 	public int getExchangeServerVersion() throws Exception {
 		
 		// First get the options from the server
-		HttpResponse response = getOptions(); 
-		
+		HttpResponse response = getOptions();		
+
 		// 200 indicates a success
 		int statusCode = response.getStatusLine().getStatusCode() ; 
 		
-		if( response.getStatusLine().getStatusCode()  == 200){
+		if( statusCode == 200){
 			
 			Header [] headers = response.getHeaders("MS-ASProtocolVersions");
 			
@@ -243,10 +264,6 @@ public class ActiveSyncManager {
 				
 				// Provision the device if necessary
 				provisionDevice();
-
-				if(Debug.Enabled)
-					Debug.Log("ActiveSync version = " + mActiveSyncVersion);
-			
 			}
 		}
 		return statusCode;
@@ -374,9 +391,15 @@ public class ActiveSyncManager {
 		String uri = mUri + "Search";
 
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-				+ "<Search xmlns=\"Search:\">\n" + "\t<Store>\n"
-				+ "\t\t<Name>GAL</Name>\n" + "\t\t<Query>" + query
-				+ "</Query>\n" + "\t</Store>\n" + "</Search>";
+				+ "<Search xmlns=\"Search:\">\n" + 
+				"\t<Store>\n"
+				+ "\t\t<Name>GAL</Name>\n" 
+				+ "\t\t<Query>" + query + "</Query>\n" 
+				+ "\t\t<Options>\n"
+				+ "\t\t\t<Range>0-99</Range>\n"
+				+ "\t\t</Options>\n"
+				+ "\t</Store>\n"
+				+ "</Search>";
 
 		// Send it to the server
 		HttpResponse response = sendPostRequest(createHttpPost(uri,xml,true));	
@@ -390,7 +413,7 @@ public class ActiveSyncManager {
 		{
 			// Decode the XML content
 			result.append(decodeContent(response.getEntity())); 
-		}
+		}		
 		
 		// parse and return the results
 		return statusCode;
