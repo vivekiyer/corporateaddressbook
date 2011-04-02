@@ -16,4 +16,5 @@
     <string name="showInvisible">Show Invisible Contacts (Only)</string>
     <string name="targetAccountLabel">Target Account</string>
     <string name="undefinedTypeLabel">(Undefined)</string>
+    <string name="ACCOUNT_TYPE">net.vivekiyer.GAL..account</string>
 </resources>
