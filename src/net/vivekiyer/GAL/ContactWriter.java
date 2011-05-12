@@ -51,7 +51,7 @@ public abstract class ContactWriter {
 	private static ContactWriter sInstance;
 
 	// TAG used for logging
-	//private static String TAG = "ContactWriterSdk5";
+	// private static String TAG = "ContactWriterSdk5";
 
 	public static ContactWriter getInstance() {
 		if (sInstance == null) {
@@ -75,10 +75,12 @@ public abstract class ContactWriter {
 																	// style
 			if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
 				className = "net.vivekiyer.GAL.ContactWriterSdk3_4";
-				//Log.d(TAG,"Detected pre Eclair SDK. SDK Version=" + sdkVersion);
+				// Log.d(TAG,"Detected pre Eclair SDK. SDK Version=" +
+				// sdkVersion);
 			} else {
 				className = "net.vivekiyer.GAL.ContactWriterSdk5";
-				//Log.d(TAG,"Detected post Donut SDK. SDK Version=" + sdkVersion);
+				// Log.d(TAG,"Detected post Donut SDK. SDK Version=" +
+				// sdkVersion);
 			}
 
 			/*
@@ -95,7 +97,10 @@ public abstract class ContactWriter {
 		return sInstance;
 	}
 
-	public abstract void saveContact();	
-	public abstract void Initialize(Context ctx, LayoutInflater lf, Contact contact);
+	public abstract void saveContact();
+
+	public abstract void Initialize(Context ctx, LayoutInflater lf,
+			Contact contact);
+
 	public abstract void cleanUp();
 }

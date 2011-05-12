@@ -87,6 +87,9 @@ public class CorporateAddressBook extends Activity implements OnClickListener {
 	// List of names in the list view control
 	private String[] names;
 
+	// Error handler for XML parsing errors
+	private XMLErrorHandler xmlErrorHandler;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -102,6 +105,9 @@ public class CorporateAddressBook extends Activity implements OnClickListener {
 		// Initialize preferences and the activesyncmanager
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		activeSyncManager = new ActiveSyncManager();
+
+		// Initialize XML parsing error handler
+		xmlErrorHandler = new XMLErrorHandler();
 
 		// Create the progress bar
 		progressdialog = new ProgressDialog(this);
@@ -322,21 +328,65 @@ public class CorporateAddressBook extends Activity implements OnClickListener {
 	 *             indexed by the DisplayName of the contacts
 	 */
 	public int parseXML(String xml) throws Exception {
-		// Our parser does not handle ampersands too well. So replace these with
-		// &amp;
-		xml = xml.replaceAll("&", "&amp;");
-
-		// Parse the XML
-		ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xml
-				.toString().getBytes());
-		XMLReader xr = XMLReaderFactory.createXMLReader();
 
 		XMLParser parser = null;
-		parser = new XMLParser();
-		xr.setContentHandler(parser);
-		xr.parse(new InputSource(xmlParseInputStream));
+
+		do {
+			// Parse the XML
+			xmlErrorHandler.setColumn(0);
+			ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(
+					xml.toString().getBytes());
+			XMLReader xr = XMLReaderFactory.createXMLReader();
+
+			parser = null;
+			parser = new XMLParser();
+			xr.setContentHandler(parser);
+			xr.setErrorHandler(xmlErrorHandler);
+
+			try {
+				xr.parse(new InputSource(xmlParseInputStream));
+			} catch (Exception ex) {
+				String old = xml.substring(parser.getStartCol(),
+						xmlErrorHandler.getColumn() + 1);
+
+				StringBuilder sb = new StringBuilder();
+				sb.append(xml.substring(0, parser.getStartCol()));
+				sb.append(removeInvalidXMLCharacters(old));
+				sb.append(xml.substring(xmlErrorHandler.getColumn() + 1,
+						xml.length()));
+
+				xml = sb.toString();
+
+			}
+		} while (xmlErrorHandler.getColumn() != 0);
+
 		mContacts = parser.getContacts();
 		return parser.getStatus();
+	}
+
+	public static String removeInvalidXMLCharacters(String s) {
+		StringBuilder out = new StringBuilder();
+
+		char[] characters = s.toCharArray();
+
+		for (char ch : characters) {
+			switch (ch) {
+			case '>':
+				out.append("&gt;");
+				break;
+			case '<':
+				out.append("&lt;");
+				break;
+			case '&':
+				out.append("&amp;");
+				break;
+			default:
+				out.append(ch);
+				break;
+			}
+		}
+
+		return out.toString();
 	}
 
 	/**

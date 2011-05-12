@@ -52,35 +52,33 @@ public class Contact implements Parcelable {
 	private String mobilePhone = "";
 
 	private String email;
-	
+
 	// Field that stores the first non empty field
 	private String firstNonEmptyField;
-	
+
 	private boolean convertedToFields = false;
 
 	public String getDisplayName() {
 		// If the XML did not contain a display name
 		// Lets check for the first name and last name
-		if(DisplayName == null)
-		{			
+		if (DisplayName == null) {
 			DisplayName = "";
-	
+
 			generateFieldsFromXML();
 
-			if(firstName != null)
-			{
+			if (firstName != null) {
 				DisplayName += firstName;
 				DisplayName += " ";
 			}
-			
-			if(lastName != null)
+
+			if (lastName != null)
 				DisplayName += lastName;
-			
+
 			// If both the first name and last name are empty
 			// Use the email address
-			if(DisplayName.equalsIgnoreCase("") && email != null)
-				DisplayName = email;			
-			else if(firstNonEmptyField!=null)
+			if (DisplayName.equalsIgnoreCase("") && email != null)
+				DisplayName = email;
+			else if (firstNonEmptyField != null)
 				DisplayName = firstNonEmptyField;
 		}
 		return DisplayName;
@@ -202,16 +200,16 @@ public class Contact implements Parcelable {
 	public void generateFieldsFromXML() {
 		if (convertedToFields)
 			return;
-		
+
 		// Get the key value pairs from the contact
-		// and loop over each one		
+		// and loop over each one
 
 		for (KeyValuePair kvp : getDetails()) {
 			String key = kvp.getKey();
 			String value = kvp.getValue();
 
-			if(firstNonEmptyField == null)
-				firstNonEmptyField = value;			
+			if (firstNonEmptyField == null)
+				firstNonEmptyField = value;
 
 			if (key.equalsIgnoreCase("Phone")) {
 				workPhone = value;
@@ -235,7 +233,7 @@ public class Contact implements Parcelable {
 				email = value;
 			}
 		}
-		
+
 		convertedToFields = true;
 	}
 }

@@ -19,46 +19,45 @@ import android.app.AlertDialog;
 import android.content.Context;
 
 /**
- * @author Vivek Iyer
- * Utility methods
+ * @author Vivek Iyer Utility methods
  */
-public class Utility {    
-    
-    /**
-     * @param encoded base64 data
-     * @return decoded data
-     * Decodes base64 data
-     */
-    public static byte[] base64Decode(byte[] encoded) {
-        if (encoded == null) {
-            return null;
-        }
-        byte[] decoded = new Base64().decode(encoded);
-        return decoded;
-    }
+public class Utility {
 
-    /**
-     * @param s String to encode
-     * @return base64 encoded string
-     * Encoder the string to base64
-     */
-    public static String base64Encode(String s) {
-        if (s == null) {
-            return s;
-        }
-        byte[] encoded = new Base64().encode(s.getBytes());
-        return new String(encoded);
-    }
-     
 	/**
-	 * @param s The alert message
-	 * Displays an alert dialog with the messaged provided
+	 * @param encoded
+	 *            base64 data
+	 * @return decoded data Decodes base64 data
 	 */
-	public static void showAlert(Context context, String mesg){
+	public static byte[] base64Decode(byte[] encoded) {
+		if (encoded == null) {
+			return null;
+		}
+		byte[] decoded = new Base64().decode(encoded);
+		return decoded;
+	}
+
+	/**
+	 * @param s
+	 *            String to encode
+	 * @return base64 encoded string Encoder the string to base64
+	 */
+	public static String base64Encode(String s) {
+		if (s == null) {
+			return s;
+		}
+		byte[] encoded = new Base64().encode(s.getBytes());
+		return new String(encoded);
+	}
+
+	/**
+	 * @param s
+	 *            The alert message Displays an alert dialog with the messaged
+	 *            provided
+	 */
+	public static void showAlert(Context context, String mesg) {
 		AlertDialog.Builder alt_bld = new AlertDialog.Builder(context);
-		alt_bld.setMessage(mesg)
-				.setPositiveButton("Ok", null);
+		alt_bld.setMessage(mesg).setPositiveButton("Ok", null);
 		AlertDialog alert = alt_bld.create();
-		alert.show();	
+		alert.show();
 	}
 }

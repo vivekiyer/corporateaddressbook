@@ -17,48 +17,50 @@ package net.vivekiyer.GAL;
 
 /**
  * @author Vivek Iyer
- *
- * Helper class that stores contact details as KeyValuePairs
+ * 
+ *         Helper class that stores contact details as KeyValuePairs
  */
 public class KeyValuePair {
-	public enum Type{
-		MOBILE,
-		PHONE,
-		EMAIL,
-		OTHER
+	public enum Type {
+		MOBILE, PHONE, EMAIL, OTHER
 	}
+
 	private Type _type;
-	
+
 	public Type get_type() {
 		return _type;
 	}
+
 	public void set_type(Type _type) {
 		this._type = _type;
 	}
-	
+
 	private String _key;
-	
+
 	public String getKey() {
 		return _key;
 	}
+
 	public void setKey(String key) {
 		_key = key;
 	}
-	
+
 	private String _value;
 
 	public String getValue() {
 		return _value;
 	}
+
 	public void setValue(String value) {
 		_value = value;
 	}
-	
-	public KeyValuePair(String key, String value){
+
+	public KeyValuePair(String key, String value) {
 		_key = key;
 		_value = value;
 	}
-	public String toString(){
-		return("Key="+_key+"\nValue="+_value);
+
+	public String toString() {
+		return ("Key=" + _key + "\nValue=" + _value);
 	}
 }

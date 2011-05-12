@@ -32,27 +32,23 @@ import android.view.LayoutInflater;
 public class ContactWriterSdk3_4 extends ContactWriter {
 	private Context context;
 	private Contact mContact;
-	//private static String TAG = "ContactWriterSdk3_4";
+	// private static String TAG = "ContactWriterSdk3_4";
 	private ContentResolver contentResolver;
 
 	@Override
 	public void saveContact() {
 		ContentValues values = new ContentValues();
 		mContact.generateFieldsFromXML();
-		
-		values.put(
-				People.NAME, 
-					mContact.getFirstName() + 
-					" " + 
-					mContact.getLastName()
-				);
+
+		values.put(People.NAME,
+				mContact.getFirstName() + " " + mContact.getLastName());
 
 		// add it to the database
 		Uri newPerson = Contacts.People.createPersonInMyContactsGroup(
 				contentResolver, values);
 
 		if (newPerson == null) {
-			//Log.d(TAG, "Error creating contact occured");
+			// Log.d(TAG, "Error creating contact occured");
 			return;
 		}
 		addContactFields(values, newPerson);
@@ -71,16 +67,17 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			ContentValues workPhoneValues = new ContentValues();
 			Uri workPhoneUri = Uri.withAppendedPath(newPerson,
 					Contacts.People.Phones.CONTENT_DIRECTORY);
-			workPhoneValues.put(Contacts.Phones.NUMBER, mContact.getWorkPhone());
+			workPhoneValues
+					.put(Contacts.Phones.NUMBER, mContact.getWorkPhone());
 			workPhoneValues
 					.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_WORK);
 			Uri phoneUpdate = contentResolver.insert(workPhoneUri,
 					workPhoneValues);
 			if (phoneUpdate == null) {
-				//Log.d(TAG, "Failed to insert mobile phone number");
+				// Log.d(TAG, "Failed to insert mobile phone number");
 			}
 		}
-		
+
 		if (!mContact.getOfficeLocation().equalsIgnoreCase("")) {
 			ContentValues addressValues = new ContentValues();
 			Uri addressUri = Uri.withAppendedPath(newPerson,
@@ -89,33 +86,35 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 					Contacts.KIND_POSTAL);
 			addressValues.put(Contacts.ContactMethods.TYPE,
 					Contacts.ContactMethods.TYPE_WORK);
-			addressValues.put(Contacts.ContactMethods.DATA, mContact.getOfficeLocation());
+			addressValues.put(Contacts.ContactMethods.DATA,
+					mContact.getOfficeLocation());
 			Uri addressUpdate = contentResolver.insert(addressUri,
 					addressValues);
 			if (addressUpdate == null) {
-				//Log.d(TAG, "Failed to insert office location");
+				// Log.d(TAG, "Failed to insert office location");
 			}
-		} 
-		
-//		if (!mContact.getAlias().equalsIgnoreCase("")) {
-//			values.put(People.PHONETIC_NAME, mContact.getAlias());
-//		}
-//		
-		
+		}
+
+		// if (!mContact.getAlias().equalsIgnoreCase("")) {
+		// values.put(People.PHONETIC_NAME, mContact.getAlias());
+		// }
+		//
+
 		if (!mContact.getHomePhone().equalsIgnoreCase("")) {
 			ContentValues homePhoneValues = new ContentValues();
 			Uri homePhoneUri = Uri.withAppendedPath(newPerson,
 					Contacts.People.Phones.CONTENT_DIRECTORY);
-			homePhoneValues.put(Contacts.Phones.NUMBER, mContact.getHomePhone());
+			homePhoneValues
+					.put(Contacts.Phones.NUMBER, mContact.getHomePhone());
 			homePhoneValues
 					.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_HOME);
 			Uri phoneUpdate = contentResolver.insert(homePhoneUri,
 					homePhoneValues);
 			if (phoneUpdate == null) {
-				//Log.d(TAG, "Failed to insert mobile phone number");
+				// Log.d(TAG, "Failed to insert mobile phone number");
 			}
-		} 
-		
+		}
+
 		if (!mContact.getMobilePhone().equalsIgnoreCase("")) {
 			ContentValues mobileValues = new ContentValues();
 			Uri mobileUri = Uri.withAppendedPath(newPerson,
@@ -124,10 +123,10 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			mobileValues.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_MOBILE);
 			Uri phoneUpdate = contentResolver.insert(mobileUri, mobileValues);
 			if (phoneUpdate == null) {
-				//Log.d(TAG, "Failed to insert mobile phone number");
+				// Log.d(TAG, "Failed to insert mobile phone number");
 			}
-		} 
-		
+		}
+
 		if (!mContact.getEmail().equalsIgnoreCase("")) {
 			ContentValues emailValues = new ContentValues();
 			Uri emailUri = Uri.withAppendedPath(newPerson,
@@ -138,26 +137,28 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			emailValues.put(Contacts.ContactMethods.DATA, mContact.getEmail());
 			Uri emailUpdate = contentResolver.insert(emailUri, emailValues);
 			if (emailUpdate == null) {
-				//Log.d(TAG, "Failed to insert email");
+				// Log.d(TAG, "Failed to insert email");
 			}
 		}
 
 		ContentValues organisationValues = new ContentValues();
 		Uri orgUri = Uri.withAppendedPath(newPerson,
 				Contacts.Organizations.CONTENT_DIRECTORY);
-		organisationValues.put(Contacts.Organizations.TITLE, mContact.getTitle());
-		organisationValues.put(Contacts.Organizations.COMPANY, mContact.getCompany());
+		organisationValues.put(Contacts.Organizations.TITLE,
+				mContact.getTitle());
+		organisationValues.put(Contacts.Organizations.COMPANY,
+				mContact.getCompany());
 		organisationValues.put(Contacts.Organizations.TYPE,
 				Contacts.Organizations.TYPE_WORK);
 		Uri orgUpdate = contentResolver.insert(orgUri, organisationValues);
 		if (orgUpdate == null) {
-			//Log.d(TAG, "Could not add organization");
+			// Log.d(TAG, "Could not add organization");
 		}
 	}
 
 	@Override
 	public void cleanUp() {
-		// Nothing to clean up here		
+		// Nothing to clean up here
 	}
 
 }

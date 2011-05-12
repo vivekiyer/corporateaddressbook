@@ -19,46 +19,46 @@ import android.os.AsyncTask;
 
 /**
  * @author Vivek Iyer
- *
- * This class is a helper class that checks if the settings provided by the user are valid
- * and correspond to a valid Exchange server. It does this by querying the Exchange server for
- * OPTIONS (via the OPTIONS command) and gets the Active Sync protocol version supported by the server
- * If the server is running 2007 or above, it also provisions the device on the server. 
+ * 
+ *         This class is a helper class that checks if the settings provided by
+ *         the user are valid and correspond to a valid Exchange server. It does
+ *         this by querying the Exchange server for OPTIONS (via the OPTIONS
+ *         command) and gets the Active Sync protocol version supported by the
+ *         server If the server is running 2007 or above, it also provisions the
+ *         device on the server.
  */
 class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 
 	// Callback to call once the check is complete
-	private TaskCompleteCallback callback;	
-	
+	private TaskCompleteCallback callback;
+
 	// variable that stores the status of the connect
 	private int statusCode = 0;
-	
+
 	// variable that stores the error string
 	private String errorString = "";
-	
+
 	/**
-	 * @param callback Callback to call once the task is complete
+	 * @param callback
+	 *            Callback to call once the task is complete
 	 */
 	public void setCallback(TaskCompleteCallback callback) {
 		this.callback = callback;
 	}
-	
-	public ConnectionChecker(			
-			TaskCompleteCallback _callback
-			){
+
+	public ConnectionChecker(TaskCompleteCallback _callback) {
 		callback = _callback;
 	}
-	
 
 	@Override
 	protected Boolean doInBackground(ActiveSyncManager... params) {
 		try {
 			// Let's try to connect to the server
 			statusCode = params[0].getExchangeServerVersion();
-			
-			if(statusCode != 200)
+
+			if (statusCode != 200)
 				return false;
-			
+
 		} catch (Exception e) {
 			errorString = e.toString();
 			return false;
@@ -67,7 +67,7 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	}
 
 	@Override
-	protected void onPostExecute(Boolean result) {		
+	protected void onPostExecute(Boolean result) {
 		// now that the task is complete
 		// call the callback with the status
 		callback.taskComplete(result, statusCode, errorString);

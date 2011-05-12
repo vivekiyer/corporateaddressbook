@@ -18,12 +18,9 @@ package net.vivekiyer.GAL;
 /**
  * @author Vivek Iyer
  * 
- * Interface that is used to implement callbacks 
+ *         Interface that is used to implement callbacks
  */
 public interface TaskCompleteCallback {
-	public void taskComplete(
-			boolean taskStatus, 
-			int statusCode,
-			String errorString
-			);
+	public void taskComplete(boolean taskStatus, int statusCode,
+			String errorString);
 }

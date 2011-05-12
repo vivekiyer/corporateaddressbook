@@ -18,36 +18,37 @@ package net.vivekiyer.GAL;
 import java.util.ArrayList;
 
 import net.vivekiyer.GAL.KeyValuePair.Type;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
  * @author Vivek Iyer
- *
- * This class is responsible for displaying the contact data in a list
- * It beautifies the list by displaying the attribute on the top left 
- * and the actual value below that. It also automatically finds phone numbers
- * and email addresses, and provides action buttons if any of those are found
+ * 
+ *         This class is responsible for displaying the contact data in a list
+ *         It beautifies the list by displaying the attribute on the top left
+ *         and the actual value below that. It also automatically finds phone
+ *         numbers and email addresses, and provides action buttons if any of
+ *         those are found
  */
-public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {	
-	
-	//private static String TAG = "ContactListAdapter";
-	
+public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
+
+	// private static String TAG = "ContactListAdapter";
+
 	/**
-	 * @param context 
-	 * @param textViewResourceId 
-	 * @param kvps The contact details
+	 * @param context
+	 * @param textViewResourceId
+	 * @param kvps
+	 *            The contact details
 	 * 
-	 * Adds the contact details to the array adapter
+	 *            Adds the contact details to the array adapter
 	 */
 	public ContactListAdapter(Context context, int textViewResourceId,
 			ArrayList<KeyValuePair> kvps) {
@@ -57,8 +58,11 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			this.add(kvp);
 	}
 
-	/* (non-Javadoc)
-	 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.widget.ArrayAdapter#getView(int, android.view.View,
+	 * android.view.ViewGroup)
 	 * 
 	 * Displays the contact details in the UI
 	 */
@@ -80,7 +84,7 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			if (tt != null) {
 				tt.setText(kvp.getKey());
 			}
-			
+
 			// Set the bottom text
 			if (bt != null) {
 				bt.setText(kvp.getValue());
@@ -91,46 +95,45 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			String topText = kvp.getKey().toLowerCase();
 			ImageView iv1 = (ImageView) v.findViewById(R.id.icon1);
 			ImageView iv2 = (ImageView) v.findViewById(R.id.icon2);
-			
+
 			// Set the on click listeners
 			iv1.setOnClickListener(mIconListener1);
 			iv2.setOnClickListener(mIconListener2);
-			
+
 			// Display the sms and phone icon for mobile phones
 			if (topText.contains("mobilephone")) {
 				kvp.set_type(Type.MOBILE);
 				iv2.setImageResource(R.drawable.call_contact);
 				iv1.setImageResource(R.drawable.sms);
 				iv2.setVisibility(android.view.View.VISIBLE);
-				iv1.setVisibility(android.view.View.VISIBLE);				
+				iv1.setVisibility(android.view.View.VISIBLE);
 			}
 			// For home and work phones display only the call icon
-			else if(topText.contains("phone")){
+			else if (topText.contains("phone")) {
 				kvp.set_type(Type.PHONE);
 				iv2.setImageResource(R.drawable.call_contact);
 				iv2.setVisibility(android.view.View.VISIBLE);
-				iv1.setVisibility(android.view.View.INVISIBLE);	
+				iv1.setVisibility(android.view.View.INVISIBLE);
 			}
 			// For email addresses, display the email icon
-			else if(topText.contains("email")){
+			else if (topText.contains("email")) {
 				kvp.set_type(Type.EMAIL);
 				iv2.setImageResource(R.drawable.ic_dialog_email);
 				iv2.setVisibility(android.view.View.VISIBLE);
 				iv1.setVisibility(android.view.View.INVISIBLE);
 			}
 			// No icon for everything else
-			else{
+			else {
 				kvp.set_type(Type.OTHER);
 				iv1.setVisibility(android.view.View.INVISIBLE);
 				iv2.setVisibility(android.view.View.INVISIBLE);
 			}
 			iv1.setTag(kvp);
-			iv2.setTag(kvp);			
+			iv2.setTag(kvp);
 		}
 		return v;
 	}
-	
-	
+
 	// Create an anonymous implementation of OnItemClickListener
 	// Called when the user clicks the phone icon
 	private OnClickListener mIconListener1 = new OnClickListener() {
@@ -139,18 +142,18 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			// Get the tag, which will provide us the KVP
 			ImageView iv1 = (ImageView) v.findViewById(R.id.icon1);
 			KeyValuePair kvp = (KeyValuePair) iv1.getTag();
-			
+
 			// An SMS can be sent only be a mobile phone
-			if(kvp.get_type() == Type.MOBILE){
-				//Log.d(TAG, "Call "+kvp.getValue());	
+			if (kvp.get_type() == Type.MOBILE) {
+				// Log.d(TAG, "Call "+kvp.getValue());
 				Intent intent = new Intent(Intent.ACTION_VIEW);
 				intent.putExtra("address", kvp.getValue());
 				intent.setType("vnd.android-dir/mms-sms");
 				getContext().startActivity(intent);
-			}				
-		}		
+			}
+		}
 	};
-	
+
 	// Create an anonymous implementation of OnItemClickListener
 	// Called when the user clicks the sms or the email icon
 	private OnClickListener mIconListener2 = new OnClickListener() {
@@ -159,25 +162,26 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			// Get the tag, which will provide us the KVP
 			ImageView iv2 = (ImageView) v.findViewById(R.id.icon2);
 			KeyValuePair kvp = (KeyValuePair) iv2.getTag();
-			
+
 			// This can be an email or phone call
-			switch(kvp.get_type()){
+			switch (kvp.get_type()) {
 			case MOBILE:
 			case PHONE:
-				//Log.d(TAG, "SMS "+kvp.getValue());
-				Intent  intent = new Intent(
-						Intent.ACTION_CALL, 
-						Uri.parse("tel:"+kvp.getValue()));
+				// Log.d(TAG, "SMS "+kvp.getValue());
+				Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"
+						+ kvp.getValue()));
 				getContext().startActivity(intent);
 				break;
 			case EMAIL:
-				//Log.d(TAG, "Email "+kvp.getValue());				
-				intent = new Intent(android.content.Intent.ACTION_SEND);				
+				// Log.d(TAG, "Email "+kvp.getValue());
+				intent = new Intent(android.content.Intent.ACTION_SEND);
 				intent.setType("text/plain");
-				intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{kvp.getValue()});
-				getContext().startActivity(Intent.createChooser(intent, "Send mail..."));
+				intent.putExtra(android.content.Intent.EXTRA_EMAIL,
+						new String[] { kvp.getValue() });
+				getContext().startActivity(
+						Intent.createChooser(intent, "Send mail..."));
 				break;
 			}
-		}		
+		}
 	};
 }

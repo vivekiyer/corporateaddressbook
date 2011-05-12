@@ -27,10 +27,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView;
-
+import android.widget.Toast;
 
 /**
  * @author Vivek Iyer 
@@ -40,21 +39,20 @@ import android.widget.TextView;
  */
 /**
  * @author vivek
- *
+ * 
  */
-public class CorporateContactRecord extends ListActivity{
+public class CorporateContactRecord extends ListActivity {
 
 	private Contact mContact;
 	private ContactListAdapter m_adapter;
 	private ContactWriter contactWriter;
-	
+
 	// Menu ids
 	private static final int MENU_ID_COPY_TO_CLIPBOARD = 0;
 	private static final int MENU_ID_EMAIL = 1;
 	private static final int MENU_ID_CALL = 2;
 	private static final int MENU_ID_EDIT_BEFORE_CALL = 3;
 	private static final int MENU_ID_SMS = 4;
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,80 +70,61 @@ public class CorporateContactRecord extends ListActivity{
 		TextView tv1 = (TextView) findViewById(R.id.displayName);
 		tv1.setText(mContact.getDisplayName());
 
-		//getListView().setOnItemLongClickListener(mListViewLongClickListener);		
+		// getListView().setOnItemLongClickListener(mListViewLongClickListener);
 		contactWriter = ContactWriter.getInstance();
-		contactWriter.Initialize(this, getLayoutInflater(), mContact);		
-		
+		contactWriter.Initialize(this, getLayoutInflater(), mContact);
+
 		registerForContextMenu(getListView());
 	}
 
-	
 	/**
 	 * @param menu
 	 * @param v
 	 * @param menuInfo
 	 * 
-	 * Create a context menu for the list view
-	 * Depending upon the item selected, shows the user
-	 * different options
+	 *            Create a context menu for the list view Depending upon the
+	 *            item selected, shows the user different options
 	 */
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
-	                                ContextMenuInfo menuInfo) {
-	  super.onCreateContextMenu(menu, v, menuInfo);  
-	  
-	  AdapterView.AdapterContextMenuInfo info 
-	  		= (AdapterView.AdapterContextMenuInfo)menuInfo;
-	  
-	  // Get the selected item from the listview adapter
-	  KeyValuePair kvp = m_adapter.getItem(info.position);
-	  
-	  // Set the header to the selected text
-	  menu.setHeaderTitle(kvp.getValue());
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
 
-	  // Add the default options (copy to clipboard)
-	  menu.add(
-			  Menu.NONE, 
-			  MENU_ID_COPY_TO_CLIPBOARD, 
-			  Menu.NONE, 
-			  "Copy to clipboard");
-	  
-	  // Handle the special cases
-	  switch(kvp.get_type()){
-	  case EMAIL:
-		  menu.add(
-				  Menu.NONE, 
-				  MENU_ID_EMAIL, 
-				  Menu.NONE, 
-				  "Send email");
-		  break;
-	  case MOBILE:
-	  case PHONE:
-		  menu.add(
-				  Menu.NONE, 
-				  MENU_ID_CALL, 
-				  Menu.NONE, 
-				  "Call " + kvp.getValue());
-		  menu.add(
-				  Menu.NONE, 
-				  MENU_ID_EDIT_BEFORE_CALL, 
-				  Menu.NONE, 
-				  "Edit number before call");
-		  menu.add(
-				  Menu.NONE, 
-				  MENU_ID_SMS, 
-				  Menu.NONE, 
-				  "Send text message");
-		  break;
-	  }
-	}	
-	
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+
+		// Get the selected item from the listview adapter
+		KeyValuePair kvp = m_adapter.getItem(info.position);
+
+		// Set the header to the selected text
+		menu.setHeaderTitle(kvp.getValue());
+
+		// Add the default options (copy to clipboard)
+		menu.add(Menu.NONE, MENU_ID_COPY_TO_CLIPBOARD, Menu.NONE,
+				"Copy to clipboard");
+
+		// Handle the special cases
+		switch (kvp.get_type()) {
+		case EMAIL:
+			menu.add(Menu.NONE, MENU_ID_EMAIL, Menu.NONE, "Send email");
+			break;
+		case MOBILE:
+		case PHONE:
+			menu.add(Menu.NONE, MENU_ID_CALL, Menu.NONE,
+					"Call " + kvp.getValue());
+			menu.add(Menu.NONE, MENU_ID_EDIT_BEFORE_CALL, Menu.NONE,
+					"Edit number before call");
+			menu.add(Menu.NONE, MENU_ID_SMS, Menu.NONE, "Send text message");
+			break;
+		}
+	}
+
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-	  AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-	  
-	  // Get the selected item from the listview adapter
-	  KeyValuePair kvp = m_adapter.getItem(info.position);
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+				.getMenuInfo();
+
+		// Get the selected item from the listview adapter
+		KeyValuePair kvp = m_adapter.getItem(info.position);
 
 		switch (item.getItemId()) {
 		case MENU_ID_CALL:
@@ -154,13 +133,10 @@ public class CorporateContactRecord extends ListActivity{
 			startActivity(intent);
 			break;
 		case MENU_ID_COPY_TO_CLIPBOARD:
-			ClipboardManager clipboard 
-				= (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			clipboard.setText(kvp.getValue());
-			Toast.makeText(
-					this, 
-					"Text copied to clipboard", 
-					Toast.LENGTH_SHORT).show();			
+			Toast.makeText(this, "Text copied to clipboard", Toast.LENGTH_SHORT)
+					.show();
 			break;
 		case MENU_ID_EDIT_BEFORE_CALL:
 			intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"
@@ -185,7 +161,7 @@ public class CorporateContactRecord extends ListActivity{
 		}
 		return true;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -218,15 +194,14 @@ public class CorporateContactRecord extends ListActivity{
 		default:
 			return super.onOptionsItemSelected(item);
 		}
-	}	
-	
-	
+	}
+
 	/**
 	 * Called when this activity is about to be destroyed by the system.
 	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		contactWriter.cleanUp();		
-	}	
+		contactWriter.cleanUp();
+	}
 };

@@ -16,6 +16,7 @@
 package net.vivekiyer.GAL;
 
 import java.util.ArrayList;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
@@ -92,9 +93,9 @@ public class ContactWriterSdk5 extends ContactWriter implements
 	}
 
 	private void addContactFields(ArrayList<ContentProviderOperation> ops) {
-		
+
 		mContact.generateFieldsFromXML();
-		
+
 		// Add work phone
 		if (!mContact.getWorkPhone().equalsIgnoreCase(""))
 			ops.add(ContentProviderOperation
@@ -250,21 +251,21 @@ public class ContactWriterSdk5 extends ContactWriter implements
 		addContactFields(ops);
 
 		// Ask the Contact provider to create a new contact
-		//Log.i(TAG, "Selected account: " + selectedAccount.getName() + " ("
-		//		+ selectedAccount.getType() + ")");
-		//Log.i(TAG, "Creating contact: " + mContact.getDisplayName());
+		// Log.i(TAG, "Selected account: " + selectedAccount.getName() + " ("
+		// + selectedAccount.getType() + ")");
+		// Log.i(TAG, "Creating contact: " + mContact.getDisplayName());
 
 		try {
-			ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY,
-					ops);
-			
-			for(ContentProviderResult result : results){
+			ContentProviderResult[] results = context.getContentResolver()
+					.applyBatch(ContactsContract.AUTHORITY, ops);
+
+			for (ContentProviderResult result : results) {
 				Log.i(TAG, result.uri.toString());
 			}
-			
+
 		} catch (Exception e) {
 			// Log exception
-			//Log.e(TAG, "Exceptoin encoutered while inserting contact: " + e);
+			// Log.e(TAG, "Exceptoin encoutered while inserting contact: " + e);
 		}
 	}
 
@@ -293,7 +294,7 @@ public class ContactWriterSdk5 extends ContactWriter implements
 
 	@Override
 	public void onAccountsUpdated(Account[] accounts) {
-		//Log.i(TAG, "Account list update detected");
+		// Log.i(TAG, "Account list update detected");
 		// Clear out any old data to prevent duplicates
 		mAccounts.clear();
 
@@ -436,6 +437,6 @@ public class ContactWriterSdk5 extends ContactWriter implements
 	@Override
 	public void cleanUp() {
 		// Remove AccountManager callback
-		AccountManager.get(context).removeOnAccountsUpdatedListener(this);		
+		AccountManager.get(context).removeOnAccountsUpdatedListener(this);
 	}
 }
