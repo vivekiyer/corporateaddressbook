@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -41,6 +42,10 @@ public class XMLParser extends DefaultHandler {
 	private String key;
 	private String value;
 	private String status = "1";
+
+	private int startCol = 0;
+
+	private Locator locator;
 
 	/**
 	 * @return The matched values
@@ -70,6 +75,10 @@ public class XMLParser extends DefaultHandler {
 		return contacts;
 	}
 
+	public void setDocumentLocator(Locator locator) {
+		this.locator = locator;
+	}
+
 	/**
 	 * @param nodeToFind
 	 *            The node to find within the XML
@@ -92,6 +101,11 @@ public class XMLParser extends DefaultHandler {
 	@Override
 	public void startElement(String namespaceURI, String localName,
 			String qName, Attributes atts) throws SAXException {
+
+		if (locator != null) {
+			startCol = locator.getColumnNumber();
+		}
+
 		// Lets see if we got the status element
 		if (localName.compareToIgnoreCase("status") == 0)
 			foundStatus = true;
@@ -143,5 +157,9 @@ public class XMLParser extends DefaultHandler {
 				}
 			}
 		}
+	}
+
+	public int getStartCol() {
+		return startCol;
 	}
 }

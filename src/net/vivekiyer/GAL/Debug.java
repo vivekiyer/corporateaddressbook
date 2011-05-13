@@ -11,7 +11,7 @@ import android.content.Intent;
 public class Debug {
 
 	// Set this to true to enable DEBUG messages
-	public static boolean Enabled = false;
+	public static boolean Enabled = true;
 
 	// StringBuffer that stores logs
 	private static final StringBuffer logger = new StringBuffer();

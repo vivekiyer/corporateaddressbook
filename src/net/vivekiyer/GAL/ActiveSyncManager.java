@@ -72,6 +72,7 @@ public class ActiveSyncManager {
 	private String mActiveSyncVersion = "";
 	private int mDeviceId = 0;
 	private float mActiveSyncVersionFloat = 0.0F;
+	private XMLErrorHandler xmlErrorHandler;
 
 	// private static final String TAG = "ActiveSyncManager";
 	private float getActiveSyncVersionFloat() {
@@ -169,6 +170,7 @@ public class ActiveSyncManager {
 	 */
 	public boolean Initialize() {
 		wbxml = new WBXML();
+		xmlErrorHandler = new XMLErrorHandler();
 
 		generateAuthString();
 
@@ -291,6 +293,7 @@ public class ActiveSyncManager {
 				result = EntityUtils.toString(entity);
 			}
 		}
+
 		// Log.d(TAG, (result.toString()));
 		return result;
 
@@ -605,9 +608,10 @@ public class ActiveSyncManager {
 				.toString().getBytes());
 		XMLReader xr = XMLReaderFactory.createXMLReader();
 		XMLParser parser = new XMLParser(nodeName);
+
+		xr.setErrorHandler(xmlErrorHandler);
 		xr.setContentHandler(parser);
 		xr.parse(new InputSource(xmlParseInputStream));
 		return parser.getOutput();
 	}
-
 }
