@@ -166,7 +166,7 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			case PHONE:
 				//Log.d(TAG, "SMS "+kvp.getValue());
 				Intent  intent = new Intent(
-						Intent.ACTION_CALL, 
+						Intent.ACTION_DIAL, 
 						Uri.parse("tel:"+kvp.getValue()));
 				getContext().startActivity(intent);
 				break;

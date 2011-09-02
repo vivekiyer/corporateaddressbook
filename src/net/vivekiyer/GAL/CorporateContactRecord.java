@@ -149,7 +149,7 @@ public class CorporateContactRecord extends ListActivity{
 
 		switch (item.getItemId()) {
 		case MENU_ID_CALL:
-			Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"
+			Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"
 					+ kvp.getValue()));
 			startActivity(intent);
 			break;
