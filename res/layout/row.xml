@@ -7,7 +7,7 @@
         android:orientation="vertical"
         android:layout_width="0dip"
         android:layout_weight="0.7"
-        android:layout_height="80px">       
+        android:layout_height="50sp">       
         <TextView
             android:id="@+id/toptext"
             android:layout_width="fill_parent"
@@ -26,20 +26,11 @@
             android:ellipsize="marquee"            
             android:paddingTop="6dip"
         />        
-    </LinearLayout>
-    <ImageView
-        android:id="@+id/icon1"
-        android:layout_width="0dip"
-        android:layout_height="45px"	      
-        android:layout_weight="0.15" 
-        android:padding="2dip"
-        android:visibility="invisible"        
-        android:layout_gravity="right|center_vertical"        
-    />
+    </LinearLayout>   
     <ImageView
         android:id="@+id/icon2"
         android:layout_width="0dip"
-        android:layout_height="45px"	      
+        android:layout_height="35dp"	      
         android:layout_weight="0.15" 
         android:padding="2dip"
         android:visibility="invisible"

@@ -89,67 +89,39 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			// If the toptext contains a phone
 			// Set the icon to phone and message
 			String topText = kvp.getKey().toLowerCase();
-			ImageView iv1 = (ImageView) v.findViewById(R.id.icon1);
 			ImageView iv2 = (ImageView) v.findViewById(R.id.icon2);
 			
 			// Set the on click listeners
-			iv1.setOnClickListener(mIconListener1);
 			iv2.setOnClickListener(mIconListener2);
 			
 			// Display the sms and phone icon for mobile phones
 			if (topText.contains("mobilephone")) {
 				kvp.set_type(Type.MOBILE);
 				iv2.setImageResource(R.drawable.call_contact);
-				iv1.setImageResource(R.drawable.sms);
 				iv2.setVisibility(android.view.View.VISIBLE);
-				iv1.setVisibility(android.view.View.VISIBLE);				
 			}
 			// For home and work phones display only the call icon
 			else if(topText.contains("phone")){
 				kvp.set_type(Type.PHONE);
 				iv2.setImageResource(R.drawable.call_contact);
 				iv2.setVisibility(android.view.View.VISIBLE);
-				iv1.setVisibility(android.view.View.INVISIBLE);	
 			}
 			// For email addresses, display the email icon
 			else if(topText.contains("email")){
 				kvp.set_type(Type.EMAIL);
 				iv2.setImageResource(R.drawable.ic_dialog_email);
 				iv2.setVisibility(android.view.View.VISIBLE);
-				iv1.setVisibility(android.view.View.INVISIBLE);
 			}
 			// No icon for everything else
 			else{
 				kvp.set_type(Type.OTHER);
-				iv1.setVisibility(android.view.View.INVISIBLE);
 				iv2.setVisibility(android.view.View.INVISIBLE);
 			}
-			iv1.setTag(kvp);
 			iv2.setTag(kvp);			
 		}
 		return v;
 	}
 	
-	
-	// Create an anonymous implementation of OnItemClickListener
-	// Called when the user clicks the phone icon
-	private OnClickListener mIconListener1 = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			// Get the tag, which will provide us the KVP
-			ImageView iv1 = (ImageView) v.findViewById(R.id.icon1);
-			KeyValuePair kvp = (KeyValuePair) iv1.getTag();
-			
-			// An SMS can be sent only be a mobile phone
-			if(kvp.get_type() == Type.MOBILE){
-				//Log.d(TAG, "Call "+kvp.getValue());	
-				Intent intent = new Intent(Intent.ACTION_VIEW);
-				intent.putExtra("address", kvp.getValue());
-				intent.setType("vnd.android-dir/mms-sms");
-				getContext().startActivity(intent);
-			}				
-		}		
-	};
 	
 	// Create an anonymous implementation of OnItemClickListener
 	// Called when the user clicks the sms or the email icon
@@ -166,7 +138,7 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 			case PHONE:
 				//Log.d(TAG, "SMS "+kvp.getValue());
 				Intent  intent = new Intent(
-						Intent.ACTION_CALL, 
+						Intent.ACTION_DIAL, 
 						Uri.parse("tel:"+kvp.getValue()));
 				getContext().startActivity(intent);
 				break;
