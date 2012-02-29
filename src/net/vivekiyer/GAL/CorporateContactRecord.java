@@ -53,7 +53,6 @@ public class CorporateContactRecord extends ListActivity{
 	private static final int MENU_ID_EMAIL = 1;
 	private static final int MENU_ID_CALL = 2;
 	private static final int MENU_ID_EDIT_BEFORE_CALL = 3;
-	private static final int MENU_ID_SMS = 4;
 	
 
 	@Override
@@ -131,11 +130,6 @@ public class CorporateContactRecord extends ListActivity{
 				  MENU_ID_EDIT_BEFORE_CALL, 
 				  Menu.NONE, 
 				  "Edit number before call");
-		  menu.add(
-				  Menu.NONE, 
-				  MENU_ID_SMS, 
-				  Menu.NONE, 
-				  "Send text message");
 		  break;
 	  }
 	}	
@@ -173,12 +167,6 @@ public class CorporateContactRecord extends ListActivity{
 			intent.putExtra(android.content.Intent.EXTRA_EMAIL,
 					new String[] { kvp.getValue() });
 			startActivity(Intent.createChooser(intent, "Send mail..."));
-			break;
-		case MENU_ID_SMS:
-			intent = new Intent(Intent.ACTION_VIEW);
-			intent.putExtra("address", kvp.getValue());
-			intent.setType("vnd.android-dir/mms-sms");
-			startActivity(intent);
 			break;
 		default:
 			return super.onContextItemSelected(item);
