@@ -5,7 +5,7 @@
     android:padding="6dip">     
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="0dip"
+        android:layout_width="fill_parent"
         android:layout_weight="0.7"
         android:layout_height="50sp">       
         <TextView

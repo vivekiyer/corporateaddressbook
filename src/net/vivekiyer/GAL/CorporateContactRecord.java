@@ -15,11 +15,19 @@
 
 package net.vivekiyer.GAL;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.ClipboardManager;
+import android.util.Config;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -53,6 +61,7 @@ public class CorporateContactRecord extends ListActivity{
 	private static final int MENU_ID_EMAIL = 1;
 	private static final int MENU_ID_CALL = 2;
 	private static final int MENU_ID_EDIT_BEFORE_CALL = 3;
+	private static final int MENU_ID_SMS = 4;
 	
 
 	@Override
@@ -74,6 +83,13 @@ public class CorporateContactRecord extends ListActivity{
 		//getListView().setOnItemLongClickListener(mListViewLongClickListener);		
 		contactWriter = ContactWriter.getInstance();
 		contactWriter.Initialize(this, getLayoutInflater(), mContact);		
+		
+		if(!Utility.isPreHoneycomb())
+		{
+			ActionBar actionBar = getActionBar();
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
+		}
 		
 		registerForContextMenu(getListView());
 	}
@@ -107,7 +123,7 @@ public class CorporateContactRecord extends ListActivity{
 			  Menu.NONE, 
 			  MENU_ID_COPY_TO_CLIPBOARD, 
 			  Menu.NONE, 
-			  "Copy to clipboard");
+			  "Copy to clipboard").setIcon(android.R.drawable.ic_menu_view);
 	  
 	  // Handle the special cases
 	  switch(kvp.get_type()){
@@ -116,20 +132,25 @@ public class CorporateContactRecord extends ListActivity{
 				  Menu.NONE, 
 				  MENU_ID_EMAIL, 
 				  Menu.NONE, 
-				  "Send email");
+				  "Send email").setIcon(android.R.drawable.sym_action_email);
 		  break;
 	  case MOBILE:
+		  menu.add(
+				  Menu.NONE, 
+				  MENU_ID_SMS, 
+				  Menu.NONE, 
+				  "Send SMS to " + kvp.getValue()).setIcon(android.R.drawable.ic_menu_send);
 	  case PHONE:
 		  menu.add(
 				  Menu.NONE, 
 				  MENU_ID_CALL, 
 				  Menu.NONE, 
-				  "Call " + kvp.getValue());
+				  "Call " + kvp.getValue()).setIcon(android.R.drawable.ic_menu_call);
 		  menu.add(
 				  Menu.NONE, 
 				  MENU_ID_EDIT_BEFORE_CALL, 
 				  Menu.NONE, 
-				  "Edit number before call");
+				  "Edit number before call").setIcon(android.R.drawable.ic_menu_edit);
 		  break;
 	  }
 	}	
@@ -144,6 +165,11 @@ public class CorporateContactRecord extends ListActivity{
 		switch (item.getItemId()) {
 		case MENU_ID_CALL:
 			Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"
+					+ kvp.getValue()));
+			startActivity(intent);
+			break;
+		case MENU_ID_SMS:
+			intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"
 					+ kvp.getValue()));
 			startActivity(intent);
 			break;
@@ -200,14 +226,19 @@ public class CorporateContactRecord extends ListActivity{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.saveContact:
+		case android.R.id.home:
+            // app icon in action bar clicked; go home
+            Intent intent = new Intent(this, net.vivekiyer.GAL.CorporateAddressBook.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return true;
+        case R.id.saveContact:
 			contactWriter.saveContact();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}	
-	
 	
 	/**
 	 * Called when this activity is about to be destroyed by the system.

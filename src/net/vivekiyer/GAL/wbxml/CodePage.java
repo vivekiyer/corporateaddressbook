@@ -17,6 +17,8 @@ package net.vivekiyer.GAL.wbxml;
 
 import java.util.HashMap;
 
+import android.util.SparseArray;
+
 /**
  * This class represents the base class for defined WBXML code pages.  It is designed as a
  * base class that contains the minimal information needed for a code page (the definition of
@@ -27,9 +29,9 @@ import java.util.HashMap;
  */
 public class CodePage {
     protected HashMap<String, Integer> codepageTokens = new HashMap<String, Integer>();
-    protected HashMap<Integer, String> codepageStrings = new HashMap<Integer, String>();
+    protected SparseArray<String> codepageStrings = new SparseArray<String>();
     protected HashMap<String, Integer> attributeTokens = new HashMap<String, Integer>();
-    protected HashMap<Integer, String> attributeStrings = new HashMap<Integer, String>();
+    protected SparseArray<String> attributeStrings = new SparseArray<String>();
     protected int codePageIndex = -1;
     protected String codePageName = "Base";
     private static final HashMap<String, Integer> wbxmlTokens = new HashMap<String, Integer>();
@@ -55,7 +57,7 @@ public class CodePage {
         wbxmlTokens.put("opaque", 0xc3);
         wbxmlTokens.put("literal_ac", 0xc4);
     }
-    private static final HashMap<Integer, String> wbxmlStrings = new HashMap<Integer, String>();
+    private static final SparseArray<String> wbxmlStrings = new SparseArray<String>();
     static {
         wbxmlStrings.put(0x00, "switch_page");
         wbxmlStrings.put(0x01, "end");
@@ -98,7 +100,7 @@ public class CodePage {
     public String getWbxmlString(Integer token) {
         String identity = new String();
 
-        if (wbxmlStrings.containsKey(token)) {
+        if (wbxmlStrings.get(token, null) != null) {
             identity = wbxmlStrings.get(token);
         }
 
@@ -148,7 +150,7 @@ public class CodePage {
     public String getCodePageString(Integer token) {
         String identity = new String();
 
-        if (codepageStrings.containsKey(token)) {
+        if (codepageStrings.get(token, null) != null) {
             identity = codepageStrings.get(token);
         }
 
@@ -181,7 +183,7 @@ public class CodePage {
     public String getAttributeString(Integer token) {
         String identity = new String();
 
-        if (attributeStrings.containsKey(token)) {
+        if (attributeStrings.get(token, null) == null) {
             identity = attributeStrings.get(token);
         }
 

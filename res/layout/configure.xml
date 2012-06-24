@@ -5,63 +5,68 @@
     android:orientation="vertical"
     >
 <LinearLayout 
-    android:layout_height="fill_parent" 
+    android:layout_height="wrap_content" 
     android:layout_width="fill_parent"
     android:orientation="vertical"
     >
-         <TextView 
-            android:text="Domain\\Username"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-            />
-        <EditText 
-            android:id="@+id/txtDomainUserName" 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"	
-			android:hint="DOMAIN\\Username"
-			android:imeOptions="actionNext"
-			/>
-        <TextView 
-            android:text="Password:"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-            />
-        <EditText 
-            android:id="@+id/txtPassword" 
-            android:password="true" 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:imeOptions="actionNext"
-            />
-        <TextView 
-            android:text="Server"             
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-            />
-        <EditText 
-            android:id="@+id/txtServerName" 
-			android:layout_width="fill_parent"
-			android:hint="mail.example.com"
-			android:layout_height="wrap_content"
-			android:imeOptions="actionGo"
-			/>
- 		<CheckBox android:id="@+id/chkUseSSL"
-            android:layout_width="fill_parent" 
+
+         <TextView
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:text="@string/unameLabel" />
+
+        <EditText
+            android:id="@+id/txtDomainUserName"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Use secure connection (SSL)"
+            android:hint="@string/domainUnameHint"
+            android:imeOptions="actionNext"
+            android:inputType="text" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/passwordLabel" />
+
+        <EditText
+            android:id="@+id/txtPassword"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/passwordHint"
+            android:imeOptions="actionNext"
+            android:inputType="textPassword" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/serverText" />
+
+        <EditText
+            android:id="@+id/txtServerName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/serverHint"
+            android:imeOptions="actionGo" />
+
+ 		<CheckBox
+ 		    android:id="@+id/chkUseSSL"
+ 		    android:layout_width="fill_parent"
+ 		    android:layout_height="wrap_content"
+ 		    android:checked="true"
+ 		    android:text="@string/useSecureSslText" />
+
+        <CheckBox
+            android:id="@+id/chkAcceptAllSSLCert"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:checked="true"
-            />
-        <CheckBox android:id="@+id/chkAcceptAllSSLCert"
-            android:layout_width="fill_parent" 
+            android:text="@string/acceptAllSllText" />
+
+        <Button
+            android:id="@+id/buttonSignIn"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:text="Accept all SSL certificates"  
-            android:checked="true"          
-            />   
-        <Button 
-            android:id="@+id/buttonSignIn" 
-            android:text="Log In"
-			android:layout_width="150px" 
-			android:layout_height="wrap_content"						
-            />
+            android:text="@string/loginButton" />
+
 </LinearLayout>
 </ScrollView>

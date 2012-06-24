@@ -15,10 +15,13 @@
 
 package net.vivekiyer.GAL;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.KeyEvent;
@@ -101,6 +104,12 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 			}
 		});
 		
+		if(!Utility.isPreHoneycomb())
+		{
+			ActionBar actionBar = getActionBar();
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
+		}
 	}	
 	
 	/**

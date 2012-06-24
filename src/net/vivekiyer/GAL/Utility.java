@@ -61,4 +61,9 @@ public class Utility {
 		AlertDialog alert = alt_bld.create();
 		alert.show();	
 	}
+	
+	public static Boolean isPreHoneycomb()
+	{
+		return android.os.Build.VERSION.SDK_INT < 11;
+	}
 }

@@ -19,19 +19,27 @@ import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Set;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.SearchRecentSuggestions;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -47,6 +55,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +96,9 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 	// List of names in the list view control
 	private String[] names;
 	
+	// Last search term
+	private String latestSearchTerm;
+	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 * 
@@ -106,9 +118,12 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		progressdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressdialog.setCancelable(false);
 
+		// Turn keystrokes into search
+		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
+		
 		// Set the listener for the button clicks
-		ImageButton button = (ImageButton) findViewById(R.id.Button01);
-		button.setOnClickListener(this);
+//		ImageButton button = (ImageButton) findViewById(R.id.Button01);
+//		button.setOnClickListener(this);
 
 		lv1 = (ListView) findViewById(R.id.ListView01);
 		
@@ -123,19 +138,46 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			startActivityForResult(myIntent, DISPLAY_CONFIGURATION_REQUEST);
 		}		
 		
-		EditText text = (EditText) findViewById(R.id.Name);
-		text.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-		   @Override
-			public boolean onEditorAction(TextView arg0, int actionId, KeyEvent arg2) {
-				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-		            performSearch();
-		            return true;
-		        }
-		        return false;
-			}
-		});
+//		EditText text = (EditText) findViewById(R.id.Name);
+//		text.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+//		   @Override
+//			public boolean onEditorAction(TextView arg0, int actionId, KeyEvent arg2) {
+//				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+//		            performSearch();
+//		            return true;
+//		        }
+//		        return false;
+//			}
+//		});
+		
+	    // Get the intent, verify the action and get the query
+	    Intent intent = getIntent();
+	    if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+	      String query = intent.getStringExtra(SearchManager.QUERY);
+	      performSearch(query);
+	    }
+		if(!Utility.isPreHoneycomb())
+		{
+			ActionBar actionBar = getActionBar();
+			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
+		}
 	}
 
+	// Assist user by showing search box whenever returning
+	public void onStart()
+	{
+		super.onStart();
+	    Intent intent = getIntent();
+	    if(intent != null)
+	    {
+		    Set<String> categories = intent.getCategories();
+		    if((categories != null) && categories.contains(Intent.CATEGORY_LAUNCHER))
+		    {
+		    	this.onSearchRequested();
+		    }
+	    }
+	}
+	
 	// Create an anonymous implementation of OnItemClickListener
 	// that is used by the listview that displays the results
 	private OnItemClickListener mListViewListener = new OnItemClickListener() {
@@ -175,19 +217,28 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 		clearResult();
 		
 		// Get the text entered by the user
-		EditText text = (EditText) findViewById(R.id.Name);
-		Editable name = text.getText();
-
-		// Hide the keyboard
-		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
+//		EditText text = (EditText) findViewById(R.id.Name);
+//		Editable name = text.getText();
+//
+//		// Hide the keyboard
+//		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//		imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
+//		performSearch(name.toString());
+	}	
+	private void performSearch(String name)
+	{
+		latestSearchTerm = name;
+		// Save search in recent list
+        SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+                RecentGALSearchTermsProvider.AUTHORITY, RecentGALSearchTermsProvider.MODE);
+        suggestions.saveRecentQuery(name, null);
 		
 		// Launch the progress bar, so the user knows his request is being processed
 		progressdialog.setMessage("Retrieving results");
 		progressdialog.show();
 
 		// Retrieve the results via an AsyncTask
-		new GALSearch().execute(name.toString());		
+		new GALSearch().execute(name);		
 	}
 	
 	/* (non-Javadoc)
@@ -209,7 +260,19 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
-		return true;
+		
+	    // Get the SearchView and set the searchable configuration for Honeycomb and above
+	    if(!Utility.isPreHoneycomb())
+	    {
+		    SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		    ComponentName component = getComponentName();
+		    SearchableInfo searchableInfo = searchManager.getSearchableInfo(component);
+		    SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+		    searchView.setSearchableInfo(searchableInfo);
+	    }
+	    
+	    //searchView.
+	    return super.onCreateOptionsMenu(menu);
 	}
 
 	/* (non-Javadoc)
@@ -226,13 +289,19 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			return true;
 		case R.id.clear:
 			clearResult();
-			EditText text = (EditText) findViewById(R.id.Name);
-			text.setText("");
+//			EditText text = (EditText) findViewById(R.id.Name);
+//			text.setText("");
 			return true;
 /*		case R.id.debug:
 			Debug.sendDebugEmail(this);
 			return true;
-*/		default:
+*/
+		case R.id.clearSearchHistory:
+			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+			        RecentGALSearchTermsProvider.AUTHORITY, RecentGALSearchTermsProvider.MODE);
+			suggestions.clearHistory();		
+			return true;
+		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
@@ -363,14 +432,14 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 			
 			parseXML(searchResultXML);		
 			
-			EditText text = (EditText) findViewById(R.id.Name);		
-			text.setText(mPreferences.getString(Configure.KEY_SEARCH_TERM_PREFERENCE, "" ));
+//			EditText text = (EditText) findViewById(R.id.Name);		
+//			text.setText(mPreferences.getString(Configure.KEY_SEARCH_TERM_PREFERENCE, "" ));
 
 			displayResult();
 			
 			// Hide the keyboard
-			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
+//			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//			imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
 
 		} catch (Exception e) {
 			Toast.makeText(
@@ -402,8 +471,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener{
 				activeSyncManager.getPolicyKey());
 		editor.putString(Configure.KEY_RESULTS_PREFERENCE,
 					searchResultXML);
-		EditText text = (EditText) findViewById(R.id.Name);		
-		editor.putString(Configure.KEY_SEARCH_TERM_PREFERENCE, text.getText().toString() );
+//		EditText text = (EditText) findViewById(R.id.Name);		
+		editor.putString(Configure.KEY_SEARCH_TERM_PREFERENCE, this.latestSearchTerm );
 		
 		// Commit the edits!
 		editor.commit();

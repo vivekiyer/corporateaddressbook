@@ -147,7 +147,7 @@ public class Contact implements Parcelable {
 		Details = new ArrayList<KeyValuePair>();
 	}
 
-	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+	public static final Parcelable.Creator<Contact> CREATOR = new Parcelable.Creator<Contact>() {
 		public Contact createFromParcel(Parcel in) {
 			return new Contact(in);
 		}

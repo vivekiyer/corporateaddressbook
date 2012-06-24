@@ -117,9 +117,12 @@ public class WBXML {
         CodePage codepage = pageList[0];
         xmlStack = new Stack<String>();
         String buffer = new String();
-        int majorVersion = 0;
-        int minorVersion = 0;
-        int publicIdentifier = 0;
+        @SuppressWarnings("unused")
+		int majorVersion = 0;
+        @SuppressWarnings("unused")
+		int minorVersion = 0;
+        @SuppressWarnings("unused")
+		int publicIdentifier = 0;
         int charset = 0;
 
         try {
@@ -308,7 +311,7 @@ public class WBXML {
                                        CodePage codepage) throws IOException {
         boolean attributeDone = false;
         int streamByte = istream.read();
-        String currentNamespace = codepage.getCodePageName();
+        //String currentNamespace = codepage.getCodePageName();
         String outputBuffer = new String();
 
         if (streamByte == -1) {
@@ -565,7 +568,7 @@ public class WBXML {
             
             /* This is the only location where the attribute information is available */
             if (atts.getLength() > 0) {
-                CodePage startCodepage = codepage;
+                //CodePage startCodepage = codepage;
                 
                 /* 7th bit represents attributes (128) */
                 startToken = pendingBuffer.get(0);
