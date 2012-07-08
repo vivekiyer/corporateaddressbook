@@ -16,7 +16,6 @@
 package net.vivekiyer.GAL.wbxml;
 
 import java.util.HashMap;
-
 import android.util.SparseArray;
 
 /**

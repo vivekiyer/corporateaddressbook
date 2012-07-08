@@ -15,6 +15,7 @@
 
 package net.vivekiyer.GAL;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -63,6 +64,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 	 * 
 	 * Called when the configuration pane is first launched
 	 */
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -75,11 +77,10 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// Get the preferences that were entered by the user and display those to the user 
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);			
 		
-		setTextForId(
-				R.id.txtDomainUserName, 
-					mPreferences.getString(KEY_DOMAIN_PREFERENCE , "") + 
-					"\\" + 
-					mPreferences.getString(KEY_USERNAME_PREFERENCE, ""));
+		String domain = mPreferences.getString(KEY_DOMAIN_PREFERENCE , ""), user = mPreferences.getString(KEY_USERNAME_PREFERENCE, "");
+		user = domain + (domain.length() > 0 ? "\\" : "") + user;
+		if (user.length() > 0)
+			setTextForId(R.id.txtDomainUserName, user);
 		setTextForId(
 				R.id.txtPassword, 
 				mPreferences.getString(KEY_PASSWORD_PREFERENCE, ""));

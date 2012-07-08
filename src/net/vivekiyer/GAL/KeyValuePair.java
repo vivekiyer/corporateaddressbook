@@ -22,14 +22,32 @@ package net.vivekiyer.GAL;
  */
 public class KeyValuePair {
 	public enum Type{
+		UNDEFINED,
 		MOBILE,
 		PHONE,
 		EMAIL,
 		OTHER
 	}
-	private Type _type;
+	private Type _type = Type.UNDEFINED;
 	
 	public Type get_type() {
+		if(_type == Type.UNDEFINED)
+		{
+			String key = _key.toLowerCase();
+			if (key.contains("mobilephone")) {
+				_type = Type.MOBILE;
+			}
+			else if(key.contains("phone")){
+				_type = Type.PHONE;
+			}
+			else if(key.contains("email")){
+				_type = Type.EMAIL;
+			}
+			// For others: type "OTHER"
+			else {
+				_type = Type.OTHER;
+			}			
+		}
 		return _type;
 	}
 	public void set_type(Type _type) {

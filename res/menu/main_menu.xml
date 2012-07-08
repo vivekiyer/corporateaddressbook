@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_search" android:titleCondensed="@string/search" android:title="@string/searchDirectory" android:showAsAction="always|collapseActionView" android:icon="@android:drawable/ic_menu_search" android:actionViewClass="android.widget.SearchView"></item><item android:id="@+id/clear" android:title="Clear Results" android:icon="@android:drawable/ic_menu_close_clear_cancel" android:showAsAction="ifRoom|withText"></item>
 
-<!-- item android:id="@+id/debug" android:title="Send Debug Log" android:icon="@drawable/ic_menu_debug"></item> -->
-    <item android:id="@+id/clearSearchHistory" android:title="@string/clearHistory" android:showAsAction="never|withText"></item><item android:id="@+id/settings" android:icon="@drawable/ic_menu_preferences" android:title="Settings" android:showAsAction="never|withText" />
-    
-    
+    <item
+  		
+        android:id="@+id/menu_search"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="always|withText"
+        android:title="@string/searchDirectory"
+        android:titleCondensed="@string/search">
+    </item>
+    <item
+        android:id="@+id/clear"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:showAsAction="ifRoom|withText"
+        android:title="Clear Results">
+    </item>
+
+    <!-- item android:id="@+id/debug" android:title="Send Debug Log" android:icon="@drawable/ic_menu_debug"></item> -->
+    <item
+        android:id="@+id/clearSearchHistory"
+        android:showAsAction="never|withText"
+        android:title="@string/clearHistory">
+    </item>
+    <item
+        android:id="@+id/settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:showAsAction="ifRoom"
+        android:title="Settings"/>
+
 </menu>

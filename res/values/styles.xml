@@ -1,3 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style parent="@android:style/Widget.ImageButton" name="flatImageButton">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+    <style name="detailsLabel" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">@android:color/secondary_text_dark</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
 </resources>

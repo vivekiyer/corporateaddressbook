@@ -438,4 +438,12 @@ public class ContactWriterSdk5 extends ContactWriter implements
 		// Remove AccountManager callback
 		AccountManager.get(context).removeOnAccountsUpdatedListener(this);		
 	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		// Make sure listener is un-registered when this object is destructed, will otherwise cause leak
+		AccountManager.get(context).removeOnAccountsUpdatedListener(this);
+		
+		super.finalize();
+	}
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:id="@+id/saveContact" android:icon="@drawable/save" android:title="Save Contact"></item>
+<item android:id="@+id/menu_search" android:icon="@android:drawable/ic_menu_search" android:titleCondensed="@string/search" android:showAsAction="always|collapseActionView" android:actionViewClass="android.widget.SearchView" android:title="@string/searchDirectory"></item><item android:id="@+id/saveContact" android:icon="@android:drawable/ic_menu_save" android:title="@string/saveAsContact"></item>
+
 </menu>

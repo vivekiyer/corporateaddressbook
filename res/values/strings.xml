@@ -17,9 +17,11 @@
 <!--     <string name="targetAccountLabel">Target Account</string> -->
 <!--     <string name="undefinedTypeLabel">(Undefined)</string> -->
     <string name="loginButton">Log In</string>
+    <string name="contactPicture">Contact picture</string>
     <string name="EnterSearchTerm">Enter search term</string>
     <string name="unameLabel">User name</string>
     <string name="domainUnameHint">DOMAIN\\Username</string>
+    <!-- string name="typeOfDetail">Type of detail</string -->
     <string name="passwordLabel">Password</string>
     <string name="passwordHint">Password</string>
     <string name="acceptAllSllText">Accept all SSL certificates</string>
@@ -30,4 +32,22 @@
     <string name="search">Search</string>
     <string name="icon">Icon</string>
     <string name="clearHistory">Clear Search History</string>
+    <string name="saveAsContact">Save as Contact</string>
+    <string name="startBySelectingSearch">Start by selecting Search</string>
+    <string name="dummyContactName">John Smith</string>
+    <string name="dummyRoleAndCompany">Consultant, BigBlue Inc.</string>
+    <string name="phone">Phone</string>
+    <string name="dummyPhoneNumber">+46 123 456 789</string>
+    <string name="verticalDivider">Vertical Divider</string>
+    <string name="actions">Actions</string>
+    <string name="retrievingResults">Retrieving results</string>
+    <string name="mobile">Mobile</string>
+    <string name="office">Office</string>
+    <string name="email">Email</string>
+    <string name="location">Location</string>
+    <string name="alias">Alias</string>
+    <string name="call">Call</string>
+    <string name="sendMessage">SMS</string>
+    <string name="sendEmail">Email</string>
+    <string name="copyToClipboard">Copy</string>
 </resources>

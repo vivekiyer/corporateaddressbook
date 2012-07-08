@@ -62,8 +62,22 @@ public class Utility {
 		alert.show();	
 	}
 	
+    /**
+     * Indicates what OS (API level) the device is running
+     * @return true if the device is running a pre-3.0 (Honeycomb) OS, false if OS is 3.0 or later
+     * Encoder the string to base64
+     */
+	public static Boolean isPreFroYo()
+	{
+		return android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO;
+	}
+    /**
+     * Indicates what OS (API level) the device is running
+     * @return true if the device is running a pre-3.0 (Honeycomb) OS, false if OS is 3.0 or later
+     * Encoder the string to base64
+     */
 	public static Boolean isPreHoneycomb()
 	{
-		return android.os.Build.VERSION.SDK_INT < 11;
+		return android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB;
 	}
 }

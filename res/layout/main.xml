@@ -1,32 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="top"
+    android:orientation="vertical" >
 
-<TableLayout android:id="@+id/TableLayout01"
-	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	xmlns:android="http://schemas.android.com/apk/res/android">
-	<!-- TableRow>
-
-		<EditText
-		    android:id="@+id/Name"
-		    android:layout_width="0dip"
-		    android:layout_height="wrap_content"
-		    android:layout_weight=".70"
-		    android:hint="@string/EnterSearchTerm"
-		    android:imeOptions="actionSearch"
-		    android:inputType="textPersonName"
-		    android:textSize="18sp" />
-
-		<ImageButton 
-			android:id="@+id/Button01" 
-		    android:layout_width="wrap_content"
-			android:layout_weight=".30" 
-			android:src="@drawable/ic_menu_search"
-			android:contentDescription="@string/search" />
-	</TableRow -->
-	<TableRow>
-		<ListView 
-			android:id="@+id/ListView01" 
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent" 
-			android:layout_weight="1.0">
-		</ListView>
-	</TableRow>
-</TableLayout>
+    <TextView
+        android:id="@+id/resultheader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="@string/startBySelectingSearch"
+        android:background="@color/holo_blue_dark"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white"
+    >
+    </TextView>    <ListView
+        android:id="@+id/ListView01"
+        style="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="fill"
+        android:layout_weight="1"
+>
+<!-- 		android:cacheColorHint="#aaaaaa"
+        android:requiresFadingEdge="vertical"
+        android:fadingEdgeLength="10dp" 
+        android:overScrollMode="never"
+ -->      
+        <!-- Preview: listitem=@layout/contact_row -->
+    </ListView>
+</LinearLayout>
