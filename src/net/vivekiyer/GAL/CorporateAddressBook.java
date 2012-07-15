@@ -273,6 +273,8 @@ public class CorporateAddressBook extends Activity implements OnClickListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
+		case R.id.menu_search:
+			return this.onSearchRequested();
 		case R.id.settings:
 			showConfiguration();
 			return true;
