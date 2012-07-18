@@ -50,4 +50,14 @@
     <string name="sendMessage">SMS</string>
     <string name="sendEmail">Email</string>
     <string name="copyToClipboard">Copy</string>
+    <string name="valid_domain_and_username_error">Please provide a valid Domain and username</string>
+    <string name="domain_and_username_format_error">Domain name and username must be in the format DOMAIN\\Username</string>
+    <string name="invalid_username_error">Please provide a valid username</string>
+    <string name="invalid_password_error">Please provide a valid password</string>
+    <string name="invalid_exchange_url_error">Please provide a valid Exchange URL</string>
+    <string name="please_check_settings">Error connecting to server. Please check your settings</string>
+    <string name="validating_settings">Validating settings</string>
+    <string name="authentication_failed_error">Authentication failed. Please check your credentials</string>
+    <string name="connection_failed_with_error_code">Connection to server failed with error code: %1$d</string>
+    <string name="error_detail">Error Detail:\n</string>
 </resources>

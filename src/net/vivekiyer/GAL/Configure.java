@@ -58,6 +58,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 	public static final String KEY_ACCEPT_ALL_CERTS = "acceptallcerts";
 	public static final String KEY_RESULTS_PREFERENCE = "results";
 	public static final String KEY_SEARCH_TERM_PREFERENCE = "searchTerm";
+	public static final String KEY_SUCCESSFULLY_CONNECTED = "successfullyConnected";
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -164,14 +165,14 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// Make sure that the user has entered the username
 		// password and the server name
 		if (getTextFromId(R.id.txtDomainUserName) == "") {
-			showAlert("Please provide a valid Domain and username");
+			showAlert(getString(R.string.valid_domain_and_username_error));
 			return;
 		}
 		
 		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");		
 		
 		if(splits.length != 2){
-			showAlert("Domain name and username must be in the format DOMAIN\\Username");
+			showAlert(getString(R.string.domain_and_username_format_error));
 			return;
 		}
 			
@@ -179,17 +180,17 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		username = splits[1];
 		
 		if (username.equalsIgnoreCase("")) {
-			showAlert("Please provide a valid username");
+			showAlert(getString(R.string.invalid_username_error));
 			return;
 		}
 		
 		if (getTextFromId(R.id.txtPassword).equalsIgnoreCase("")){
-			showAlert("Please provide a valid password");
+			showAlert(getString(R.string.invalid_password_error));
 			return;			
 		}
 			
 		if (getTextFromId(R.id.txtServerName).equalsIgnoreCase("") ){
-			showAlert("Please provide a valid Exchange URL");
+			showAlert(getString(R.string.invalid_exchange_url_error));
 			return;
 		}		
 		
@@ -212,13 +213,13 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// That means the URL is just bad
 		// display an error
 		if(!activeSyncManager.Initialize()){
-			showAlert("Error connecting to server. Please check your settings");
+			showAlert(getString(R.string.please_check_settings));
 			return;
 		}
 		
 		progressdialog = new ProgressDialog(this);
 		progressdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		progressdialog.setMessage("Validating settings");
+		progressdialog.setMessage(getString(R.string.validating_settings));
 		progressdialog.setCancelable(false);
 		progressdialog.show();		
 		ConnectionChecker checker = new ConnectionChecker(this);
@@ -261,16 +262,15 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 				// All other error codes are unknown
 				switch (statusCode){
 				case 401: // UNAUTHORIZED
-					showAlert("Authentication failed. Please check your credentials");
+					showAlert(getString(R.string.authentication_failed_error));
 					break;
 				default:
 					StringBuilder sb = new StringBuilder();
-					sb.append("Connection to server failed with error code:");
-					sb.append(statusCode);
+					sb.append(String.format(getString(R.string.connection_failed_with_error_code), statusCode));
 					
 					if(errorString.compareToIgnoreCase("") != 0){
-						sb.append("\n");
-						sb.append("Error Detail:\n");
+						sb.append(System.getProperty("line.separator"));
+						sb.append(getString(R.string.error_detail));
 						sb.append(errorString);
 					}
 					
@@ -300,6 +300,8 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 					activeSyncManager.getDeviceId());
 			editor.putString(KEY_POLICY_KEY_PREFERENCE,
 					activeSyncManager.getPolicyKey());
+			editor.putBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED,
+					true);
 
 			// Commit the edits!
 			editor.commit();		

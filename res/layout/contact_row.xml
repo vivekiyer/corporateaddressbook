@@ -1,37 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight" >
-
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    android:orientation="horizontal" >
+
+    <!-- android:layout_height="?android:attr/listpreferreditemheight" -->
+
     <QuickContactBadge
         android:id="@+id/contactPicture"
-        android:layout_alignParentTop="true"
+        style="?android:attr/quickContactBadgeStyleSmallWindowLarge"
         android:layout_alignParentLeft="true"
-        android:contentDescription="@string/contactPicture"
-		style="?android:attr/quickContactBadgeStyleSmallWindowLarge"
-    android:layout_marginRight="6dp"
-	 />
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="6dp"
+        android:contentDescription="@string/contactPicture" />
+
+    <LinearLayout
+        android:id="@+id/textLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/contactPicture"
+        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/toptext"
-        android:layout_alignParentTop="true"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-	        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/contactPicture"
             android:singleLine="true"
             android:text="@string/dummyContactName" />
-
+
         <TextView
             android:id="@+id/bottomtext"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/toptext"
-            android:layout_toRightOf="@+id/contactPicture"
             android:ellipsize="marquee"
-            android:paddingTop="0dip"
             android:singleLine="true"
             android:text="@string/dummyRoleAndCompany"
             android:textColor="@android:color/secondary_text_dark" />
-        
+    </LinearLayout>
+
 </RelativeLayout>

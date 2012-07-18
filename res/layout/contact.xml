@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    tools:context=".CorporateContactRecord" >
+    tools:context=".CorporateContactRecord" xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RelativeLayout
+    <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/LinearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:background="@color/holo_blue_dark" >
@@ -15,46 +15,54 @@
         <QuickContactBadge
             android:id="@+id/contactPicture"
             style="?android:attr/quickContactBadgeStyleWindowLarge"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
             android:layout_marginRight="6dp"
             android:contentDescription="@string/contactPicture" />
 
-        <TextView
-            android:id="@+id/toptext"
-            android:layout_width="fill_parent"
+        <LinearLayout
+            android:id="@+id/textContainer"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="6dp"
-            android:layout_marginTop="6dp"
-            android:layout_toRightOf="@+id/contactPicture"
-            android:singleLine="true"
-            android:text="@string/dummyContactName"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@android:color/white" />
-
-        <TextView
-            android:id="@+id/bottomtext"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/toptext"
             android:layout_marginBottom="6dp"
             android:layout_marginRight="6dp"
-            android:layout_toRightOf="@+id/contactPicture"
-            android:ellipsize="marquee"
-            android:paddingTop="0dip"
-            android:singleLine="true"
-            android:text="@string/dummyRoleAndCompany"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/secondary_text_dark" />
-    </RelativeLayout>
+            android:layout_weight="1"
+            android:orientation="vertical" >
 
+            <TextView
+                android:id="@+id/toptext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginRight="6dp"
+                android:layout_marginTop="6dp"
+                android:singleLine="true"
+                android:text="@string/dummyContactName"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/bottomtext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:paddingTop="0dip"
+                android:singleLine="true"
+                android:text="@string/dummyRoleAndCompany"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/secondary_text_dark" />
+        </LinearLayout>
+    </LinearLayout>
     <ListView
-        android:id="@+id/android:list"
+        android:id="@android:id/list"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:longClickable="true"
         tools:listitem="@layout/detail_row" />
+
+    <android.widget.TextView
+        android:id="@android:id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </LinearLayout>

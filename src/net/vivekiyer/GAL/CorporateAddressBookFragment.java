@@ -1,0 +1,250 @@
+/* Copyright 2010 Vivek Iyer
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package net.vivekiyer.GAL;
+
+import java.io.ByteArrayInputStream;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.provider.SearchRecentSuggestions;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+/**
+ * @author Vivek Iyer
+ * 
+ *         This class is the main entry point to the application
+ */
+/**
+ * @author danm
+ *
+ */
+/**
+ * @author danm
+ *
+ */
+/**
+ * @author danm
+ *
+ */
+public class CorporateAddressBookFragment extends android.app.Fragment {
+
+	public interface OnContactSelectedListener {
+		public void OnContactSelected(Contact contact);
+	}
+	
+	// TAG used for logging
+	// private static String TAG = "CorporateAddressBook";
+
+	// Stores the list of contacts returned
+	private Hashtable<String, Contact> mContacts;
+
+	// List of names in the list view control
+	private Contact[] contactList;
+
+	// Last search term
+	private String latestSearchTerm;
+
+	protected OnContactSelectedListener contactSelectedListener;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 * 
+	 * Called when the activity is first created.
+	 */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
+	
+	@Override
+	public View onCreateView(android.view.LayoutInflater inflater, android.view.ViewGroup container,
+	        Bundle savedInstanceState) {
+	 
+	    View view = inflater.inflate(R.layout.main, container, false);
+
+		return view;
+	}
+	
+	
+    /* (non-Javadoc)
+     * Overridden so that any Activity this Fragment is attached to is hooked up
+     * to the OnContactSelectedListener
+     * 
+     * @see android.app.Fragment#onAttach(android.app.Activity)
+     */
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            this.contactSelectedListener = (OnContactSelectedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnContactSelectedListener");
+        }
+    }
+	
+	// Create an anonymous implementation of OnItemClickListener
+	// that is used by the listview that displays the results
+	private final OnItemClickListener mListViewListener = new OnItemClickListener() {
+
+		/*
+		 * (non-Javadoc)
+		 * When the user clicks a particular entry in the list view launch the
+		 * CorporateContactRecord activity
+		 * 
+		 * @see
+		 * android.widget.AdapterView.OnItemClickListener#onItemClick(android
+		 * .widget.AdapterView, android.view.View, int, long)
+		 * 
+		 */
+		@Override
+		public void onItemClick(AdapterView<?> a, View v, int position, long id) {
+
+			// Get the selected display name from the list view
+			final Contact selectedItem = (Contact) ((ListView)getView().findViewById(R.id.contactsListView))
+					.getItemAtPosition(position);
+
+			// Trigger callback so that the Activity can decide how to handle the click
+			assert(contactSelectedListener != null);
+			contactSelectedListener.OnContactSelected(selectedItem);			
+		}
+	};
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 * 
+	 * Displays the menu when the user clicks the options button. In our case
+	 * our menu only contains one button - Settings
+	 */
+	@TargetApi(11)
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.main_fragment_menu, menu);
+
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 * 
+	 * Launches the preferences pane when the user clicks the settings option
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.clear:
+			clearResult();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onStop()
+	 * 
+	 * Called when the application is closed
+	 */
+	@Override
+	public void onStop() {
+		super.onStop();
+	}
+
+	public void displayResult(Hashtable<String, Contact> contacts, String searchTerm) {
+		this.mContacts = contacts;
+		this.latestSearchTerm = searchTerm;
+		this.displayResult();
+	}
+
+	/**
+	 * Displays the search results in the Listview
+	 */
+	private void displayResult() {
+		
+		TextView tv = (TextView) this.getView().findViewById(R.id.resultheader);
+		if(this.latestSearchTerm == null || this.latestSearchTerm.length() == 0)
+			tv.setText("Last search produced " + mContacts.size() + " results");
+		else
+			tv.setText("Found " + mContacts.size() + " results for '" + this.latestSearchTerm + "'");
+		
+		// Get the result and sort the alphabetically
+		contactList = new Contact[mContacts.size()];
+		
+		int i = 0;
+		for (final Enumeration<Contact> e = mContacts.elements(); e
+				.hasMoreElements();) {
+			contactList[i++] = e.nextElement();
+		}
+
+		Arrays.sort(contactList);
+
+		// Create a new array adapter and add the result to this
+		final ContactListAdapter listadapter = new ContactListAdapter(
+				this.getActivity(), R.layout.contact_row,
+				contactList);
+
+		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
+		lv.setAdapter(listadapter);
+		lv.setOnItemClickListener(mListViewListener);
+	}
+
+	/**
+	 * Clear the results from the listview
+	 */
+	protected void clearResult() {
+		contactList = new Contact[0];
+
+		// Create a new array adapter and add the result to this
+		final ContactListAdapter listadapter = new ContactListAdapter(
+				this.getActivity(), R.layout.contact_row,
+				contactList);
+
+		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
+		lv.setAdapter(listadapter);
+		TextView v = (TextView) getView().findViewById(R.id.resultheader);
+		v.setText(R.string.EnterSearchTerm);
+	}
+};

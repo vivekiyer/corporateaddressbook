@@ -61,11 +61,11 @@ public class XMLParser extends DefaultHandler {
     }
     
     /**
+     * Returns all the contacts that were obtained by parsing the XML
      * @return Contacts
      * @throws Exception
-     * Returns all the contacts that were obtained by parsing the XML
      */
-    public Hashtable <String, Contact> getContacts() throws Exception {    	
+    public Hashtable <String, Contact> getContacts() {    	
     	return contacts;
     }
     

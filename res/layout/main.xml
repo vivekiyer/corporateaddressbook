@@ -1,33 +1,53 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/LinearLayout1"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:gravity="top"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/resultheader"
+    <LinearLayout
+        android:id="@+id/headerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="@string/startBySelectingSearch"
         android:background="@color/holo_blue_dark"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/white"
-    >
-    </TextView>    <ListView
-        android:id="@+id/ListView01"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/resultheader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:text="@string/startBySelectingSearch"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white" >
+        </TextView>
+
+        <ImageView
+            android:id="@+id/borderShading"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/border_shading"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/contactsListView"
         style="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_gravity="fill"
         android:layout_weight="1"
->
-<!-- 		android:cacheColorHint="#aaaaaa"
+        tools:listitem="@layout/contact_row" >
+
+        <!--
+     		android:cacheColorHint="#aaaaaa"
         android:requiresFadingEdge="vertical"
         android:fadingEdgeLength="10dp" 
-        android:overScrollMode="never"
- -->      
-        <!-- Preview: listitem=@layout/contact_row -->
+        android:overScrollMode="never"
+        -->
     </ListView>
+
 </LinearLayout>

@@ -1,61 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/RelativeLayout1"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_weight="1"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
     android:paddingBottom="3dip"
     android:paddingLeft="6dip"
     android:paddingTop="3dip" >
-
-    <TextView
-        android:id="@+id/toptext"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:gravity="center_vertical"
-        android:text="@string/dummyPhoneNumber"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-	<TextView
-	    android:id="@+id/bottomtext"
-	    style="@style/detailsLabel"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_alignLeft="@+id/toptext"
-	    android:layout_below="@+id/toptext"
-	    android:ellipsize="marquee"
-	    android:singleLine="true"
-	    android:text="@string/mobile" />
 
+    <LinearLayout
+        android:id="@+id/textLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/toptext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/dummyPhoneNumber"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/bottomtext"
+            style="@style/detailsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:textAllCaps="true"
+            android:text="@string/mobile" />
+    </LinearLayout>
 	<LinearLayout
         android:id="@+id/buttonContainer"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_alignBottom="@id/bottomtext"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerVertical="true"
         android:layout_gravity="right|center_vertical"
         android:showDividers="beginning" >
-		<ImageView
+
+        <ImageView
             android:id="@+id/detailsDivider"
             android:layout_width="1dip"
             android:layout_height="fill_parent"
             android:clickable="false"
+            android:contentDescription="@string/verticalDivider"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:longClickable="false"
-            android:src="@drawable/vert_divider"
-            android:contentDescription="@string/verticalDivider"/>
+            android:src="@drawable/vert_divider" />
+
         <ImageButton
             android:id="@+id/detailsMoreActions"
             style="@style/flatImageButton"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:src="@android:drawable/ic_menu_more"
-            android:contentDescription="@string/actions"/>
+            android:contentDescription="@string/actions"
+            android:src="@android:drawable/ic_menu_more" />
+
     </LinearLayout>
-</RelativeLayout>
+
+</LinearLayout>
