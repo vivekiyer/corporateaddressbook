@@ -22,9 +22,11 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.SearchView;
 
 /**
@@ -37,7 +39,6 @@ import android.widget.SearchView;
  * @author vivek
  * 
  */
-@SuppressWarnings("deprecation")
 public class CorporateContactRecord extends Activity {
 
 	@Override
@@ -95,5 +96,31 @@ public class CorporateContactRecord extends Activity {
 
 		return true;
 	}
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 * 
+	 * Launches the preferences pane when the user clicks the settings option
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			// app icon in action bar clicked; go home
+			final Intent intent = new Intent(this,
+					net.vivekiyer.GAL.CorporateAddressBook.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			return true;
+		case R.id.menu_search:
+			return this.onSearchRequested();
+		case R.id.settings:
+			CorporateAddressBook.showConfiguration(this);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 };

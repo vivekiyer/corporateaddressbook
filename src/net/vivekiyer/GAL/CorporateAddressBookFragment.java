@@ -15,32 +15,21 @@
 
 package net.vivekiyer.GAL;
 
-import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.SearchRecentSuggestions;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * @author Vivek Iyer
@@ -89,7 +78,7 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
+		//setHasOptionsMenu(true);
 	}
 	
 	@Override
@@ -97,7 +86,6 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 	        Bundle savedInstanceState) {
 	 
 	    View view = inflater.inflate(R.layout.main, container, false);
-
 		return view;
 	}
 	

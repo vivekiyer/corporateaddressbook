@@ -21,7 +21,6 @@ import java.util.Set;
 import net.vivekiyer.GAL.CorporateAddressBookFragment.OnContactSelectedListener;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
@@ -30,7 +29,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
@@ -70,9 +68,6 @@ public class CorporateAddressBook extends Activity
 	// Progress bar
 	private ProgressDialog progressdialog;
 
-	// List of names in the list view control
-	private Contact[] contactList;
-
 	// Last search term
 	private String latestSearchTerm;
 
@@ -105,7 +100,7 @@ public class CorporateAddressBook extends Activity
 		// If not launch the config pane and query the user for
 		// Exchange server settings
 		if (!loadPreferences()) {
-			showConfiguration();
+			CorporateAddressBook.showConfiguration(this);
 		}
 
 
@@ -169,6 +164,8 @@ public class CorporateAddressBook extends Activity
 
 	private void performSearch(String name) {
 		latestSearchTerm = name;
+		
+		
 		// Save search in recent list
 		final SearchRecentSuggestions suggestions = new SearchRecentSuggestions(
 				this, RecentGALSearchTermsProvider.AUTHORITY,
@@ -243,7 +240,7 @@ public class CorporateAddressBook extends Activity
 		case R.id.menu_search:
 			return this.onSearchRequested();
 		case R.id.settings:
-			showConfiguration();
+			CorporateAddressBook.showConfiguration(this);
 			return true;
 		case R.id.clearSearchHistory:
 			final SearchRecentSuggestions suggestions = new SearchRecentSuggestions(
@@ -259,11 +256,11 @@ public class CorporateAddressBook extends Activity
 	/**
 	 * Launches the preferences activity
 	 */
-	public void showConfiguration() {
+	public static void showConfiguration(Activity parentActivity) {
 		final Intent myIntent = new Intent();
 		myIntent.setClassName("net.vivekiyer.GAL",
 				"net.vivekiyer.GAL.Configure");
-		startActivityForResult(myIntent, DISPLAY_CONFIGURATION_REQUEST);
+		parentActivity.startActivityForResult(myIntent, DISPLAY_CONFIGURATION_REQUEST);
 	}
 
 	/*
@@ -282,7 +279,7 @@ public class CorporateAddressBook extends Activity
 		case DISPLAY_CONFIGURATION_REQUEST:
 			// Initialize the activesync object with the validated settings
 			if (!loadPreferences()) {
-				showConfiguration();
+				CorporateAddressBook.showConfiguration(this);
 			}
 			break;
 		}
@@ -392,9 +389,20 @@ public class CorporateAddressBook extends Activity
 	}
 
 	private void displaySearchResult(Hashtable<String, Contact> contacts, String searchTerm) {
-		CorporateAddressBookFragment list = (CorporateAddressBookFragment) getFragmentManager()
+		
+		final FragmentManager fragmentManager = getFragmentManager();
+		
+		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
 		    .findFragmentById(R.id.main_fragment);
-		    list.displayResult(contacts, searchTerm);
+	    list.displayResult(contacts, searchTerm);
+
+	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
+	    	.findFragmentById(R.id.contact_fragment);
+		 
+	    if (details != null && details.isInLayout()) {
+	    	details.clear();
+	    }
+		    
 	}
 
 	/*
@@ -429,16 +437,24 @@ public class CorporateAddressBook extends Activity
 	public void OnContactSelected(Contact contact) {
 		// Create a parcel with the associated contact object
 		// This parcel is used to send data to the activity
-		final Bundle b = new Bundle();
-		b.putParcelable("net.vivekiyer.GAL", contact);
+		
+	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) getFragmentManager()
+		            .findFragmentById(R.id.contact_fragment);
+		 
+	    if (details == null || !details.isInLayout()) {
+			final Bundle b = new Bundle();
+			b.putParcelable("net.vivekiyer.GAL", contact);
 
-		// Launch the activity
-		final Intent myIntent = new Intent();
-		myIntent.setClassName("net.vivekiyer.GAL",
-				"net.vivekiyer.GAL.CorporateContactRecord");
+			// Launch the activity
+			final Intent myIntent = new Intent();
+			myIntent.setClassName("net.vivekiyer.GAL",
+					"net.vivekiyer.GAL.CorporateContactRecord");
 
-		myIntent.putExtras(b);
-		startActivity(myIntent);
+			myIntent.putExtras(b);
+			startActivity(myIntent);
+	    } else {
+	        details.setContact(contact);
+	    }		
 	}
 
 	@Override

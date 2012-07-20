@@ -2,7 +2,6 @@
 <resources>
     <!--color name="ActionBarBackgroundColor" >#ffcccccc</color-->
     <!--color name="MessageBarBackgroundColor" >#ffccccff</color-->
-	<color name="holo_blue_dark">#ff0099cc</color>
-	<color name="contact_list_background">@android:color/background_light</color>
+	<color name="contact_list_background">#e8e8e8</color>
 </resources>
  

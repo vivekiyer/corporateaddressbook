@@ -3,51 +3,29 @@
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/contact_list_background"
     android:gravity="top"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/headerContainer"
+    <TextView
+        android:id="@+id/resultheader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0"
         android:background="@color/holo_blue_dark"
-        android:orientation="horizontal" >
+        android:padding="10dp"
+        android:text="@string/startBySelectingSearch"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white" />
 
-        <TextView
-            android:id="@+id/resultheader"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:text="@string/startBySelectingSearch"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/white" >
-        </TextView>
-
-        <ImageView
-            android:id="@+id/borderShading"
-            android:layout_width="5dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/border_shading"
-            android:visibility="gone" />
-
-    </LinearLayout>
-
     <ListView
         android:id="@+id/contactsListView"
-        style="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_gravity="fill"
         android:layout_weight="1"
+        android:listSelector="@drawable/list_selector"
         tools:listitem="@layout/contact_row" >
-
-        <!--
-     		android:cacheColorHint="#aaaaaa"
-        android:requiresFadingEdge="vertical"
-        android:fadingEdgeLength="10dp" 
-        android:overScrollMode="never"
-        -->
     </ListView>
 
 </LinearLayout>

@@ -15,15 +15,11 @@
 
 package net.vivekiyer.GAL;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.ActionBar;
-import android.app.ListActivity;
-import android.app.SearchManager;
-import android.app.SearchableInfo;
-import android.content.ComponentName;
+import com.devoteam.quickaction.QuickActionWindow;
+
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.ClipboardManager;
@@ -33,9 +29,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.SearchView;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,7 +48,8 @@ import android.widget.Toast;
  * 
  */
 @SuppressWarnings("deprecation")
-public class CorporateContactRecordFragment extends android.app.ListFragment {
+public class CorporateContactRecordFragment extends android.app.ListFragment
+	implements OnClickListener, PopupMenu.OnMenuItemClickListener {
 
 	private Contact mContact;
 	private ContactDetailsAdapter m_adapter;
@@ -66,28 +65,45 @@ public class CorporateContactRecordFragment extends android.app.ListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-//		if (!Utility.isPreHoneycomb()) {
-//			final ActionBar actionBar = getActionBar();
-//			actionBar.setDisplayHomeAsUpEnabled(true);
-//		}
-
+		this.setHasOptionsMenu(true);
 	}
 
+	@Override
+	public View onCreateView(android.view.LayoutInflater inflater,
+			android.view.ViewGroup container, Bundle savedInstanceState) {
+	    View view = inflater.inflate(R.layout.contact, container, false);
+
+		ImageButton contactActions = (ImageButton) view.findViewById(R.id.contact_actions);
+		assert(contactActions != null);
+		contactActions.setOnClickListener(this);
+
+		return view;		
+	};
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		
+		registerForContextMenu(getListView());
+	    getView().findViewById(R.id.contactHeader).setVisibility(View.GONE);
+	};
+	
 	public void setContact(Contact contact) {
 		mContact = contact;
 		setContact();
 	}
 	private void setContact()
 	{
+		final View view = getView();
+		
 		m_adapter = new ContactDetailsAdapter(this.getActivity(), R.layout.detail_row,
 				mContact.getDetails());
 		setListAdapter(m_adapter);
 
-		final TextView tv1 = (TextView) getView().findViewById(R.id.toptext);
+		final TextView tv1 = (TextView) view.findViewById(R.id.toptext);
 		tv1.setText(mContact.getDisplayName());
 
-		final TextView tv2 = (TextView) getView().findViewById(R.id.bottomtext);
+		final TextView tv2 = (TextView) view.findViewById(R.id.bottomtext);
 		// Set the bottom text
 		if (tv2 != null) {
 			String s;
@@ -102,18 +118,16 @@ public class CorporateContactRecordFragment extends android.app.ListFragment {
 		contactWriter = ContactWriter.getInstance();
 		contactWriter.Initialize(this.getActivity(), this.getActivity().getLayoutInflater(), mContact);
 
-		registerForContextMenu(getListView());
-
+	    view.findViewById(R.id.contactHeader).setVisibility(View.VISIBLE);
+	}
+	
+	public void clear() {
+		mContact = null;
+		m_adapter = null;
+		setListAdapter(m_adapter);
+	    getView().findViewById(R.id.contactHeader).setVisibility(View.GONE);
 	}
 
-	@Override
-	public View onCreateView(android.view.LayoutInflater inflater,
-			android.view.ViewGroup container, Bundle savedInstanceState) {
-	    View view = inflater.inflate(R.layout.contact, container, false);
-
-		return view;		
-	};
-	
 	/**
 	 * @param menu
 	 * @param v
@@ -142,24 +156,71 @@ public class CorporateContactRecordFragment extends android.app.ListFragment {
 		// Handle the special cases
 		switch (kvp.get_type()) {
 		case EMAIL:
-			menu.add(Menu.NONE, MENU_ID_EMAIL, Menu.NONE, "Send email")
+			menu.add(Menu.NONE, MENU_ID_EMAIL, Menu.NONE, R.string.send_email)
 					.setIcon(android.R.drawable.sym_action_email);
 			break;
 		case MOBILE:
 			menu.add(Menu.NONE, MENU_ID_SMS, Menu.NONE,
-					"Send SMS to " + kvp.getValue()).setIcon(
+					getString(R.string.send_sms_to) + kvp.getValue()).setIcon(
 					android.R.drawable.ic_menu_send);
 		case PHONE:
 			menu.add(Menu.NONE, MENU_ID_CALL, Menu.NONE,
-					"Call " + kvp.getValue()).setIcon(
+					getString(R.string.call_) + kvp.getValue()).setIcon(
 					android.R.drawable.ic_menu_call);
 			menu.add(Menu.NONE, MENU_ID_EDIT_BEFORE_CALL, Menu.NONE,
-					"Edit number before call").setIcon(
+					R.string.edit_number_before_call).setIcon(
 					android.R.drawable.ic_menu_edit);
 		case OTHER:
 		case UNDEFINED:
 			break;
 		}
+	}
+	
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()) {
+		case R.id.contact_actions:
+			if(Utility.isPreHoneycomb()) {
+				showContactQuickActions(v);
+				return;
+			}
+			else {
+				PopupMenu popup = new PopupMenu(getActivity(), v);
+				popup.setOnMenuItemClickListener(this);
+				MenuInflater inflater = popup.getMenuInflater();
+			
+				inflater.inflate(R.menu.contact_actions_menu, popup.getMenu());			
+				popup.show();
+			}
+			break;
+		default:
+			break;	
+		}
+	}
+
+	private void showContactQuickActions(View v) {
+		// Get the tag, which will provide us the KVP
+		
+		int[] xy = new int[2];
+		v.getLocationInWindow(xy);
+		Rect rect = new Rect(xy[0], xy[1], xy[0]+v.getWidth(), xy[1]+v.getHeight());
+		final QuickActionWindow qa = new QuickActionWindow(v.getContext(), v, rect);
+
+		qa.addItem(R.drawable.social_add_person, R.id.saveContact, this);
+		v.getLocationOnScreen(xy);
+		qa.show(xy[0] + v.getWidth()/2);
+	}
+	
+	@Override
+	public boolean onMenuItemClick(MenuItem item) {
+		switch(item.getItemId()){
+		case R.id.saveContact:
+			this.contactWriter.saveContact();
+			return true;
+		default:
+			break;
+		}
+		return false;
 	}
 
 	@Override
@@ -214,25 +275,10 @@ public class CorporateContactRecordFragment extends android.app.ListFragment {
 	 * menu contains only one button - save
 	 */
 //	@TargetApi(11)
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		final MenuInflater inflater = getMenuInflater();
-//		inflater.inflate(R.menu.contacts_menu, menu);
-//
-//		// Get the SearchView and set the searchable configuration for Honeycomb
-//		// and above
-//		if (!Utility.isPreHoneycomb()) {
-//			final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//			final ComponentName component = getComponentName();
-//			final SearchableInfo searchableInfo = searchManager
-//					.getSearchableInfo(component);
-//			final SearchView searchView = (SearchView) menu.findItem(
-//					R.id.menu_search).getActionView();
-//			searchView.setSearchableInfo(searchableInfo);
-//		}
-//
-//		return true;
-//	}
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		//inflater.inflate(R.menu.contacts_menu, menu);
+	}
 
 	/*
 	 * (non-Javadoc)

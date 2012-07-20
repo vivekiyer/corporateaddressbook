@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    tools:context=".CorporateContactRecord" xmlns:android="http://schemas.android.com/apk/res/android">
+    tools:context=".CorporateContactRecord" >
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/LinearLayout1"
+        android:id="@+id/contactHeader"
         android:layout_width="fill_parent"
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:background="@color/holo_blue_dark" >
@@ -16,7 +17,8 @@
             android:id="@+id/contactPicture"
             style="?android:attr/quickContactBadgeStyleWindowLarge"
             android:layout_marginRight="6dp"
-            android:contentDescription="@string/contactPicture" />
+            android:contentDescription="@string/contactPicture"
+            android:padding="6dp" />
 
         <LinearLayout
             android:id="@+id/textContainer"
@@ -50,19 +52,28 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@android:color/secondary_text_dark" />
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/contact_actions"
+            style="@style/flatImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:contentDescription="@string/actions"
+            android:src="@drawable/ic_action_more_dark" />
     </LinearLayout>
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:longClickable="true"
         tools:listitem="@layout/detail_row" />
-
+
     <android.widget.TextView
         android:id="@android:id/empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Large Text"
+        android:text="@string/select_a_contact_to_view_details"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </LinearLayout>

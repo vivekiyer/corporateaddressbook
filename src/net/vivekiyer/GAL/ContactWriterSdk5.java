@@ -60,14 +60,17 @@ public class ContactWriterSdk5 extends ContactWriter implements
 		layoutInflater = lf;
 		mContact = contact;
 
-		mAccounts = new ArrayList<AccountData>();
-		mAccountAdapter = new AccountAdapter(context, mAccounts);
-
-		// Prepare the system account manager. On registering the listener
-		// below, we also ask for
-		// an initial callback to pre-populate the account list.
-		AccountManager.get(context).addOnAccountsUpdatedListener(this, null,
-				true);
+		// TODO: Refactor into non-singelton object
+		if(mAccounts == null){
+			mAccounts = new ArrayList<AccountData>();
+			mAccountAdapter = new AccountAdapter(context, mAccounts);
+	
+			// Prepare the system account manager. On registering the listener
+			// below, we also ask for
+			// an initial callback to pre-populate the account list.
+			AccountManager.get(context).addOnAccountsUpdatedListener(this, null,
+					true);
+		}		
 	}
 
 	/**

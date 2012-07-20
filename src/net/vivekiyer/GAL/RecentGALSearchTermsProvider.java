@@ -1,6 +1,7 @@
 package net.vivekiyer.GAL;
 
 import android.content.SearchRecentSuggestionsProvider;
+import android.provider.SearchRecentSuggestions;
 
 /**
  * @author Vivek Iyer
@@ -12,5 +13,16 @@ public class RecentGALSearchTermsProvider extends SearchRecentSuggestionsProvide
 	
 	public RecentGALSearchTermsProvider() {
 		setupSuggestions(AUTHORITY, MODE);
+	}
+	
+	/**
+	 * @return
+	 */
+	protected boolean clearSearchHistory() {
+		final SearchRecentSuggestions suggestions = new SearchRecentSuggestions(
+				getContext(), RecentGALSearchTermsProvider.AUTHORITY,
+				RecentGALSearchTermsProvider.MODE);
+		suggestions.clearHistory();
+		return true;
 	}
 }

@@ -2,7 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_fragment"
     android:name="net.vivekiyer.GAL.CorporateAddressBookFragment"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    class="net.vivekiyer.GAL.CorporateAddressBookFragment"
+    tools:context=".CorporateAddressBook"
     tools:layout="@layout/main" >
+
 </fragment>
