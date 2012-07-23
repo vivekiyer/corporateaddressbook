@@ -15,13 +15,13 @@
 
 package net.vivekiyer.GAL;
 
+import android.app.Application;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.provider.Contacts;
 import android.provider.Contacts.People;
-import android.view.LayoutInflater;
 
 /**
  * An implementation of {@link ContactWriter} that uses legacy Contacts API.
@@ -30,13 +30,12 @@ import android.view.LayoutInflater;
  */
 @SuppressWarnings("deprecation")
 public class ContactWriterSdk3_4 extends ContactWriter {
-	private Context context;
 	private Contact mContact;
 	//private static String TAG = "ContactWriterSdk3_4";
 	private ContentResolver contentResolver;
 
 	@Override
-	public void saveContact() {
+	public void saveContact(Context cxt) {
 		ContentValues values = new ContentValues();
 		mContact.generateFieldsFromXML();
 		
@@ -59,10 +58,9 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 	}
 
 	@Override
-	public void Initialize(Context ctx, LayoutInflater lf, Contact contact) {
-		context = ctx;
+	public void Initialize(Application appCtx, Contact contact) {
 		mContact = contact;
-		contentResolver = context.getContentResolver();
+		contentResolver = appCtx.getContentResolver();
 	}
 
 	private void addContactFields(ContentValues values, Uri newPerson) {

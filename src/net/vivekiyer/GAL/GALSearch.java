@@ -105,7 +105,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	protected void onPostExecute(Boolean result) {
 		super.onPostExecute(result);
 		if(onSearchCompletedListener != null)
-			onSearchCompletedListener.OnSearchCompleted(errorCode, mContacts);
+			onSearchCompletedListener.OnSearchCompleted(result ? errorCode : -1, mContacts);
 	}
 	
 	public int parseXML(String xml) throws SAXException, IOException{

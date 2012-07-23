@@ -57,7 +57,7 @@ public class Utility {
 	public static void showAlert(Context context, String mesg){
 		AlertDialog.Builder alt_bld = new AlertDialog.Builder(context);
 		alt_bld.setMessage(mesg)
-				.setPositiveButton("Ok", null);
+				.setPositiveButton(android.R.string.ok, null);
 		AlertDialog alert = alt_bld.create();
 		alert.show();	
 	}
@@ -67,8 +67,7 @@ public class Utility {
      * @return true if the device is running a pre-3.0 (Honeycomb) OS, false if OS is 3.0 or later
      * Encoder the string to base64
      */
-	public static Boolean isPreFroYo()
-	{
+	public static Boolean isPreFroYo() {
 		return android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO;
 	}
     /**
@@ -76,8 +75,11 @@ public class Utility {
      * @return true if the device is running a pre-3.0 (Honeycomb) OS, false if OS is 3.0 or later
      * Encoder the string to base64
      */
-	public static Boolean isPreHoneycomb()
-	{
+	public static Boolean isPreHoneycomb() {
 		return android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB;
+	}
+	
+	public static String getUCString(int stringID) {
+		return App.getInstance().getString(stringID).toUpperCase();		
 	}
 }

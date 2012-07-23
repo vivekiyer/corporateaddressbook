@@ -17,6 +17,7 @@ package net.vivekiyer.GAL;
 
 import com.devoteam.quickaction.QuickActionWindow;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -47,13 +48,14 @@ import android.widget.Toast;
  * @author vivek
  * 
  */
+@TargetApi(11)
 @SuppressWarnings("deprecation")
 public class CorporateContactRecordFragment extends android.app.ListFragment
 	implements OnClickListener, PopupMenu.OnMenuItemClickListener {
 
-	private Contact mContact;
-	private ContactDetailsAdapter m_adapter;
-	private ContactWriter contactWriter;
+	private Contact mContact = null;
+	private ContactDetailsAdapter m_adapter = null;
+	private ContactWriter contactWriter = null;
 
 	// Menu ids
 	private static final int MENU_ID_COPY_TO_CLIPBOARD = 0;
@@ -85,7 +87,8 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 		super.onActivityCreated(savedInstanceState);
 		
 		registerForContextMenu(getListView());
-	    getView().findViewById(R.id.contactHeader).setVisibility(View.GONE);
+		if(this.mContact == null)
+			getView().findViewById(R.id.contactHeader).setVisibility(View.GONE);
 	};
 	
 	public void setContact(Contact contact) {
@@ -115,8 +118,7 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 		}
 
 		// getListView().setOnItemLongClickListener(mListViewLongClickListener);
-		contactWriter = ContactWriter.getInstance();
-		contactWriter.Initialize(this.getActivity(), this.getActivity().getLayoutInflater(), mContact);
+		contactWriter = new ContactWriterSdk5(App.getInstance(), mContact);
 
 	    view.findViewById(R.id.contactHeader).setVisibility(View.VISIBLE);
 	}
@@ -215,7 +217,7 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 	public boolean onMenuItemClick(MenuItem item) {
 		switch(item.getItemId()){
 		case R.id.saveContact:
-			this.contactWriter.saveContact();
+			this.contactWriter.saveContact(getView().getContext());
 			return true;
 		default:
 			break;
@@ -299,7 +301,7 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 			startActivity(intent);
 			return true;
 		case R.id.saveContact:
-			contactWriter.saveContact();
+			contactWriter.saveContact(getView().getContext());
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

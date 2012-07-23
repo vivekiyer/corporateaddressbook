@@ -104,18 +104,18 @@ public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {
 			switch (kvp.get_type()) {
 			case MOBILE:
 				v2.setVisibility(android.view.View.VISIBLE);
-				bt.setText(R.string.mobile);
-				v.setOnClickListener(Listeners.getCallListener(kvp.getValue(), null));
+				bt.setText(Utility.getUCString(R.string.mobile));
+				v.setOnClickListener(Listeners.getCallListener(kvp.getValue()));
 				break;
 			case PHONE:
 				v2.setVisibility(android.view.View.VISIBLE);
-				bt.setText(R.string.office);
-				v.setOnClickListener(Listeners.getCallListener(kvp.getValue(), null));
+				bt.setText(Utility.getUCString(R.string.office));
+				v.setOnClickListener(Listeners.getCallListener(kvp.getValue()));
 				break;
 			case EMAIL:
 				v2.setVisibility(android.view.View.VISIBLE);
-				bt.setText(R.string.email);
-				v.setOnClickListener(Listeners.getMailListener(kvp.getValue(), null));
+				bt.setText(Utility.getUCString(R.string.email));
+				v.setOnClickListener(Listeners.getMailListener(kvp.getValue()));
 				break;
 			default:
 				// For others: hide "More actions"
@@ -124,13 +124,13 @@ public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {
 				// Try to find a reasonable label
 				final String key = kvp.getKey().toLowerCase();
 				if(key.contains("office")){
-					bt.setText(R.string.location);
+					bt.setText(Utility.getUCString(R.string.location));
 				}
 				else if(key.contains("alias")){
-					bt.setText(R.string.alias);
+					bt.setText(Utility.getUCString(R.string.alias));
 				}
 				else{
-					bt.setText(key);
+					bt.setText(key.toUpperCase());
 				}
 			}
 			im.setTag(kvp);			

@@ -10,8 +10,12 @@ import com.devoteam.quickaction.QuickActionWindow;
 
 public class Listeners {
 	
+	public static OnClickListener getCallListener(final String telNo) {
+		return getCallListener(telNo, null);
+	}
+
 	public static OnClickListener getCallListener(final String telNo,
-			final QuickActionWindow qa) {
+		final QuickActionWindow qa) {
 		return new OnClickListener() {
 			
 			@Override
@@ -27,8 +31,12 @@ public class Listeners {
 		};
 	}
 
+	public static OnClickListener getSmsListener(final String telNo) {
+		return getSmsListener(telNo, null);
+	}
+
 	public static OnClickListener getSmsListener(final String telNo,
-			final QuickActionWindow qa) {
+		final QuickActionWindow qa) {
 		return new OnClickListener() {
 			
 			@Override
@@ -44,8 +52,11 @@ public class Listeners {
 		};
 	};
 
+	public static OnClickListener getMailListener(final String mailAddress) {
+		return getMailListener(mailAddress, null);
+	}
 	public static OnClickListener getMailListener(final String mailAddress,
-			final QuickActionWindow qa) {
+		final QuickActionWindow qa) {
 		return new OnClickListener() {
 			
 			@Override
@@ -61,8 +72,12 @@ public class Listeners {
 		};
 	}
 
+	public static OnClickListener getCopyListener(final String text) {
+		return getCopyListener(text, null);
+	}
+
 	public static OnClickListener getCopyListener(final String text,
-			final QuickActionWindow qa) {
+		final QuickActionWindow qa) {
 		return new OnClickListener() {
 
 			@SuppressWarnings("deprecation")

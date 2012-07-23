@@ -21,6 +21,7 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
 import android.accounts.OnAccountsUpdateListener;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.Context;
@@ -42,11 +43,10 @@ import android.widget.TextView;
  * This class should be used on Eclair or beyond, but would not work on any
  * earlier release of Android. As a matter of fact, it could not even be loaded.
  */
-public class ContactWriterSdk5 extends ContactWriter implements
-		OnAccountsUpdateListener {
+public class ContactWriterSdk5 extends ContactWriter {
 
-	ArrayList<AccountData> mAccounts;
-	private AccountAdapter mAccountAdapter;
+	private static ArrayList<AccountData> mAccounts = null;
+	private static AccountAdapter mAccountAdapter = null;
 	private Context context;
 	private LayoutInflater layoutInflater;
 	private Contact mContact;
@@ -54,22 +54,26 @@ public class ContactWriterSdk5 extends ContactWriter implements
 	// TAG used for logging
 	private static String TAG = "ContactWriterSdk5";
 
+	public ContactWriterSdk5(Application appCtx, Contact contact) {
+		super();
+		Initialize(appCtx, contact);
+	}
+	
 	@Override
-	public void Initialize(Context ctx, LayoutInflater lf, Contact contact) {
-		context = ctx;
-		layoutInflater = lf;
+	public void Initialize(Application appCtx, Contact contact) {
+		context = appCtx;
+		layoutInflater = (LayoutInflater)appCtx.getSystemService
+			      (Context.LAYOUT_INFLATER_SERVICE);
 		mContact = contact;
 
 		// TODO: Refactor into non-singelton object
 		if(mAccounts == null){
 			mAccounts = new ArrayList<AccountData>();
-			mAccountAdapter = new AccountAdapter(context, mAccounts);
+			mAccountAdapter = new AccountAdapter(appCtx, mAccounts);
 	
 			// Prepare the system account manager. On registering the listener
 			// below, we also ask for
 			// an initial callback to pre-populate the account list.
-			AccountManager.get(context).addOnAccountsUpdatedListener(this, null,
-					true);
 		}		
 	}
 
@@ -276,9 +280,9 @@ public class ContactWriterSdk5 extends ContactWriter implements
 	 * displayed to the addressbook on the device
 	 */
 	@Override
-	public void saveContact() {
+	public void saveContact(Context ctx) {
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		builder.setTitle("Select account");
 
 		builder.setSingleChoiceItems(mAccountAdapter, -1,
@@ -292,34 +296,6 @@ public class ContactWriterSdk5 extends ContactWriter implements
 					}
 				});
 		builder.show();
-	}
-
-	@Override
-	public void onAccountsUpdated(Account[] accounts) {
-		//Log.i(TAG, "Account list update detected");
-		// Clear out any old data to prevent duplicates
-		mAccounts.clear();
-
-		// Get account data from system
-		AuthenticatorDescription[] accountTypes = AccountManager.get(context)
-				.getAuthenticatorTypes();
-
-		// Populate tables
-		for (int i = 0; i < accounts.length; i++) {
-			// The user may have multiple accounts with the same name, so we
-			// need to construct a
-			// meaningful display name for each.
-			String systemAccountType = accounts[i].type;
-
-			AuthenticatorDescription ad = getAuthenticatorDescription(
-					systemAccountType, accountTypes);
-			AccountData data = new AccountData(accounts[i].name, ad);
-			mAccounts.add(data);
-		}
-
-		// Update the account spinner
-		mAccountAdapter.notifyDataSetChanged();
-
 	}
 
 	/**
@@ -402,10 +378,13 @@ public class ContactWriterSdk5 extends ContactWriter implements
 	 * Custom adapter used to display account icons and descriptions in the
 	 * account spinner.
 	 */
-	private class AccountAdapter extends ArrayAdapter<AccountData> {
+	private class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccountsUpdateListener {
+		
 		public AccountAdapter(Context context,
 				ArrayList<AccountData> accountData) {
 			super(context, android.R.layout.simple_list_item_1, accountData);
+			AccountManager.get(context).addOnAccountsUpdatedListener(this, null,
+					true);
 		}
 
 		@Override
@@ -434,19 +413,50 @@ public class ContactWriterSdk5 extends ContactWriter implements
 			accountIcon.setImageDrawable(icon);
 			return convertView;
 		}
-	}
+
+		@Override
+		public void onAccountsUpdated(Account[] accounts) {
+			//Log.i(TAG, "Account list update detected");
+			// Clear out any old data to prevent duplicates
+			mAccounts.clear();
+
+			// Get account data from system
+			AuthenticatorDescription[] accountTypes = AccountManager.get(context)
+					.getAuthenticatorTypes();
+
+			// Populate tables
+			for (int i = 0; i < accounts.length; i++) {
+				// The user may have multiple accounts with the same name, so we
+				// need to construct a
+				// meaningful display name for each.
+				String systemAccountType = accounts[i].type;
+
+				AuthenticatorDescription ad = getAuthenticatorDescription(
+						systemAccountType, accountTypes);
+				AccountData data = new AccountData(accounts[i].name, ad);
+				mAccounts.add(data);
+			}
+
+			// Update the account spinner
+			this.notifyDataSetChanged();
+
+		}
+		
+		@Override
+		protected void finalize() throws Throwable {
+			// Make sure listener is un-registered when this object is destructed, will otherwise cause leak
+			AccountManager.get(context).removeOnAccountsUpdatedListener(this);
+			
+			super.finalize();
+		}
+}
 
 	@Override
 	public void cleanUp() {
-		// Remove AccountManager callback
-		AccountManager.get(context).removeOnAccountsUpdatedListener(this);		
 	}
 	
 	@Override
 	protected void finalize() throws Throwable {
-		// Make sure listener is un-registered when this object is destructed, will otherwise cause leak
-		AccountManager.get(context).removeOnAccountsUpdatedListener(this);
-		
 		super.finalize();
 	}
 }
