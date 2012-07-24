@@ -199,7 +199,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// Lets validate it	
 		
 		activeSyncManager = new ActiveSyncManager(
-				getTextFromId(R.id.txtServerName),
+				getTextFromId(R.id.txtServerName).trim(),
 				domain,
 				username,
 				getTextFromId(R.id.txtPassword),
@@ -283,7 +283,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		else{
 			SharedPreferences.Editor editor = mPreferences.edit();
 			editor.putString(KEY_SERVER_PREFERENCE,
-					getTextFromId(R.id.txtServerName));
+					getTextFromId(R.id.txtServerName).trim());
 			editor.putString(KEY_DOMAIN_PREFERENCE,
 					domain);
 			editor.putString(KEY_USERNAME_PREFERENCE,
