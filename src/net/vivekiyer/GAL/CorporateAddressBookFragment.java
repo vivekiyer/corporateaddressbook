@@ -194,9 +194,9 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 		
 		TextView tv = (TextView) this.getView().findViewById(R.id.resultheader);
 		if(this.latestSearchTerm == null || this.latestSearchTerm.length() == 0)
-			tv.setText("Last search produced " + mContacts.size() + " results");
+			tv.setText(String.format(getString(R.string.last_search_produced_x_results), mContacts.size()));
 		else
-			tv.setText("Found " + mContacts.size() + " results for '" + this.latestSearchTerm + "'");
+			tv.setText(String.format(getString(R.string.found_x_results_for_y), mContacts.size(), this.latestSearchTerm));
 		
 		// Get the result and sort the alphabetically
 		contactList = new Contact[mContacts.size()];
