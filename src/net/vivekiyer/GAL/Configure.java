@@ -171,13 +171,18 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		
 		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");		
 		
-		if(splits.length != 2){
+		if(splits.length == 1) {
+			domain = "";
+			username = splits[0];
+		}
+		else if (splits.length == 2) {
+			domain = splits[0];
+			username = splits[1];
+		}
+		else {
 			showAlert(getString(R.string.domain_and_username_format_error));
 			return;
 		}
-			
-		domain = splits[0];
-		username = splits[1];
 		
 		if (username.equalsIgnoreCase("")) {
 			showAlert(getString(R.string.invalid_username_error));
