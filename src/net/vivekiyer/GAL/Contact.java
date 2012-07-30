@@ -17,8 +17,6 @@ package net.vivekiyer.GAL;
 
 import java.util.ArrayList;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 
 /**
  * @author Vivek Iyer
@@ -27,7 +25,7 @@ import android.os.Parcelable;
  *         between two activities without loss of data. It does this by writing
  *         the display name followed by all the contacts details into the parcel
  */
-public class Contact implements Parcelable {
+public class Contact {
 
 	private ArrayList<KeyValuePair> Details;
 
@@ -147,16 +145,6 @@ public class Contact implements Parcelable {
 		Details = new ArrayList<KeyValuePair>();
 	}
 
-	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-		public Contact createFromParcel(Parcel in) {
-			return new Contact(in);
-		}
-
-		public Contact[] newArray(int size) {
-			return new Contact[size];
-		}
-	};
-
 	// Load our class from the parcel
 	public Contact(Parcel in) {
 
@@ -176,11 +164,6 @@ public class Contact implements Parcelable {
 
 	public void add(String key, String value) {
 		Details.add(new KeyValuePair(key, value));
-	}
-
-	@Override
-	public int describeContents() {
-		return 0;
 	}
 
 	@Override

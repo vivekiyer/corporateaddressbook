@@ -38,8 +38,6 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import android.util.Log;
-
 /*
  * This class represents an entity for converting between WBXML and XML. The process uses
  * subclasses of the CodePage class that contain data for each code page potentially
@@ -149,10 +147,10 @@ public class WBXML {
             processTagState(istream, ostream, codepage);
 
         } catch (IOException ioe) {
-            Log.e(TAG, "IOException, doh: "+ ioe);
+            System.out.println("IOException, doh: "+ ioe);
             return;
         } catch (Exception e) {
-            Log.e(TAG, "Exception e:" + e);
+            System.out.println("Exception e:" + e);
             return;
         }
     }
@@ -428,9 +426,9 @@ public class WBXML {
             xr.parse(is);
         } 
         catch (SAXException se) {
-            Log.e("WBXML", "SAXException in convertXmlToWbxml: " + se);
+        	System.out.println("SAXException in convertXmlToWbxml: " + se);
         } catch (IOException ioe) {
-            Log.e("WBXML", "IOException in convertXmlToWbxml: " + ioe);
+        	System.out.println("IOException in convertXmlToWbxml: " + ioe);
         }
     }
 
@@ -674,7 +672,7 @@ public class WBXML {
 	                }
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
-					Log.v(TAG,e.toString());
+					System.out.println(e.toString());
 				}
                 
                 

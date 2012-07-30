@@ -15,9 +15,6 @@
 
 package net.vivekiyer.GAL;
 
-import android.app.AlertDialog;
-import android.content.Context;
-
 /**
  * @author Vivek Iyer
  * Utility methods
@@ -49,16 +46,4 @@ public class Utility {
         byte[] encoded = new Base64().encode(s.getBytes());
         return new String(encoded);
     }
-     
-	/**
-	 * @param s The alert message
-	 * Displays an alert dialog with the messaged provided
-	 */
-	public static void showAlert(Context context, String mesg){
-		AlertDialog.Builder alt_bld = new AlertDialog.Builder(context);
-		alt_bld.setMessage(mesg)
-				.setPositiveButton("Ok", null);
-		AlertDialog alert = alt_bld.create();
-		alert.show();	
-	}
 }
