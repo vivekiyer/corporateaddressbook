@@ -15,6 +15,7 @@
 
 package net.vivekiyer.GAL;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
@@ -25,7 +26,12 @@ import java.util.ArrayList;
  *         between two activities without loss of data. It does this by writing
  *         the display name followed by all the contacts details into the parcel
  */
-public class Contact {
+public class Contact implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7827243056600566907L;
 
 	private ArrayList<KeyValuePair> Details;
 
@@ -145,41 +151,8 @@ public class Contact {
 		Details = new ArrayList<KeyValuePair>();
 	}
 
-	// Load our class from the parcel
-	public Contact(Parcel in) {
-
-		// The Display name for the contact
-		DisplayName = in.readString();
-
-		Details = new ArrayList<KeyValuePair>();
-
-		// The number of elements in the array list
-		int size = in.readInt();
-
-		// Each KVP in the Array List
-		for (int i = 0; i < size; i++) {
-			add(in.readString(), in.readString());
-		}
-	}
-
 	public void add(String key, String value) {
 		Details.add(new KeyValuePair(key, value));
-	}
-
-	@Override
-	// Flatten this object into a parcel
-	public void writeToParcel(Parcel dest, int flags) {
-		// The Display name for the contact
-		dest.writeString(DisplayName);
-
-		// The number of elements in the array list
-		dest.writeInt(Details.size());
-
-		// Each KVP in the Array List
-		for (KeyValuePair kvp : Details) {
-			dest.writeString(kvp.getKey());
-			dest.writeString(kvp.getValue());
-		}
 	}
 
 	public void generateFieldsFromXML() {
