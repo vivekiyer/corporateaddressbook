@@ -56,6 +56,7 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 	private Contact mContact = null;
 	private ContactDetailsAdapter m_adapter = null;
 	private ContactWriter contactWriter = null;
+	private Boolean isDualFrame = true;
 
 	// Menu ids
 	private static final int MENU_ID_COPY_TO_CLIPBOARD = 0;
@@ -63,6 +64,14 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 	private static final int MENU_ID_CALL = 2;
 	private static final int MENU_ID_EDIT_BEFORE_CALL = 3;
 	private static final int MENU_ID_SMS = 4;
+
+	public Boolean getIsDualFrame() {
+		return isDualFrame;
+	}
+
+	public void setIsDualFrame(Boolean isDualFrame) {
+		this.isDualFrame = isDualFrame;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -72,12 +81,8 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 
 	@Override
 	public View onCreateView(android.view.LayoutInflater inflater,
-			android.view.ViewGroup container, Bundle savedInstanceState) {
+		android.view.ViewGroup container, Bundle savedInstanceState) {
 	    View view = inflater.inflate(R.layout.contact, container, false);
-
-		ImageButton contactActions = (ImageButton) view.findViewById(R.id.contact_actions);
-		assert(contactActions != null);
-		contactActions.setOnClickListener(this);
 
 		return view;		
 	};
@@ -89,6 +94,15 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 		registerForContextMenu(getListView());
 		if(this.mContact == null)
 			getView().findViewById(R.id.contactHeader).setVisibility(View.GONE);
+		
+		ImageButton contactActions = (ImageButton) getView().findViewById(R.id.contact_actions);
+		if(isDualFrame) {
+			assert(contactActions != null);
+			contactActions.setOnClickListener(this);
+		}
+		else {
+			contactActions.setVisibility(View.GONE);
+		}
 	};
 	
 	public void setContact(Contact contact) {
@@ -279,7 +293,8 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 //	@TargetApi(11)
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		//inflater.inflate(R.menu.contacts_menu, menu);
+		if(isDualFrame)
+			inflater.inflate(R.menu.contact_actions_menu, menu);
 	}
 
 	/*

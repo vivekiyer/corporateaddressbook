@@ -41,6 +41,8 @@ import android.widget.SearchView;
  */
 public class CorporateContactRecord extends Activity {
 
+	private SearchView searchView;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,6 +53,7 @@ public class CorporateContactRecord extends Activity {
 		Contact contact = b.getParcelable("net.vivekiyer.GAL");
 
 		CorporateContactRecordFragment contacts = (CorporateContactRecordFragment) getFragmentManager().findFragmentById(R.id.contact_fragment);
+		contacts.setIsDualFrame(false);
 		contacts.setContact(contact);
 
 		if (!Utility.isPreHoneycomb()) {
@@ -89,7 +92,7 @@ public class CorporateContactRecord extends Activity {
 			final ComponentName component = getComponentName();
 			final SearchableInfo searchableInfo = searchManager
 					.getSearchableInfo(component);
-			final SearchView searchView = (SearchView) menu.findItem(
+			searchView = (SearchView) menu.findItem(
 					R.id.menu_search).getActionView();
 			searchView.setSearchableInfo(searchableInfo);
 		}
@@ -123,4 +126,22 @@ public class CorporateContactRecord extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	@Override
+	public boolean onSearchRequested() {
+		if(!Utility.isPreHoneycomb()) {
+			if(searchView != null) {
+				searchView.setFocusable(true);
+			    searchView.setIconified(false);
+			    searchView.requestFocusFromTouch();
+			    return true;
+			}
+			else {
+				Debug.Log("Running HC+ without SearchView");
+				return false;
+			}
+		}
+		return super.onSearchRequested();
+	};
+
 };

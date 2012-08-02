@@ -49,7 +49,7 @@ import android.widget.TextView;
  *
  */
 public class CorporateAddressBookFragment extends android.app.Fragment {
-
+ 
 	public interface OnContactSelectedListener {
 		public void OnContactSelected(Contact contact);
 	}
@@ -78,7 +78,7 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//setHasOptionsMenu(true);
+		setHasOptionsMenu(true);
 	}
 	
 	@Override

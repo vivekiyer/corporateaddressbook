@@ -71,6 +71,8 @@ public class CorporateAddressBook extends Activity
 	// Last search term
 	private String latestSearchTerm;
 
+	private SearchView searchView;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -218,9 +220,11 @@ public class CorporateAddressBook extends Activity
 			final ComponentName component = getComponentName();
 			final SearchableInfo searchableInfo = searchManager
 					.getSearchableInfo(component);
-			final SearchView searchView = (SearchView) menu.findItem(
+			searchView = (SearchView) menu.findItem(
 					R.id.menu_search).getActionView();
 			searchView.setSearchableInfo(searchableInfo);
+			
+			//this.onSearchRequested();
 		}
 
 		return super.onCreateOptionsMenu(menu);
@@ -456,6 +460,23 @@ public class CorporateAddressBook extends Activity
 	        details.setContact(contact);
 	    }		
 	}
+	
+	@Override
+	public boolean onSearchRequested() {
+		if(!Utility.isPreHoneycomb()) {
+			if(searchView != null) {
+				searchView.setFocusable(true);
+			    searchView.setIconified(false);
+			    searchView.requestFocusFromTouch();
+			    return true;
+			}
+			else {
+				Debug.Log("Running HC+ without SearchView");
+				return false;
+			}
+		}
+		return super.onSearchRequested();
+	};
 
 	@Override
 	public void OnSearchCompleted(int result,
