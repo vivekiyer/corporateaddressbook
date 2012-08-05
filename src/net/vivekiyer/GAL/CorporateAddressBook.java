@@ -118,6 +118,17 @@ public class CorporateAddressBook extends Activity
 	@Override
 	protected void onStart() {
 		super.onStart();
+		
+		FragmentManager fm = getFragmentManager();
+	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) fm
+		    	.findFragmentById(R.id.contact_fragment);
+			 
+	    if (details != null && details.isInLayout()) {
+			CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) getFragmentManager()
+				.findFragmentById(R.id.main_fragment);
+			contacts.setIsSelectable(true);
+	    }
+	    
 		final Intent intent = getIntent();
 		if (intent != null) {
 			final Set<String> categories = intent.getCategories();

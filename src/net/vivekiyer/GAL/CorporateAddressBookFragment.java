@@ -67,6 +67,22 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 	private String latestSearchTerm;
 
 	protected OnContactSelectedListener contactSelectedListener;
+	
+	private Boolean isSelectable = false;
+
+	public Boolean getIsSelectable() {
+		return isSelectable;
+	}
+
+	public void setIsSelectable(Boolean isSelectable) {
+		this.isSelectable = isSelectable;
+	    setSelectionMode(getView(), isSelectable);
+	}
+
+	private void setSelectionMode(View view, Boolean isSelectable) {
+		ListView lv = (ListView) view.findViewById(R.id.contactsListView);
+	    lv.setChoiceMode(isSelectable ? ListView.CHOICE_MODE_SINGLE : ListView.CHOICE_MODE_NONE);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -86,6 +102,7 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 	        Bundle savedInstanceState) {
 	 
 	    View view = inflater.inflate(R.layout.main, container, false);
+	    setSelectionMode(view, isSelectable);
 		return view;
 	}
 	

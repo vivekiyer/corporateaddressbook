@@ -53,6 +53,7 @@ import android.widget.Toast;
 public class CorporateContactRecordFragment extends android.app.ListFragment
 	implements OnClickListener, PopupMenu.OnMenuItemClickListener {
 
+	private Menu fragmentMenu = null;
 	private Contact mContact = null;
 	private ContactDetailsAdapter m_adapter = null;
 	private ContactWriter contactWriter = null;
@@ -135,6 +136,13 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 		contactWriter = new ContactWriterSdk5(App.getInstance(), mContact);
 
 	    view.findViewById(R.id.contactHeader).setVisibility(View.VISIBLE);
+	    if(this.isDualFrame) {
+	    	view.findViewById(R.id.contact_actions).setVisibility(View.GONE);
+	    	setSaveMenuEnabled(true);
+	    }
+//	    else {
+//	    	setSaveMenuEnabled(false);
+//	    }
 	}
 	
 	public void clear() {
@@ -142,6 +150,15 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 		m_adapter = null;
 		setListAdapter(m_adapter);
 	    getView().findViewById(R.id.contactHeader).setVisibility(View.GONE);
+	    setSaveMenuEnabled(false);
+	}
+
+	private void setSaveMenuEnabled(boolean enabled) {
+		if(fragmentMenu != null) {
+	    	MenuItem item = fragmentMenu.findItem(R.id.saveContact);
+	    	if(item!=null)
+	    		item.setEnabled(enabled);
+	    }
 	}
 
 	/**
@@ -293,8 +310,12 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 //	@TargetApi(11)
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		if(isDualFrame)
+		if(isDualFrame) {
 			inflater.inflate(R.menu.contact_actions_menu, menu);
+			this.fragmentMenu = menu;
+			setSaveMenuEnabled(false);
+		}
+
 	}
 
 	/*

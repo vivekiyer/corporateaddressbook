@@ -4,6 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
+    android:padding="5dp"
+    android:background="@color/details_list_background"
     tools:context=".CorporateContactRecord" >
 
     <LinearLayout

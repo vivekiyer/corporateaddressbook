@@ -3,6 +3,13 @@
     <!--color name="ActionBarBackgroundColor" >#ffcccccc</color-->
     <!--color name="MessageBarBackgroundColor" >#ffccccff</color-->
 	<color name="holo_blue_dark">#ff0099cc</color>
+	<color name="holo_blue_dark_shaded">#ff004c66</color>
+	<color name="holo_blue_light">#ff33b5e5</color>
+	<color name="holo_blue_light_shaded">#ff195a72</color>
 	<color name="contact_list_background">@android:color/background_light</color>
+	<color name="contact_list_background_shaded">#ff797979</color>
+	<color name="listItemBackgroundChecked">@color/holo_blue_dark</color>
+	<color name="listItemBackgroundUnchecked">@android:color/transparent</color>
+	<color name="details_list_background">@android:color/background_light</color>
 </resources>
  

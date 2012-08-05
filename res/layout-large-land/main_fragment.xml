@@ -26,8 +26,8 @@
         android:name="net.vivekiyer.GAL.CorporateContactRecordFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_margin="5dp"
         android:layout_weight="0.6"
+	    android:background="@android:color/white"
         class="net.vivekiyer.GAL.CorporateContactRecordFragment"
         tools:layout="@layout/contact" >
     </fragment>
