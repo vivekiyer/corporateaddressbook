@@ -16,6 +16,7 @@ import org.apache.http.conn.scheme.SocketFactory;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+@SuppressWarnings("deprecation")
 public class FakeSocketFactory implements SocketFactory, LayeredSocketFactory {
 
     private SSLContext sslcontext = null;

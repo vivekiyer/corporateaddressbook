@@ -9,12 +9,18 @@ package net.vivekiyer.GAL;
 public class Debug {
 	
 	// Set this to true to enable DEBUG messages
-	public static boolean Enabled = false;
+	public static boolean Enabled = true;;
 	
 	// StringBuffer that stores logs
-	private static final StringBuffer logger = new StringBuffer();
+	private static StringBuffer logger = new StringBuffer();
 	
 	public static void Log(String s){
 		logger.append(s+"\n");
 	}
+	
+	public static void printLog(){
+		System.out.println(logger.toString());
+		logger = new StringBuffer();
+	}
+	
 }
