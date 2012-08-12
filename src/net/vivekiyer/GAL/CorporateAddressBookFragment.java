@@ -50,8 +50,9 @@ import android.widget.TextView;
  */
 public class CorporateAddressBookFragment extends android.app.Fragment {
  
-	public interface OnContactSelectedListener {
-		public void OnContactSelected(Contact contact);
+	public interface ContactListListener {
+		public void onContactSelected(Contact contact);
+		public void onSearchCleared();
 	}
 	
 	// TAG used for logging
@@ -66,7 +67,7 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 	// Last search term
 	private String latestSearchTerm;
 
-	protected OnContactSelectedListener contactSelectedListener;
+	protected ContactListListener contactListListener;
 	
 	private Boolean isSelectable = false;
 
@@ -117,7 +118,7 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            this.contactSelectedListener = (OnContactSelectedListener) activity;
+            this.contactListListener = (ContactListListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnContactSelectedListener");
         }
@@ -145,8 +146,8 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 					.getItemAtPosition(position);
 
 			// Trigger callback so that the Activity can decide how to handle the click
-			assert(contactSelectedListener != null);
-			contactSelectedListener.OnContactSelected(selectedItem);			
+			assert(contactListListener != null);
+			contactListListener.onContactSelected(selectedItem);			
 		}
 	};
 
@@ -240,6 +241,7 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 	 * Clear the results from the listview
 	 */
 	protected void clearResult() {
+		contactListListener.onSearchCleared();
 		contactList = new Contact[0];
 
 		// Create a new array adapter and add the result to this
@@ -251,5 +253,7 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 		lv.setAdapter(listadapter);
 		TextView v = (TextView) getView().findViewById(R.id.resultheader);
 		v.setText(R.string.EnterSearchTerm);
+		
+		assert(contactListListener != null);
 	}
 };

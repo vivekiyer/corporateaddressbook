@@ -18,10 +18,11 @@ package net.vivekiyer.GAL;
 import java.util.Hashtable;
 import java.util.Set;
 
-import net.vivekiyer.GAL.CorporateAddressBookFragment.OnContactSelectedListener;
+import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -44,7 +45,7 @@ import android.widget.Toast;
  *         This class is the main entry point to the application
  */
 public class CorporateAddressBook extends Activity
-	implements OnContactSelectedListener, GALSearch.OnSearchCompletedListener
+	implements ContactListListener, GALSearch.OnSearchCompletedListener
 	{
 
 	// TAG used for logging
@@ -127,7 +128,10 @@ public class CorporateAddressBook extends Activity
 			CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) getFragmentManager()
 				.findFragmentById(R.id.main_fragment);
 			contacts.setIsSelectable(true);
-	    }
+			FragmentTransaction ft = getFragmentManager().beginTransaction();  
+			ft.hide(details);  
+			ft.commit();
+		}
 	    
 		final Intent intent = getIntent();
 		if (intent != null) {
@@ -176,8 +180,13 @@ public class CorporateAddressBook extends Activity
 //	};
 
 	private void performSearch(String name) {
-		latestSearchTerm = name;
 		
+		if(progressdialog != null) {
+			progressdialog.setMessage(getString(R.string.retrievingResults));
+			progressdialog.show();
+		}
+
+		latestSearchTerm = name;
 		
 		// Save search in recent list
 		final SearchRecentSuggestions suggestions = new SearchRecentSuggestions(
@@ -187,11 +196,6 @@ public class CorporateAddressBook extends Activity
 
 		// Launch the progress bar, so the user knows his request is being
 		// processed
-		if(progressdialog != null) {
-			progressdialog.setMessage(getString(R.string.retrievingResults));
-			progressdialog.show();
-		}
-
 		// Retrieve the results via an AsyncTask
 		GALSearch search = new GALSearch(activeSyncManager);
 		search.onSearchCompletedListener = this;
@@ -411,13 +415,22 @@ public class CorporateAddressBook extends Activity
 		    .findFragmentById(R.id.main_fragment);
 	    list.displayResult(contacts, searchTerm);
 
-	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
+	    resetAndHideDetails(fragmentManager);
+		    
+	}
+
+	private void resetAndHideDetails(final FragmentManager fragmentManager) {
+		CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
 	    	.findFragmentById(R.id.contact_fragment);
 		 
 	    if (details != null && details.isInLayout()) {
 	    	details.clear();
-	    }
-		    
+			FragmentTransaction ft = getFragmentManager().beginTransaction();  
+			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+			ft.hide(details);  
+			ft.commit();
+			fragmentManager.executePendingTransactions();
+		}
 	}
 
 	/*
@@ -449,7 +462,7 @@ public class CorporateAddressBook extends Activity
 
 
 	@Override
-	public void OnContactSelected(Contact contact) {
+	public void onContactSelected(Contact contact) {
 		// Create a parcel with the associated contact object
 		// This parcel is used to send data to the activity
 		
@@ -469,9 +482,18 @@ public class CorporateAddressBook extends Activity
 			startActivity(myIntent);
 	    } else {
 	        details.setContact(contact);
+			FragmentTransaction ft = getFragmentManager().beginTransaction();  
+			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+			ft.show(details);
+			ft.commit();
 	    }		
 	}
 	
+	@Override
+	public void onSearchCleared() {
+		resetAndHideDetails(getFragmentManager());
+	}
+
 	@Override
 	public boolean onSearchRequested() {
 		if(!Utility.isPreHoneycomb()) {
