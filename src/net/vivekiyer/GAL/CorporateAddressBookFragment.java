@@ -16,8 +16,7 @@
 package net.vivekiyer.GAL;
 
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import com.google.common.collect.HashMultimap;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -59,7 +58,7 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 	// private static String TAG = "CorporateAddressBook";
 
 	// Stores the list of contacts returned
-	private Hashtable<String, Contact> mContacts;
+	private HashMultimap<String, Contact> mContacts;
 
 	// List of names in the list view control
 	private Contact[] contactList;
@@ -199,7 +198,7 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 		super.onStop();
 	}
 
-	public void displayResult(Hashtable<String, Contact> contacts, String searchTerm) {
+	public void displayResult(HashMultimap<String, Contact> contacts, String searchTerm) {
 		this.mContacts = contacts;
 		this.latestSearchTerm = searchTerm;
 		this.displayResult();
@@ -220,9 +219,8 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 		contactList = new Contact[mContacts.size()];
 		
 		int i = 0;
-		for (final Enumeration<Contact> e = mContacts.elements(); e
-				.hasMoreElements();) {
-			contactList[i++] = e.nextElement();
+		for (Contact contact : mContacts.values()) {
+			contactList[i++] = contact;
 		}
 
 		Arrays.sort(contactList);

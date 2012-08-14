@@ -15,8 +15,9 @@
 
 package net.vivekiyer.GAL;
 
-import java.util.Hashtable;
 import java.util.Set;
+
+import com.google.common.collect.HashMultimap;
 
 import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
 import android.annotation.TargetApi;
@@ -382,32 +383,11 @@ public class CorporateAddressBook extends Activity
 				editor.putBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED, true);
 				editor.apply();
 			}
-		
-
-		// If we connected fine, load the last set of results
-		try {
-			searchResultXML = mPreferences.getString(
-					Configure.KEY_RESULTS_PREFERENCE, "");
-			if (searchResultXML.equalsIgnoreCase(""))
-				return true;
-
-			GALSearch search = new GALSearch(activeSyncManager);
-			int res = search.parseXML(searchResultXML);
-			if(200 == res)
-			{
-				Hashtable<String, Contact> contacts = search.getContacts();
-			    displaySearchResult(contacts, null);
-			}
-
-		} catch (final Exception e) {
-			Toast.makeText(CorporateAddressBook.this, e.toString(),
-					Toast.LENGTH_LONG).show();
-		}
 
 		return true;
 	}
 
-	private void displaySearchResult(Hashtable<String, Contact> contacts, String searchTerm) {
+	private void displaySearchResult(HashMultimap<String, Contact> contacts, String searchTerm) {
 		
 		final FragmentManager fragmentManager = getFragmentManager();
 		
@@ -513,7 +493,7 @@ public class CorporateAddressBook extends Activity
 
 	@Override
 	public void OnSearchCompleted(int result,
-			Hashtable<String, Contact> contacts) {
+			HashMultimap<String, Contact> contacts) {
 		if(progressdialog != null) {
 			progressdialog.dismiss();
 		}
