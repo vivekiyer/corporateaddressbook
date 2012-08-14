@@ -129,6 +129,7 @@ public class CorporateAddressBook extends Activity
 			CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) getFragmentManager()
 				.findFragmentById(R.id.main_fragment);
 			contacts.setIsSelectable(true);
+			contacts.setViewBackground(false);
 			FragmentTransaction ft = getFragmentManager().beginTransaction();  
 			ft.hide(details);  
 			ft.commit();
@@ -400,9 +401,14 @@ public class CorporateAddressBook extends Activity
 	}
 
 	private void resetAndHideDetails(final FragmentManager fragmentManager) {
+
+		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
+		    .findFragmentById(R.id.main_fragment);
+		list.setViewBackground(false);
+		
 		CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
-	    	.findFragmentById(R.id.contact_fragment);
-		 
+		    	.findFragmentById(R.id.contact_fragment);
+			 
 	    if (details != null && details.isInLayout()) {
 	    	details.clear();
 			FragmentTransaction ft = getFragmentManager().beginTransaction();  
@@ -446,7 +452,9 @@ public class CorporateAddressBook extends Activity
 		// Create a parcel with the associated contact object
 		// This parcel is used to send data to the activity
 		
-	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) getFragmentManager()
+		final FragmentManager fragmentManager = getFragmentManager();
+		
+	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
 		            .findFragmentById(R.id.contact_fragment);
 		 
 	    if (details == null || !details.isInLayout()) {
@@ -461,6 +469,10 @@ public class CorporateAddressBook extends Activity
 			myIntent.putExtras(b);
 			startActivity(myIntent);
 	    } else {
+			CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
+				.findFragmentById(R.id.main_fragment);
+			list.setViewBackground(true);
+				
 	        details.setContact(contact);
 			FragmentTransaction ft = getFragmentManager().beginTransaction();  
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);

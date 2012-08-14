@@ -69,6 +69,8 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 	protected ContactListListener contactListListener;
 	
 	private Boolean isSelectable = false;
+	
+	private Boolean isDualFragment = false;
 
 	public Boolean getIsSelectable() {
 		return isSelectable;
@@ -77,6 +79,14 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 	public void setIsSelectable(Boolean isSelectable) {
 		this.isSelectable = isSelectable;
 	    setSelectionMode(getView(), isSelectable);
+	}
+
+	public Boolean getIsDualFragment() {
+		return isDualFragment;
+	}
+
+	public void setIsDualFragment(Boolean isDualFragment) {
+		this.isDualFragment = isDualFragment;
 	}
 
 	private void setSelectionMode(View view, Boolean isSelectable) {
@@ -146,9 +156,20 @@ public class CorporateAddressBookFragment extends android.app.Fragment {
 
 			// Trigger callback so that the Activity can decide how to handle the click
 			assert(contactListListener != null);
-			contactListListener.onContactSelected(selectedItem);			
+			contactListListener.onContactSelected(selectedItem);		
 		}
 	};
+	
+	protected void setViewBackground(Boolean shaded){
+		if(shaded){
+			getView().findViewById(R.id.resultheader).setBackgroundDrawable(getResources().getDrawable(R.drawable.header_border_shading));
+			getView().findViewById(R.id.contactsListView).setBackgroundDrawable(getResources().getDrawable(R.drawable.border_shading));
+		}
+		else{
+			getView().findViewById(R.id.resultheader).setBackgroundColor(getResources().getColor(R.color.header_background));
+			getView().findViewById(R.id.contactsListView).setBackgroundColor(getResources().getColor(R.color.contact_list_background));
+		}
+	}
 
 	/*
 	 * (non-Javadoc)
