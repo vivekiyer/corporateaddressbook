@@ -154,8 +154,10 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 	    	if(item!=null)
 	    		item.setEnabled(enabled);
 	    }
-		else {
-			getView().findViewById(R.id.save_contact).setVisibility(enabled ? View.VISIBLE : View.GONE);
+		else if(getView() != null){
+			View saveContact = getView().findViewById(R.id.save_contact);
+			if(saveContact != null)
+				saveContact.setVisibility(enabled ? View.VISIBLE : View.GONE);
 		}
 	}
 
