@@ -3,30 +3,29 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@color/details_list_background"
     android:orientation="vertical"
     android:padding="5dp"
-    android:background="@color/details_list_background"
-    tools:context=".CorporateContactRecord" >
+    tools:context=".CorporateContactRecordFragment" >
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/contactHeader"
         android:layout_width="fill_parent"
-        android:layout_height="?android:attr/listPreferredItemHeight"
-        android:background="@color/holo_blue_dark" >
+        android:layout_height="wrap_content"
+        android:background="@color/holo_blue_dark"
+        android:padding="6dip" >
 
         <QuickContactBadge
             android:id="@+id/contactPicture"
             style="?android:attr/quickContactBadgeStyleWindowLarge"
             android:layout_marginRight="6dp"
-            android:contentDescription="@string/contactPicture"
-            android:padding="6dp" />
+            android:contentDescription="@string/contactPicture" />
 
         <LinearLayout
             android:id="@+id/textContainer"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
+            android:layout_height="fill_parent"
             android:layout_marginRight="6dp"
             android:layout_weight="1"
             android:orientation="vertical" >
@@ -36,8 +35,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:layout_marginRight="6dp"
-                android:layout_marginTop="6dp"
                 android:singleLine="true"
                 android:text="@string/dummyContactName"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -45,15 +42,23 @@
 
             <TextView
                 android:id="@+id/bottomtext"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
-                android:paddingTop="0dip"
                 android:singleLine="true"
                 android:text="@string/dummyRoleAndCompany"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@android:color/secondary_text_dark" />
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/save_contact"
+            style="@style/flatImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="6dp"
+            android:contentDescription="@string/actions"
+            android:src="@drawable/social_add_person_dark" />
 
         <ImageButton
             android:id="@+id/contact_actions"

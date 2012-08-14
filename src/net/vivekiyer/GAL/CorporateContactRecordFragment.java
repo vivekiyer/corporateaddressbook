@@ -97,13 +97,14 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 			getView().findViewById(R.id.contactHeader).setVisibility(View.GONE);
 		
 		ImageButton contactActions = (ImageButton) getView().findViewById(R.id.contact_actions);
-		if(isDualFrame) {
-			assert(contactActions != null);
-			contactActions.setOnClickListener(this);
-		}
-		else {
-			contactActions.setVisibility(View.GONE);
-		}
+		assert(contactActions != null);
+		contactActions.setOnClickListener(this);
+		contactActions.setVisibility(View.GONE);
+
+		ImageButton saveContacts = (ImageButton) getView().findViewById(R.id.save_contact);
+		assert(contactActions != null);
+		saveContacts.setOnClickListener(this);
+		saveContacts.setVisibility(View.GONE);
 	};
 	
 	public void setContact(Contact contact) {
@@ -136,13 +137,7 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 		contactWriter = new ContactWriterSdk5(App.getInstance(), mContact);
 
 	    view.findViewById(R.id.contactHeader).setVisibility(View.VISIBLE);
-	    if(this.isDualFrame) {
-	    	view.findViewById(R.id.contact_actions).setVisibility(View.GONE);
-	    	setSaveMenuEnabled(true);
-	    }
-//	    else {
-//	    	setSaveMenuEnabled(false);
-//	    }
+    	setSaveMenuEnabled(true);
 	}
 	
 	public void clear() {
@@ -159,6 +154,9 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 	    	if(item!=null)
 	    		item.setEnabled(enabled);
 	    }
+		else {
+			getView().findViewById(R.id.save_contact).setVisibility(enabled ? View.VISIBLE : View.GONE);
+		}
 	}
 
 	/**
@@ -226,6 +224,8 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 				popup.show();
 			}
 			break;
+		case R.id.save_contact:
+			this.contactWriter.saveContact(getView().getContext());
 		default:
 			break;	
 		}
@@ -310,12 +310,11 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 //	@TargetApi(11)
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		if(isDualFrame) {
+		if(!isDualFrame) {
 			inflater.inflate(R.menu.contact_actions_menu, menu);
 			this.fragmentMenu = menu;
-			setSaveMenuEnabled(false);
 		}
-
+		setSaveMenuEnabled(this.mContact != null);
 	}
 
 	/*
