@@ -48,10 +48,9 @@ import android.widget.Toast;
  * @author vivek
  * 
  */
-@TargetApi(11)
 @SuppressWarnings("deprecation")
-public class CorporateContactRecordFragment extends android.app.ListFragment
-	implements OnClickListener, PopupMenu.OnMenuItemClickListener {
+public class CorporateContactRecordFragment extends android.support.v4.app.ListFragment
+	implements OnClickListener {
 
 	private Menu fragmentMenu = null;
 	private Contact mContact = null;
@@ -209,6 +208,7 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 		}
 	}
 	
+	@TargetApi(11)
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()) {
@@ -219,7 +219,7 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 			}
 			else {
 				PopupMenu popup = new PopupMenu(getActivity(), v);
-				popup.setOnMenuItemClickListener(this);
+				popup.setOnMenuItemClickListener(HoneycombListeners.getPopupMenuListener(this));
 				MenuInflater inflater = popup.getMenuInflater();
 			
 				inflater.inflate(R.menu.contact_actions_menu, popup.getMenu());			
@@ -240,24 +240,23 @@ public class CorporateContactRecordFragment extends android.app.ListFragment
 		v.getLocationInWindow(xy);
 		Rect rect = new Rect(xy[0], xy[1], xy[0]+v.getWidth(), xy[1]+v.getHeight());
 		final QuickActionWindow qa = new QuickActionWindow(v.getContext(), v, rect);
-
 		qa.addItem(R.drawable.social_add_person, R.id.saveContact, this);
 		v.getLocationOnScreen(xy);
 		qa.show(xy[0] + v.getWidth()/2);
 	}
 	
-	@Override
-	public boolean onMenuItemClick(MenuItem item) {
-		switch(item.getItemId()){
-		case R.id.saveContact:
-			this.contactWriter.saveContact(getView().getContext());
-			return true;
-		default:
-			break;
-		}
-		return false;
-	}
-
+//	@Override
+//	public boolean onMenuItemClick(MenuItem item) {
+//		switch(item.getItemId()){
+//		case R.id.saveContact:
+//			this.contactWriter.saveContact(getView().getContext());
+//			return true;
+//		default:
+//			break;
+//		}
+//		return false;
+//	}
+//
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item

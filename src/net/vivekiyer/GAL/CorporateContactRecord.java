@@ -17,7 +17,7 @@ package net.vivekiyer.GAL;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
@@ -39,10 +39,11 @@ import android.widget.SearchView;
  * @author vivek
  * 
  */
-public class CorporateContactRecord extends Activity {
+public class CorporateContactRecord extends FragmentActivity {
 
 	private SearchView searchView;
 
+	@TargetApi(11)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,7 +53,7 @@ public class CorporateContactRecord extends Activity {
 
 		Contact contact = b.getParcelable("net.vivekiyer.GAL");
 
-		CorporateContactRecordFragment contacts = (CorporateContactRecordFragment) getFragmentManager().findFragmentById(R.id.contact_fragment);
+		CorporateContactRecordFragment contacts = (CorporateContactRecordFragment) getSupportFragmentManager().findFragmentById(R.id.contact_fragment);
 		contacts.setIsDualFrame(false);
 		contacts.setContact(contact);
 
@@ -127,6 +128,7 @@ public class CorporateContactRecord extends Activity {
 		}
 	}
 	
+	@TargetApi(11)
 	@Override
 	public boolean onSearchRequested() {
 		if(!Utility.isPreHoneycomb()) {

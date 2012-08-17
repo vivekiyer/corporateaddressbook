@@ -49,7 +49,7 @@ public class CommandRequest {
 		authString = _authString;
 		useSSL = _useSSL;
 		protocolVersion = _protocolVersion;
-		if(protocolVersion.isEmpty() == false)
+		if(protocolVersion.length() > 0)
 			protocolVersionFloat = Float.parseFloat(protocolVersion);
 		acceptAllCerts = _acceptAllCerts;
 		policyKey = _policyKey;

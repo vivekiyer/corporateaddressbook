@@ -47,7 +47,7 @@ import android.widget.TextView;
  * @author danm
  *
  */
-public class CorporateAddressBookFragment extends android.app.Fragment {
+public class CorporateAddressBookFragment extends android.support.v4.app.Fragment {
  
 	public interface ContactListListener {
 		public void onContactSelected(Contact contact);

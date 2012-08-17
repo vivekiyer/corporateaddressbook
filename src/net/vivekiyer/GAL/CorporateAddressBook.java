@@ -22,8 +22,9 @@ import com.google.common.collect.HashMultimap;
 import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -45,7 +46,7 @@ import android.widget.Toast;
  * 
  *         This class is the main entry point to the application
  */
-public class CorporateAddressBook extends Activity
+public class CorporateAddressBook extends FragmentActivity
 	implements ContactListListener, GALSearch.OnSearchCompletedListener
 	{
 
@@ -121,16 +122,16 @@ public class CorporateAddressBook extends Activity
 	protected void onStart() {
 		super.onStart();
 		
-		FragmentManager fm = getFragmentManager();
+		FragmentManager fm = getSupportFragmentManager();
 	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) fm
 		    	.findFragmentById(R.id.contact_fragment);
 			 
 	    if (details != null && details.isInLayout()) {
-			CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) getFragmentManager()
+			CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.main_fragment);
 			contacts.setIsSelectable(true);
 			contacts.setViewBackground(false);
-			FragmentTransaction ft = getFragmentManager().beginTransaction();  
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
 			ft.hide(details);  
 			ft.commit();
 		}
@@ -382,7 +383,7 @@ public class CorporateAddressBook extends Activity
 				// settings
 				SharedPreferences.Editor editor = mPreferences.edit();
 				editor.putBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED, true);
-				editor.apply();
+				editor.commit();
 			}
 
 		return true;
@@ -390,7 +391,7 @@ public class CorporateAddressBook extends Activity
 
 	private void displaySearchResult(HashMultimap<String, Contact> contacts, String searchTerm) {
 		
-		final FragmentManager fragmentManager = getFragmentManager();
+		final FragmentManager fragmentManager = getSupportFragmentManager();
 		
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
 		    .findFragmentById(R.id.main_fragment);
@@ -411,7 +412,7 @@ public class CorporateAddressBook extends Activity
 			 
 	    if (details != null && details.isInLayout()) {
 	    	details.clear();
-			FragmentTransaction ft = getFragmentManager().beginTransaction();  
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
 			ft.hide(details);  
 			ft.commit();
@@ -452,7 +453,7 @@ public class CorporateAddressBook extends Activity
 		// Create a parcel with the associated contact object
 		// This parcel is used to send data to the activity
 		
-		final FragmentManager fragmentManager = getFragmentManager();
+		final FragmentManager fragmentManager = getSupportFragmentManager();
 		
 	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
 		            .findFragmentById(R.id.contact_fragment);
@@ -474,7 +475,7 @@ public class CorporateAddressBook extends Activity
 			list.setViewBackground(true);
 				
 	        details.setContact(contact);
-			FragmentTransaction ft = getFragmentManager().beginTransaction();  
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 			ft.show(details);
 			ft.commit();
@@ -483,9 +484,10 @@ public class CorporateAddressBook extends Activity
 	
 	@Override
 	public void onSearchCleared() {
-		resetAndHideDetails(getFragmentManager());
+		resetAndHideDetails(getSupportFragmentManager());
 	}
 
+	@TargetApi(11)
 	@Override
 	public boolean onSearchRequested() {
 		if(!Utility.isPreHoneycomb()) {
