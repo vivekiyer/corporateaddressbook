@@ -160,13 +160,18 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		
 		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");		
 		
-		if(splits.length != 2){
+		if(splits.length == 1) {
+			domain = "";
+			username = splits[0];
+		}
+		else if (splits.length == 2) {
+			domain = splits[0];
+			username = splits[1];
+		}
+		else {
 			showAlert("Domain name and username must be in the format DOMAIN\\Username");
 			return;
 		}
-			
-		domain = splits[0];
-		username = splits[1];
 		
 		if (username.equalsIgnoreCase("")) {
 			showAlert("Please provide a valid username");
@@ -188,7 +193,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// Lets validate it	
 		
 		activeSyncManager = new ActiveSyncManager(
-				getTextFromId(R.id.txtServerName),
+				getTextFromId(R.id.txtServerName).trim(),
 				domain,
 				username,
 				getTextFromId(R.id.txtPassword),
@@ -273,7 +278,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		else{
 			SharedPreferences.Editor editor = mPreferences.edit();
 			editor.putString(KEY_SERVER_PREFERENCE,
-					getTextFromId(R.id.txtServerName));
+					getTextFromId(R.id.txtServerName).trim());
 			editor.putString(KEY_DOMAIN_PREFERENCE,
 					domain);
 			editor.putString(KEY_USERNAME_PREFERENCE,
