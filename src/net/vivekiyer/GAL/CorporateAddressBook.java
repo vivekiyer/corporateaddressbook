@@ -405,19 +405,24 @@ public class CorporateAddressBook extends FragmentActivity
 
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
 		    .findFragmentById(R.id.main_fragment);
-		list.setViewBackground(false);
 		
 		CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
 		    	.findFragmentById(R.id.contact_fragment);
 			 
 	    if (details != null && details.isInLayout()) {
-	    	details.clear();
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
-			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+			//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+
+			// Below does not work since it clears the detail fragment before anim starts,
+			// making it look rather weird. Better off w/o anims, unfortunately.
+			//ft.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
 			ft.hide(details);  
 			ft.commit();
 			fragmentManager.executePendingTransactions();
+	    	details.clear();
 		}
+
+	    list.setViewBackground(false);
 	}
 
 	/*
@@ -475,8 +480,12 @@ public class CorporateAddressBook extends FragmentActivity
 			list.setViewBackground(true);
 				
 	        details.setContact(contact);
+	        
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
-			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+			//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+			// Below does not work since it resizes the result fragment before anim starts,
+			// making it look rather weird. Better off w/o anims, unfortunately.
+			//ft.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
 			ft.show(details);
 			ft.commit();
 	    }		
