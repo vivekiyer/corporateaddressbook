@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_selected="true" android:state_single="@drawable/list_selected" android:drawable="@drawable/list_selected" />
+    <item android:state_single="true" android:drawable="@drawable/list_selected" ></item>
+    <item android:state_active="true" android:drawable="@drawable/list_selected" ></item>
+</selector>

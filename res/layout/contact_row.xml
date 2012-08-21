@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<net.vivekiyer.GAL.ContactRowView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="right"
+    android:orientation="horizontal" >
+
+    <RelativeLayout
+        android:id="@+id/ContactPicText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/imageView1"
+        android:paddingBottom="6dp"
+        android:paddingLeft="6dp"
+        android:paddingTop="6dp" >
+
+        <QuickContactBadge
+            android:id="@+id/contactPicture"
+            style="?android:attr/quickContactBadgeStyleSmallWindowLarge"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="6dp"
+            android:contentDescription="@string/contactPicture" />
+
+        <TextView
+            android:id="@+id/toptext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/contactPicture"
+            android:singleLine="true"
+            android:text="@string/dummyContactName" />
+
+        <TextView
+            android:id="@+id/bottomtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/toptext"
+            android:layout_below="@+id/toptext"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="@string/dummyRoleAndCompany"
+            android:textColor="@android:color/secondary_text_dark" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/selectedMark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/icon"
+        android:src="@drawable/selection_marker" />
+
+</net.vivekiyer.GAL.ContactRowView>

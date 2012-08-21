@@ -27,7 +27,7 @@ import android.os.Parcelable;
  *         between two activities without loss of data. It does this by writing
  *         the display name followed by all the contacts details into the parcel
  */
-public class Contact implements Parcelable {
+public class Contact implements Parcelable, Comparable<Contact> {
 
 	private ArrayList<KeyValuePair> Details;
 
@@ -37,9 +37,9 @@ public class Contact implements Parcelable {
 
 	private String officeLocation = "";
 
-	private String title = "";
+	private String title;
 
-	private String company = "";
+	private String company;
 
 	private String alias = "";
 
@@ -95,10 +95,30 @@ public class Contact implements Parcelable {
 	}
 
 	public String getTitle() {
+		if(title == null)
+			for(KeyValuePair kvp : Details)
+			{
+				if(kvp.getKey().equalsIgnoreCase("title"))
+				{
+					title = kvp.getValue();
+					break;
+				}
+				title = "";
+			}
 		return title;
 	}
 
 	public String getCompany() {
+		if(company == null)
+			for(KeyValuePair kvp : Details)
+			{
+				if(kvp.getKey().equalsIgnoreCase("Company"))
+				{
+					company = kvp.getValue();
+					break;
+				}
+				company = "";
+			}
 		return company;
 	}
 
@@ -123,6 +143,16 @@ public class Contact implements Parcelable {
 	}
 
 	public String getEmail() {
+		if(email == null)
+			for(KeyValuePair kvp : Details)
+			{
+				if(kvp.getKey().equalsIgnoreCase("email"))
+				{
+					email = kvp.getValue();
+					break;
+				}
+				email = "";
+			}
 		return email;
 	}
 
@@ -147,7 +177,7 @@ public class Contact implements Parcelable {
 		Details = new ArrayList<KeyValuePair>();
 	}
 
-	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+	public static final Parcelable.Creator<Contact> CREATOR = new Parcelable.Creator<Contact>() {
 		public Contact createFromParcel(Parcel in) {
 			return new Contact(in);
 		}
@@ -237,5 +267,10 @@ public class Contact implements Parcelable {
 		}
 		
 		convertedToFields = true;
+	}
+
+	@Override
+	public int compareTo(Contact another) {
+		return(this.getDisplayName().compareTo(another.getDisplayName()));
 	}
 }

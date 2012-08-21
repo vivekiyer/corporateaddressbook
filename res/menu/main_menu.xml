@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/settings"
-          android:icon="@drawable/ic_menu_preferences"
-          android:title="Settings" />
-<item android:id="@+id/clear" android:title="Clear Results" android:icon="@drawable/ic_menu_clear"></item>
-<!-- item android:id="@+id/debug" android:title="Send Debug Log" android:icon="@drawable/ic_menu_debug"></item> -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_search"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="always|withText"
+        android:title="@string/searchDirectory"
+        android:titleCondensed="@string/search" android:menuCategory="container" android:orderInCategory="1">
+    </item>
+    <item
+        android:id="@+id/clearSearchHistory"
+        android:showAsAction="never|withText"
+        android:title="@string/clearHistory" android:orderInCategory="500" android:menuCategory="secondary">
+    </item>
+    <item
+        android:id="@+id/settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:showAsAction="never"
+        android:title="@string/settings" android:orderInCategory="1000" android:menuCategory="secondary"/>
+
 </menu>

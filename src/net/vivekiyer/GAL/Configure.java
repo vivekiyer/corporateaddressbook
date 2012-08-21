@@ -15,10 +15,14 @@
 
 package net.vivekiyer.GAL;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.KeyEvent;
@@ -54,12 +58,14 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 	public static final String KEY_ACCEPT_ALL_CERTS = "acceptallcerts";
 	public static final String KEY_RESULTS_PREFERENCE = "results";
 	public static final String KEY_SEARCH_TERM_PREFERENCE = "searchTerm";
+	public static final String KEY_SUCCESSFULLY_CONNECTED = "successfullyConnected";
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 * 
 	 * Called when the configuration pane is first launched
 	 */
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -72,11 +78,10 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// Get the preferences that were entered by the user and display those to the user 
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);			
 		
-		setTextForId(
-				R.id.txtDomainUserName, 
-					mPreferences.getString(KEY_DOMAIN_PREFERENCE , "") + 
-					"\\" + 
-					mPreferences.getString(KEY_USERNAME_PREFERENCE, ""));
+		String domain = mPreferences.getString(KEY_DOMAIN_PREFERENCE , ""), user = mPreferences.getString(KEY_USERNAME_PREFERENCE, "");
+		user = domain + (domain.length() > 0 ? "\\" : "") + user;
+		if (user.length() > 0)
+			setTextForId(R.id.txtDomainUserName, user);
 		setTextForId(
 				R.id.txtPassword, 
 				mPreferences.getString(KEY_PASSWORD_PREFERENCE, ""));
@@ -101,6 +106,12 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 			}
 		});
 		
+		if(!Utility.isPreHoneycomb())
+		{
+			ActionBar actionBar = getActionBar();
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
+		}
 	}	
 	
 	/**
@@ -154,32 +165,37 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// Make sure that the user has entered the username
 		// password and the server name
 		if (getTextFromId(R.id.txtDomainUserName) == "") {
-			showAlert("Please provide a valid Domain and username");
+			showAlert(getString(R.string.valid_domain_and_username_error));
 			return;
 		}
 		
 		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");		
 		
-		if(splits.length != 2){
-			showAlert("Domain name and username must be in the format DOMAIN\\Username");
+		if(splits.length == 1) {
+			domain = "";
+			username = splits[0];
+		}
+		else if (splits.length == 2) {
+			domain = splits[0];
+			username = splits[1];
+		}
+		else {
+			showAlert(getString(R.string.domain_and_username_format_error));
 			return;
 		}
-			
-		domain = splits[0];
-		username = splits[1];
 		
 		if (username.equalsIgnoreCase("")) {
-			showAlert("Please provide a valid username");
+			showAlert(getString(R.string.invalid_username_error));
 			return;
 		}
 		
 		if (getTextFromId(R.id.txtPassword).equalsIgnoreCase("")){
-			showAlert("Please provide a valid password");
+			showAlert(getString(R.string.invalid_password_error));
 			return;			
 		}
 			
 		if (getTextFromId(R.id.txtServerName).equalsIgnoreCase("") ){
-			showAlert("Please provide a valid Exchange URL");
+			showAlert(getString(R.string.invalid_exchange_url_error));
 			return;
 		}		
 		
@@ -188,7 +204,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// Lets validate it	
 		
 		activeSyncManager = new ActiveSyncManager(
-				getTextFromId(R.id.txtServerName),
+				getTextFromId(R.id.txtServerName).trim(),
 				domain,
 				username,
 				getTextFromId(R.id.txtPassword),
@@ -202,13 +218,13 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		// That means the URL is just bad
 		// display an error
 		if(!activeSyncManager.Initialize()){
-			showAlert("Error connecting to server. Please check your settings");
+			showAlert(getString(R.string.please_check_settings));
 			return;
 		}
 		
 		progressdialog = new ProgressDialog(this);
 		progressdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		progressdialog.setMessage("Validating settings");
+		progressdialog.setMessage(getString(R.string.validating_settings));
 		progressdialog.setCancelable(false);
 		progressdialog.show();		
 		ConnectionChecker checker = new ConnectionChecker(this);
@@ -251,16 +267,15 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 				// All other error codes are unknown
 				switch (statusCode){
 				case 401: // UNAUTHORIZED
-					showAlert("Authentication failed. Please check your credentials");
+					showAlert(getString(R.string.authentication_failed_error));
 					break;
 				default:
 					StringBuilder sb = new StringBuilder();
-					sb.append("Connection to server failed with error code:");
-					sb.append(statusCode);
+					sb.append(String.format(getString(R.string.connection_failed_with_error_code), statusCode));
 					
 					if(errorString.compareToIgnoreCase("") != 0){
-						sb.append("\n");
-						sb.append("Error Detail:\n");
+						sb.append(System.getProperty("line.separator"));
+						sb.append(getString(R.string.error_detail));
 						sb.append(errorString);
 					}
 					
@@ -273,7 +288,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 		else{
 			SharedPreferences.Editor editor = mPreferences.edit();
 			editor.putString(KEY_SERVER_PREFERENCE,
-					getTextFromId(R.id.txtServerName));
+					getTextFromId(R.id.txtServerName).trim());
 			editor.putString(KEY_DOMAIN_PREFERENCE,
 					domain);
 			editor.putString(KEY_USERNAME_PREFERENCE,
@@ -290,6 +305,8 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 					activeSyncManager.getDeviceId());
 			editor.putString(KEY_POLICY_KEY_PREFERENCE,
 					activeSyncManager.getPolicyKey());
+			editor.putBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED,
+					true);
 
 			// Commit the edits!
 			editor.commit();		

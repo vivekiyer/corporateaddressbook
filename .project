@@ -3,6 +3,7 @@
 	<name>Corporate AddressBook</name>
 	<comment></comment>
 	<projects>
+		<project>com.devoteam.quickaction.MyTest</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

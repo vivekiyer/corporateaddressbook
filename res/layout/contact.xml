@@ -1,22 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-   android:orientation="vertical"
-   android:layout_width="fill_parent"
-   android:layout_height="fill_parent"
-   >
-<TextView
-    android:id="@+id/displayName"
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="22sp"
-    android:background="#808080"
-    android:textColor="#ffffff"
-    android:padding="10dip"    
-    />
-<ListView
-    android:id="@+id/android:list"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:longClickable="true"
-    />
+    android:layout_height="fill_parent"
+    android:background="@color/details_list_background"
+    android:orientation="vertical"
+    android:padding="5dp"
+    tools:context=".CorporateContactRecordFragment" >
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/contactHeader"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/holo_blue_dark"
+        android:padding="6dip" >
+
+        <QuickContactBadge
+            android:id="@+id/contactPicture"
+            style="?android:attr/quickContactBadgeStyleWindowLarge"
+            android:layout_marginRight="6dp"
+            android:contentDescription="@string/contactPicture" />
+
+        <LinearLayout
+            android:id="@+id/textContainer"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="6dp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/toptext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:singleLine="true"
+                android:text="@string/dummyContactName"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/bottomtext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text="@string/dummyRoleAndCompany"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/secondary_text_dark" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/save_contact"
+            style="@style/flatImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="6dp"
+            android:contentDescription="@string/actions"
+            android:src="@drawable/social_add_person_dark" />
+
+        <ImageButton
+            android:id="@+id/contact_actions"
+            style="@style/flatImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:contentDescription="@string/actions"
+            android:src="@drawable/ic_action_more_dark" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:longClickable="true"
+        tools:listitem="@layout/detail_row" />
+
+    <android.widget.TextView
+        android:id="@android:id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_a_contact_to_view_details"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
 </LinearLayout>

@@ -15,9 +15,9 @@
 
 package net.vivekiyer.GAL;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.Build;
-import android.view.LayoutInflater;
 
 /**
  * This abstract class defines SDK-independent API for communication with
@@ -95,7 +95,7 @@ public abstract class ContactWriter {
 		return sInstance;
 	}
 
-	public abstract void saveContact();	
-	public abstract void Initialize(Context ctx, LayoutInflater lf, Contact contact);
+	public abstract void Initialize(Application appCtx, Contact contact);
 	public abstract void cleanUp();
+	public abstract void saveContact(Context ctx);
 }

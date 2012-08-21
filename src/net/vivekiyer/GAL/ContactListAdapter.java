@@ -15,52 +15,50 @@
 
 package net.vivekiyer.GAL;
 
-import java.util.ArrayList;
-
-import net.vivekiyer.GAL.KeyValuePair.Type;
-
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
 /**
- * @author Vivek Iyer
- *
- * This class is responsible for displaying the contact data in a list
+ * 
+ * This class is responsible for displaying the contact data in a list.
+ * <p/>
  * It beautifies the list by displaying the attribute on the top left 
  * and the actual value below that. It also automatically finds phone numbers
- * and email addresses, and provides action buttons if any of those are found
+ * and email addresses, and provides action buttons if any of those are found.
+ * 
+ * @author Vivek Iyer
+ *
  */
-public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {	
+public class ContactListAdapter extends ArrayAdapter<Contact> {	
 	
 	//private static String TAG = "ContactListAdapter";
 	
 	/**
+	 * Adds the contact details to the array adapter
+	 * 
 	 * @param context 
 	 * @param textViewResourceId 
 	 * @param kvps The contact details
 	 * 
-	 * Adds the contact details to the array adapter
 	 */
 	public ContactListAdapter(Context context, int textViewResourceId,
-			ArrayList<KeyValuePair> kvps) {
+			Contact[] cs) {
 		super(context, textViewResourceId);
 
-		for (KeyValuePair kvp : kvps)
-			this.add(kvp);
+		for (Contact c : cs)
+			this.add(c);
 	}
 
 	/* (non-Javadoc)
+	 * Displays the contact details in the UI
 	 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
 	 * 
-	 * Displays the contact details in the UI
 	 */
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -68,56 +66,43 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 		if (v == null) {
 			LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
 					Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(R.layout.row, null);
+			v = vi.inflate(R.layout.contact_row, null);
 		}
 
-		KeyValuePair kvp = this.getItem(position);
-		if (kvp != null) {
+		Contact c = this.getItem(position);
+		if (c != null) {
 			TextView tt = (TextView) v.findViewById(R.id.toptext);
 			TextView bt = (TextView) v.findViewById(R.id.bottomtext);
 
 			// Set the top text
 			if (tt != null) {
-				tt.setText(kvp.getKey());
+				tt.setText(c.getDisplayName());
 			}
 			
 			// Set the bottom text
 			if (bt != null) {
-				bt.setText(kvp.getValue());
+				String s;
+				if((s = c.getTitle()).length() != 0)
+					s = s + ", ";
+				{
+					bt.setText(s + c.getCompany());
+				}
 			}
 
+			QuickContactBadge qcb = (QuickContactBadge) v.findViewById(R.id.contactPicture);
+			qcb.assignContactFromEmail(c.getEmail(), true); 
+			qcb.setMode(ContactsContract.QuickContact.MODE_LARGE);
+			v.setTag(c);			
+			qcb.bringToFront();
 			// If the toptext contains a phone
 			// Set the icon to phone and message
-			String topText = kvp.getKey().toLowerCase();
-			ImageView iv2 = (ImageView) v.findViewById(R.id.icon2);
+//			ImageView iv2 = (ImageView) v.findViewById(R.id.contactPicture);
+//			
+//			// Set the on click listeners
+//			iv2.setOnClickListener(mIconListener2);
+//			
+//			iv2.setTag(c);		
 			
-			// Set the on click listeners
-			iv2.setOnClickListener(mIconListener2);
-			
-			// Display the sms and phone icon for mobile phones
-			if (topText.contains("mobilephone")) {
-				kvp.set_type(Type.MOBILE);
-				iv2.setImageResource(R.drawable.call_contact);
-				iv2.setVisibility(android.view.View.VISIBLE);
-			}
-			// For home and work phones display only the call icon
-			else if(topText.contains("phone")){
-				kvp.set_type(Type.PHONE);
-				iv2.setImageResource(R.drawable.call_contact);
-				iv2.setVisibility(android.view.View.VISIBLE);
-			}
-			// For email addresses, display the email icon
-			else if(topText.contains("email")){
-				kvp.set_type(Type.EMAIL);
-				iv2.setImageResource(R.drawable.ic_dialog_email);
-				iv2.setVisibility(android.view.View.VISIBLE);
-			}
-			// No icon for everything else
-			else{
-				kvp.set_type(Type.OTHER);
-				iv2.setVisibility(android.view.View.INVISIBLE);
-			}
-			iv2.setTag(kvp);			
 		}
 		return v;
 	}
@@ -125,31 +110,25 @@ public class ContactListAdapter extends ArrayAdapter<KeyValuePair> {
 	
 	// Create an anonymous implementation of OnItemClickListener
 	// Called when the user clicks the sms or the email icon
-	private OnClickListener mIconListener2 = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			// Get the tag, which will provide us the KVP
-			ImageView iv2 = (ImageView) v.findViewById(R.id.icon2);
-			KeyValuePair kvp = (KeyValuePair) iv2.getTag();
-			
-			// This can be an email or phone call
-			switch(kvp.get_type()){
-			case MOBILE:
-			case PHONE:
-				//Log.d(TAG, "SMS "+kvp.getValue());
-				Intent  intent = new Intent(
-						Intent.ACTION_DIAL, 
-						Uri.parse("tel:"+kvp.getValue()));
-				getContext().startActivity(intent);
-				break;
-			case EMAIL:
-				//Log.d(TAG, "Email "+kvp.getValue());				
-				intent = new Intent(android.content.Intent.ACTION_SEND);				
-				intent.setType("text/plain");
-				intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{kvp.getValue()});
-				getContext().startActivity(Intent.createChooser(intent, "Send mail..."));
-				break;
-			}
-		}		
-	};
+//	private OnClickListener mIconListener2 = new OnClickListener() {
+//		@Override
+//		public void onClick(View v) {
+//			// Get the tag, which will provide us the KVP
+////			ImageView iv2 = (ImageView) v.findViewById(R.id.contactPicture);
+//			Contact c = (Contact) v.getTag();
+//			
+//			// Create a parcel with the associated contact object
+//			// This parcel is used to send data to the activity
+//			final Bundle b = new Bundle();
+//			b.putParcelable("net.vivekiyer.GAL", c);
+//
+//			// Launch the activity
+//			final Intent myIntent = new Intent();
+//			myIntent.setClassName("net.vivekiyer.GAL",
+//					"net.vivekiyer.GAL.CorporateContactRecord");
+//
+//			myIntent.putExtras(b);
+//			getContext().startActivity(myIntent);
+//		}		
+//	};
 }

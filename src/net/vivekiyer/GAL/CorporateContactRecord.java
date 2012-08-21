@@ -15,22 +15,19 @@
 
 package net.vivekiyer.GAL;
 
-import android.app.ListActivity;
+import android.annotation.TargetApi;
+import android.app.ActionBar;
+import android.support.v4.app.FragmentActivity;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.ClipboardManager;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.TextView;
-
+import android.widget.SearchView;
 
 /**
  * @author Vivek Iyer 
@@ -40,140 +37,41 @@ import android.widget.TextView;
  */
 /**
  * @author vivek
- *
+ * 
  */
-public class CorporateContactRecord extends ListActivity{
+public class CorporateContactRecord extends FragmentActivity {
 
-	private Contact mContact;
-	private ContactListAdapter m_adapter;
-	private ContactWriter contactWriter;
-	
-	// Menu ids
-	private static final int MENU_ID_COPY_TO_CLIPBOARD = 0;
-	private static final int MENU_ID_EMAIL = 1;
-	private static final int MENU_ID_CALL = 2;
-	private static final int MENU_ID_EDIT_BEFORE_CALL = 3;
-	
+	private SearchView searchView;
 
+	@TargetApi(11)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.contact_fragment);
 
-		Bundle b = getIntent().getExtras();
+		final Bundle b = getIntent().getExtras();
 
-		mContact = b.getParcelable("net.vivekiyer.GAL");
+		Contact contact = b.getParcelable("net.vivekiyer.GAL");
 
-		setContentView(R.layout.contact);
-		this.m_adapter = new ContactListAdapter(this, R.layout.row,
-				mContact.getDetails());
-		setListAdapter(this.m_adapter);
+		CorporateContactRecordFragment contacts = (CorporateContactRecordFragment) getSupportFragmentManager().findFragmentById(R.id.contact_fragment);
+		contacts.setIsDualFrame(false);
+		contacts.setContact(contact);
 
-		TextView tv1 = (TextView) findViewById(R.id.displayName);
-		tv1.setText(mContact.getDisplayName());
-
-		//getListView().setOnItemLongClickListener(mListViewLongClickListener);		
-		contactWriter = ContactWriter.getInstance();
-		contactWriter.Initialize(this, getLayoutInflater(), mContact);		
-		
-		registerForContextMenu(getListView());
+		if (!Utility.isPreHoneycomb()) {
+			final ActionBar actionBar = getActionBar();
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 	}
 
-	
 	/**
 	 * @param menu
 	 * @param v
 	 * @param menuInfo
 	 * 
-	 * Create a context menu for the list view
-	 * Depending upon the item selected, shows the user
-	 * different options
+	 *            Create a context menu for the list view Depending upon the
+	 *            item selected, shows the user different options
 	 */
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-	                                ContextMenuInfo menuInfo) {
-	  super.onCreateContextMenu(menu, v, menuInfo);  
-	  
-	  AdapterView.AdapterContextMenuInfo info 
-	  		= (AdapterView.AdapterContextMenuInfo)menuInfo;
-	  
-	  // Get the selected item from the listview adapter
-	  KeyValuePair kvp = m_adapter.getItem(info.position);
-	  
-	  // Set the header to the selected text
-	  menu.setHeaderTitle(kvp.getValue());
 
-	  // Add the default options (copy to clipboard)
-	  menu.add(
-			  Menu.NONE, 
-			  MENU_ID_COPY_TO_CLIPBOARD, 
-			  Menu.NONE, 
-			  "Copy to clipboard");
-	  
-	  // Handle the special cases
-	  switch(kvp.get_type()){
-	  case EMAIL:
-		  menu.add(
-				  Menu.NONE, 
-				  MENU_ID_EMAIL, 
-				  Menu.NONE, 
-				  "Send email");
-		  break;
-	  case MOBILE:
-	  case PHONE:
-		  menu.add(
-				  Menu.NONE, 
-				  MENU_ID_CALL, 
-				  Menu.NONE, 
-				  "Call " + kvp.getValue());
-		  menu.add(
-				  Menu.NONE, 
-				  MENU_ID_EDIT_BEFORE_CALL, 
-				  Menu.NONE, 
-				  "Edit number before call");
-		  break;
-	  }
-	}	
-	
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-	  AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-	  
-	  // Get the selected item from the listview adapter
-	  KeyValuePair kvp = m_adapter.getItem(info.position);
-
-		switch (item.getItemId()) {
-		case MENU_ID_CALL:
-			Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"
-					+ kvp.getValue()));
-			startActivity(intent);
-			break;
-		case MENU_ID_COPY_TO_CLIPBOARD:
-			ClipboardManager clipboard 
-				= (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-			clipboard.setText(kvp.getValue());
-			Toast.makeText(
-					this, 
-					"Text copied to clipboard", 
-					Toast.LENGTH_SHORT).show();			
-			break;
-		case MENU_ID_EDIT_BEFORE_CALL:
-			intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"
-					+ kvp.getValue()));
-			startActivity(intent);
-			break;
-		case MENU_ID_EMAIL:
-			intent = new Intent(android.content.Intent.ACTION_SEND);
-			intent.setType("text/plain");
-			intent.putExtra(android.content.Intent.EXTRA_EMAIL,
-					new String[] { kvp.getValue() });
-			startActivity(Intent.createChooser(intent, "Send mail..."));
-			break;
-		default:
-			return super.onContextItemSelected(item);
-		}
-		return true;
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -182,39 +80,70 @@ public class CorporateContactRecord extends ListActivity{
 	 * Displays the menu when the user clicks the Options button In our case the
 	 * menu contains only one button - save
 	 */
+	@TargetApi(11)
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
+		final MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.contacts_menu, menu);
+
+		// Get the SearchView and set the searchable configuration for Honeycomb
+		// and above
+		if (!Utility.isPreHoneycomb()) {
+			final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+			final ComponentName component = getComponentName();
+			final SearchableInfo searchableInfo = searchManager
+					.getSearchableInfo(component);
+			searchView = (SearchView) menu.findItem(
+					R.id.menu_search).getActionView();
+			searchView.setSearchableInfo(searchableInfo);
+		}
+
 		return true;
 	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
 	 * 
-	 * Shows the save contact option when the user clicks the save option
+	 * Launches the preferences pane when the user clicks the settings option
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.saveContact:
-			contactWriter.saveContact();
+		case android.R.id.home:
+			// app icon in action bar clicked; go home
+			final Intent intent = new Intent(this,
+					net.vivekiyer.GAL.CorporateAddressBook.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			return true;
+		case R.id.menu_search:
+			return this.onSearchRequested();
+		case R.id.settings:
+			CorporateAddressBook.showConfiguration(this);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
-	}	
+	}
 	
-	
-	/**
-	 * Called when this activity is about to be destroyed by the system.
-	 */
+	@TargetApi(11)
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		contactWriter.cleanUp();		
-	}	
+	public boolean onSearchRequested() {
+		if(!Utility.isPreHoneycomb()) {
+			if(searchView != null) {
+				searchView.setFocusable(true);
+			    searchView.setIconified(false);
+			    searchView.requestFocusFromTouch();
+			    return true;
+			}
+			else {
+				Debug.Log("Running HC+ without SearchView");
+				return false;
+			}
+		}
+		return super.onSearchRequested();
+	};
+
 };

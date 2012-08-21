@@ -1,29 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TableLayout android:id="@+id/TableLayout01"
-	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	xmlns:android="http://schemas.android.com/apk/res/android">
-	<TableRow>
-		<EditText 
-			android:id="@+id/Name" 
-			android:layout_height="wrap_content"
-			android:layout_weight=".70" 
-			android:layout_width="0dip"
-			android:inputType="textPersonName" 
-			android:textSize="18sp"			 
-			android:imeOptions="actionSearch"
-			android:hint="Enter search term"/>
-		<ImageButton 
-			android:id="@+id/Button01" 
-			android:layout_weight=".30" 
-			android:layout_width="0dip"
-			android:src="@drawable/ic_menu_search" />
-	</TableRow>
-	<TableRow>
-		<ListView 
-			android:id="@+id/ListView01" 
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent" 
-			android:layout_weight="1.0">
-		</ListView>
-	</TableRow>
-</TableLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/resultheader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:padding="10dp"
+        android:text="@string/startBySelectingSearch"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white"
+        android:background="@drawable/header_border_shading"
+         />
+
+    <ListView
+        android:id="@+id/contactsListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="fill"
+        android:layout_weight="1"
+        android:listSelector="@drawable/list_selector"
+        tools:listitem="@layout/contact_row"
+        android:choiceMode="singleChoice"
+        android:background="@drawable/border_shading"
+		>
+    </ListView>
+
+</LinearLayout>
