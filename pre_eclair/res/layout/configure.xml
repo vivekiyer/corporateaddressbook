@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="fill_parent" 
+    android:layout_width="fill_parent"
+    android:orientation="vertical"
+    >
+<LinearLayout 
+    android:layout_height="fill_parent" 
+    android:layout_width="fill_parent"
+    android:orientation="vertical"
+    >
+         <TextView 
+            android:text="Domain\\Username"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+            />
+        <EditText 
+            android:id="@+id/txtDomainUserName" 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"	
+			android:hint="DOMAIN\\Username"
+			android:imeOptions="actionNext"
+			/>
+        <TextView 
+            android:text="Password:"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+            />
+        <EditText 
+            android:id="@+id/txtPassword" 
+            android:password="true" 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:imeOptions="actionNext"
+            />
+        <TextView 
+            android:text="Server"             
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+            />
+        <EditText 
+            android:id="@+id/txtServerName" 
+			android:layout_width="fill_parent"
+			android:hint="mail.example.com"
+			android:layout_height="wrap_content"
+			android:imeOptions="actionGo"
+			/>
+ 		<CheckBox android:id="@+id/chkUseSSL"
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:text="Use secure connection (SSL)"
+            android:checked="true"
+            />
+        <CheckBox android:id="@+id/chkAcceptAllSSLCert"
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:text="Accept all SSL certificates"  
+            android:checked="true"          
+            />   
+        <Button 
+            android:id="@+id/buttonSignIn" 
+            android:text="Log In"
+			android:layout_width="150px" 
+			android:layout_height="wrap_content"						
+            />
+</LinearLayout>
+</ScrollView>
