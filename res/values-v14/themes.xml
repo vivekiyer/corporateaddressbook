@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@android:style/Theme.DeviceDefault.Light">
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+        <!-- Any customizations for your app running on pre-3.0 devices here -->
+    </style>
+</resources>

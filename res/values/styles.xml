@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="flatImageButton" parent="@android:style/Widget.ImageButton">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="detailsLabel" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">@android:color/secondary_text_dark</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="itemLabel" parent="android:Widget.DeviceDefault.Light.TextView">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+</resources>
