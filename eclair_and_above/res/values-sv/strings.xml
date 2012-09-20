@@ -55,4 +55,6 @@
   <string name="last_search_produced_x_results">Senaste sökningen gav %1$d resultat</string>
   <string name="clearSearch">Rensa sökning</string>
   <string name="unable_to_find_matching_certificate">Det gick inte att hitta ett certifikat som matchar servern.%1$s%1$sFörsök med att aktivera alternativet \"%2$s\"</string>
+  <string name="could_not_connect_to_server">Kunde inte ansluta till servern</string>
+  <string name="show_settings">Visa inställningar</string>
 </resources>

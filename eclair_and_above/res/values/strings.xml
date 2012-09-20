@@ -71,5 +71,7 @@
     <string name="last_search_produced_x_results">Last search produced %1$d results</string>
     <string name="clearSearch">Clear search</string>
     <string name="unable_to_find_matching_certificate">Unable to find a certificate matching the server.%1$s%1$sTry enabling the option \"%2$s\"</string>
+    <string name="could_not_connect_to_server">Could not connect to server</string>
+    <string name="show_settings">Show settings</string>
 
 </resources>

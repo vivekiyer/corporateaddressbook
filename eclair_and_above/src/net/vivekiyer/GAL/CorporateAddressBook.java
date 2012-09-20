@@ -15,10 +15,12 @@
 
 package net.vivekiyer.GAL;
 
+import java.text.ChoiceFormat;
 import java.util.Set;
 
 import com.google.common.collect.HashMultimap;
 
+import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
 import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -47,7 +49,7 @@ import android.widget.Toast;
  *         This class is the main entry point to the application
  */
 public class CorporateAddressBook extends FragmentActivity
-	implements ContactListListener, GALSearch.OnSearchCompletedListener
+	implements ContactListListener, GALSearch.OnSearchCompletedListener, OnChoiceDialogOptionClickListener
 	{
 
 	// TAG used for logging
@@ -522,7 +524,21 @@ public class CorporateAddressBook extends FragmentActivity
 		}
 		if(result == 0)
 			displaySearchResult(contacts, latestSearchTerm);
+		else if(result == 401) {
+			String title = getResources().getString(R.string.could_not_connect_to_server);
+	        String message = getResources().getString(R.string.authentication_failed_error);
+	        String positiveButtonText = getString(R.string.show_settings);
+	        String negativeButtonText = getString(android.R.string.cancel);
+	        ChoiceDialogFragment dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText);
+	        dialogFragment.setListener(this);
+	        dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag");
+			
+		}
 		else
 			Toast.makeText(getApplicationContext(), "Error: " + String.valueOf(result), Toast.LENGTH_SHORT).show();
 	}
+	public void onChoiceDialogOptionPressed(int action) {
+		if(action == 1)
+			showConfiguration(this);
+	};
 };
