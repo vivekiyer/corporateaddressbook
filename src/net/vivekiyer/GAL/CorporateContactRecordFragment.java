@@ -103,7 +103,10 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 		ImageButton saveContacts = (ImageButton) getView().findViewById(R.id.save_contact);
 		assert(contactActions != null);
 		saveContacts.setOnClickListener(this);
-		saveContacts.setVisibility(View.GONE);
+		// Seems to be some logic gone wrong, no way to 
+		// save contacts exists in phone layout. Commenting
+		// this out for now.
+		//saveContacts.setVisibility(View.GONE);
 	};
 	
 	public void setContact(Contact contact) {
