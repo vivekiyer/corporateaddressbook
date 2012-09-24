@@ -29,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author Vivek Iyer
@@ -229,7 +230,11 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 	 * Displays the search results in the Listview
 	 */
 	private void displayResult() {
-		
+		if(mContacts == null)
+		{
+			Toast.makeText(getActivity(), R.string.undefined_result_please_try_again, Toast.LENGTH_LONG).show();
+			return;
+		}
 		TextView tv = (TextView) this.getView().findViewById(R.id.resultheader);
 		if(this.latestSearchTerm == null || this.latestSearchTerm.length() == 0)
 			tv.setText(String.format(getString(R.string.last_search_produced_x_results), mContacts.size()));

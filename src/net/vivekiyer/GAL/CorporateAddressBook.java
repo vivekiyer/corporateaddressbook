@@ -15,7 +15,6 @@
 
 package net.vivekiyer.GAL;
 
-import java.text.ChoiceFormat;
 import java.util.Set;
 
 import com.google.common.collect.HashMultimap;
@@ -113,11 +112,16 @@ public class CorporateAddressBook extends FragmentActivity
 
 		// Get the intent, verify the action and get the query
 		final Intent intent = getIntent();
+		onNewIntent(intent);
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			final String query = intent.getStringExtra(SearchManager.QUERY);
 			performSearch(query);
-		}
-	}
+		}		
+	};
 	
 	// Assist user by showing search box whenever returning
 	@Override
@@ -519,8 +523,12 @@ public class CorporateAddressBook extends FragmentActivity
 	@Override
 	public void OnSearchCompleted(int result,
 			HashMultimap<String, Contact> contacts) {
-		if(progressdialog != null) {
-			progressdialog.dismiss();
+		if((progressdialog != null) && progressdialog.isShowing()) {
+			try {
+				progressdialog.dismiss();
+			} catch (java.lang.IllegalArgumentException e) {
+				;
+			}
 		}
 		if(result == 0)
 			displaySearchResult(contacts, latestSearchTerm);

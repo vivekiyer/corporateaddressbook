@@ -12,6 +12,8 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 
 	private ActiveSyncManager activeSyncManager;
 
+	// It IS used...
+	@SuppressWarnings("unused")
 	private String errorMesg;
 
 	private int errorCode = 0;

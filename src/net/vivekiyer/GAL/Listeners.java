@@ -44,9 +44,13 @@ public class Listeners {
 				Intent  intent = new Intent(
 						Intent.ACTION_SENDTO, 
 						Uri.parse("smsto:"+telNo));
-				v.getContext().startActivity(intent);
-				if(qa != null)
-					qa.dismiss();
+				try {
+					v.getContext().startActivity(intent);
+					if(qa != null)
+						qa.dismiss();					
+				} catch (android.content.ActivityNotFoundException e) {
+					Toast.makeText(v.getContext(), R.string.could_not_find_sms_application , Toast.LENGTH_SHORT).show();
+				}
 			}
 			
 		};

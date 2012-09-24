@@ -46,6 +46,9 @@ public abstract class Parser {
     private static final int EOF_BYTE = -1;
     private boolean logging = false;
     private boolean capture = false;
+
+    // It IS used...
+	@SuppressWarnings("unused")
     private String logTag;
 
     // Where tags start in a page
