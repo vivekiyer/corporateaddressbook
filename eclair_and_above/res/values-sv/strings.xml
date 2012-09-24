@@ -57,4 +57,6 @@
   <string name="unable_to_find_matching_certificate">Det gick inte att hitta ett certifikat som matchar servern.%1$s%1$sFörsök med att aktivera alternativet \"%2$s\"</string>
   <string name="could_not_connect_to_server">Kunde inte ansluta till servern</string>
   <string name="show_settings">Visa inställningar</string>
+  <string name="undefined_result_please_try_again">Odefinierat resultat, var vänlig försök igen</string>
+  <string name="could_not_find_sms_application">Tyvärr, det gick inte att hitta en app för att skicka SMS</string>
 </resources>

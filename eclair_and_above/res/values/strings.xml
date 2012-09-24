@@ -73,5 +73,7 @@
     <string name="unable_to_find_matching_certificate">Unable to find a certificate matching the server.%1$s%1$sTry enabling the option \"%2$s\"</string>
     <string name="could_not_connect_to_server">Could not connect to server</string>
     <string name="show_settings">Show settings</string>
+    <string name="undefined_result_please_try_again">Undefined result,  please try again</string>
+    <string name="could_not_find_sms_application">Sorry, could not find an application to send SMS</string>
 
 </resources>
