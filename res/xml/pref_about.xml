@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/settings" android:icon="@drawable/icon">
+    <PreferenceCategory android:title="About" android:summary="x.y.z" >
+        <net.vivekiyer.GAL.Preferences.VersionPreference android:summary="x.y.z" android:title="Version" android:enabled="false" />
+       
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Links">
+        <Preference android:summary="Downloads, issue tracker and wiki" android:title="Corporate Addressbook on Google Code" android:icon="@drawable/google_code">
+            <intent android:action="android.intent.action.VIEW"
+            	android:data="http://code.google.com/p/corporateaddressbook" >
+            </intent>
+		</Preference>
+        <Preference android:summary="Help us translate the app" android:title="Corporate Addressbook on Crowdin" android:icon="@drawable/crowdin">
+            <intent android:action="android.intent.action.VIEW"
+            	android:data="http://crowdin.net/project/corporate-addressbook/" >
+            </intent>
+		</Preference>
+        <Preference android:summary="For praise, whining or help" android:title="Contact the authors">
+            <intent android:action="android.intent.action.SEND"
+            	android:data="mailto:corporateaddressbook@googlegroups.com?subject=Feedback on Corporate Addressbook" >
+            	<extra android:name="android.intent.extra.TEXT" android:value="\n\n------------------------\nSent from the app"/>
+            </intent>
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>

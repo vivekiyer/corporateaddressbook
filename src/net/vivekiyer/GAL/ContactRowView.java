@@ -1,6 +1,8 @@
 package net.vivekiyer.GAL;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Checkable;
@@ -40,11 +42,16 @@ public class ContactRowView extends RelativeLayout implements Checkable {
 			toggle();
 	}
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	@SuppressWarnings("deprecation")
 	@Override
 	public void toggle() {
 		isChecked = !isChecked;
 		if(isChecked){
-			this.setBackgroundDrawable(getResources().getDrawable(R.drawable.selected_border_shading));
+			if(Utility.isPreJellyBean())
+				this.setBackgroundDrawable(getResources().getDrawable(R.drawable.selected_border_shading));
+			else
+				this.setBackground(getResources().getDrawable(R.drawable.selected_border_shading));
 			findViewById(R.id.selectedMark).setVisibility(View.VISIBLE);
 		}
 		else {

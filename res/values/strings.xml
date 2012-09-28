@@ -75,5 +75,6 @@
     <string name="show_settings">Show settings</string>
     <string name="undefined_result_please_try_again">Undefined result,  please try again</string>
     <string name="could_not_find_sms_application">Sorry, could not find an application to send SMS</string>
-
+    <string name="server_settings">Server settings</string>
+    <string name="about_app">About Corporate Addressbook</string>
 </resources>

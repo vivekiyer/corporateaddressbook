@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ACCOUNT_TYPE">net.vivekiyer.GAL.ACCOUNT</string>
+    <string name="PREFS_KEY_SERVER_NAME">PREFS_KEY_SERVER_NAME</string>
+    <string name="PREFS_KEY_USERNAME_PREFERENCE">username</string>
+    <string name="PREFS_KEY_PASSWORD_PREFERENCE">password</string>
+    <string name="PREFS_KEY_DOMAIN_PREFERENCE">domain</string>
+    <string name="PREFS_KEY_SERVER_PREFERENCE">server</string>
+    <string name="PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE">activesyncversion</string>
+    <string name="PREFS_KEY_DEVICE_ID">deviceid</string>
+    <string name="PREFS_KEY_POLICY_KEY_PREFERENCE">policykey</string>
+    <string name="PREFS_KEY_USE_SSL">usessl</string>
+    <string name="PREFS_KEY_ACCEPT_ALL_CERTS">acceptallcerts</string>
+    <string name="PREFS_KEY_RESULTS_PREFERENCE">results</string>
+    <string name="PREFS_KEY_SEARCH_TERM_PREFERENCE">searchTerm</string>
+    <string name="PREFS_KEY_SUCCESSFULLY_CONNECTED">successfullyConnected</string>
+</resources>

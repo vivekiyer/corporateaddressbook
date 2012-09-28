@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+<header android:fragment="net.vivekiyer.GAL.Preferences.PrefsFragment"
+    android:icon="@drawable/server_icon"
+    android:title="@string/server_settings"
+    >
+    <extra android:name="pref-resource" android:value="pref_server" />
+</header>
+<header android:fragment="net.vivekiyer.GAL.Preferences.PrefsFragment"
+    android:icon="@drawable/info_icon"
+    android:title="@string/about_app"
+    >
+    <extra android:name="pref-resource" android:value="pref_about" />
+</header>
+</preference-headers>

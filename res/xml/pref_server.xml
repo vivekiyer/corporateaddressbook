@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:icon="@drawable/icon"
+    android:title="@string/settings" >
+    <PreferenceCategory android:title="Server" >
+        <EditTextPreference
+            android:dialogTitle="@string/serverText"
+            android:key="@string/PREFS_KEY_SERVER_PREFERENCE"
+            android:summary="Name or IP address of the server"
+            android:title="@string/serverText" />
+        <CheckBoxPreference
+            android:key="@string/PREFS_KEY_USE_SSL"
+            android:summaryOff="Uses non-secure communication to server"
+            android:summaryOn="Communication to server secured by SSL"
+            android:title="@string/useSecureSslText" />
+        <CheckBoxPreference
+            android:key="@string/PREFS_KEY_ACCEPT_ALL_CERTS"
+            android:summaryOff="Denies connection to servers whose SSL certificate is not trusted"
+            android:summaryOn="Connects to server even if its SSL certificate is not trusted"
+            android:title="@string/acceptAllSllText" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="User credentials" >
+        <EditTextPreference
+            android:dialogMessage="DOMAIN\\user or user@domain.com"
+            android:dialogTitle="Please enter username"
+            android:key="@string/PREFS_KEY_USERNAME_PREFERENCE"
+            android:summary="@string/domainUnameHint"
+            android:title="@string/unameLabel" />
+        <EditTextPreference
+            android:inputType="textPassword"
+            android:key="@string/PREFS_KEY_PASSWORD_PREFERENCE"
+            android:summary="@string/passwordHint"
+            android:title="@string/passwordLabel" android:dialogTitle="Please enter your password"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

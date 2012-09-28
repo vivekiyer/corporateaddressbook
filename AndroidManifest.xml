@@ -21,6 +21,11 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+	<uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
     <application
         android:name=".App"
@@ -55,14 +60,42 @@
                 android:value=".CorporateAddressBook" />
         </activity>
         <activity
-            android:name=".Configure"
+            android:name=".Preferences.Configure"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name" >
         </activity>
-
+	    <activity 
+			android:name=".Preferences.PrefsActivity"
+	        android:label="@string/settings"
+	        android:enabled="true" >
+	        <intent-filter>
+	            <category android:name="android.intent.category.PREFERENCE" />
+	        </intent-filter>
+	    </activity>
+    
         <provider
             android:name=".RecentGALSearchTermsProvider"
             android:authorities="net.vivekiyer.GAL.RecentGALSearchTermsProvider" />
-    </application>
+        
+		<service
+		    android:name=".AccountAuthenticatorService"
+		    android:exported="true"
+		    android:process=":auth" >
+ 			<intent-filter>
+  				<action android:name="android.accounts.AccountAuthenticator" />
+ 			</intent-filter>
+ 			<meta-data
+ 			    android:name="android.accounts.AccountAuthenticator"
+ 			    android:resource="@xml/authenticator" />
+		</service>
+		<service android:name=".ContactsSyncAdapterService" android:exported="true" android:process=":contacts">
+ 			<intent-filter>
+  				<action android:name="android.content.SyncAdapter" />
+ 			</intent-filter>
+ 			<meta-data android:name="android.content.SyncAdapter" android:resource="@xml/sync_contacts" />
+ 			<meta-data android:name="android.provider.CONTACTS_STRUCTURE" android:resource="@xml/contacts" />
+		</service>		
+        
+	</application>
 
 </manifest>

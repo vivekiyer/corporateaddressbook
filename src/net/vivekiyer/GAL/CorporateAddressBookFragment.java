@@ -18,6 +18,7 @@ package net.vivekiyer.GAL;
 import java.util.Arrays;
 import com.google.common.collect.HashMultimap;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Bundle;
@@ -161,10 +162,17 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 		}
 	};
 	
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
 	protected void setViewBackground(Boolean shaded){
 		if(shaded){
-			getView().findViewById(R.id.resultheader).setBackgroundDrawable(getResources().getDrawable(R.drawable.header_border_shading));
-			getView().findViewById(R.id.contactsListView).setBackgroundDrawable(getResources().getDrawable(R.drawable.border_shading));
+			if(Utility.isPreJellyBean()) {
+				getView().findViewById(R.id.resultheader).setBackgroundDrawable(getResources().getDrawable(R.drawable.header_border_shading));
+				getView().findViewById(R.id.contactsListView).setBackgroundDrawable(getResources().getDrawable(R.drawable.border_shading));
+			} else {
+				getView().findViewById(R.id.resultheader).setBackground(getResources().getDrawable(R.drawable.header_border_shading));
+				getView().findViewById(R.id.contactsListView).setBackground(getResources().getDrawable(R.drawable.border_shading));
+			}
 		}
 		else{
 			getView().findViewById(R.id.resultheader).setBackgroundColor(getResources().getColor(R.color.header_background));

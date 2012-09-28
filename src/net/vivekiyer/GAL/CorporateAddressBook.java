@@ -21,6 +21,7 @@ import com.google.common.collect.HashMultimap;
 
 import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
 import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
+import net.vivekiyer.GAL.Preferences.PrefsActivity;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.support.v4.app.FragmentActivity;
@@ -285,10 +286,11 @@ public class CorporateAddressBook extends FragmentActivity
 	 * Launches the preferences activity
 	 */
 	public static void showConfiguration(Activity parentActivity) {
-		final Intent myIntent = new Intent();
-		myIntent.setClassName("net.vivekiyer.GAL",
-				"net.vivekiyer.GAL.Configure");
-		parentActivity.startActivityForResult(myIntent, DISPLAY_CONFIGURATION_REQUEST);
+//		final Intent myIntent = new Intent();
+//		myIntent.setClassName("net.vivekiyer.GAL",
+//				"net.vivekiyer.GAL.Configure");
+//		parentActivity.startActivityForResult(myIntent, DISPLAY_CONFIGURATION_REQUEST);
+		parentActivity.startActivity(new Intent(parentActivity, PrefsActivity.class));
 	}
 
 	/*
@@ -320,20 +322,20 @@ public class CorporateAddressBook extends FragmentActivity
 	 */
 	private void cleanUpServerName() {
 		String serverName = mPreferences.getString(
-				Configure.KEY_SERVER_PREFERENCE, "");
+				getString(R.string.PREFS_KEY_SERVER_PREFERENCE), "");
 		serverName = serverName.toLowerCase();
 
 		if (serverName.startsWith("https://")) {
 			final SharedPreferences.Editor editor = mPreferences.edit();
-			editor.putBoolean(Configure.KEY_USE_SSL, true);
+			editor.putBoolean(getString(R.string.PREFS_KEY_USE_SSL), true);
 			serverName = serverName.substring(8);
-			editor.putString(Configure.KEY_SERVER_PREFERENCE, serverName);
+			editor.putString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE), serverName);
 			editor.commit();
 		} else if (serverName.startsWith("http://")) {
 			final SharedPreferences.Editor editor = mPreferences.edit();
-			editor.putBoolean(Configure.KEY_USE_SSL, false);
+			editor.putBoolean(getString(R.string.PREFS_KEY_USE_SSL), false);
 			serverName = serverName.substring(7);
-			editor.putString(Configure.KEY_SERVER_PREFERENCE, serverName);
+			editor.putString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE), serverName);
 			editor.commit();
 		}
 
@@ -350,25 +352,25 @@ public class CorporateAddressBook extends FragmentActivity
 	 */
 	public boolean loadPreferences() {
 		activeSyncManager.setmUsername(mPreferences.getString(
-				Configure.KEY_USERNAME_PREFERENCE, ""));
+				getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), ""));
 		activeSyncManager.setPassword(mPreferences.getString(
-				Configure.KEY_PASSWORD_PREFERENCE, ""));
+				getString(R.string.PREFS_KEY_PASSWORD_PREFERENCE), ""));
 		activeSyncManager.setDomain(mPreferences.getString(
-				Configure.KEY_DOMAIN_PREFERENCE, ""));
+				getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE), ""));
 
 		// Clean up server name from previous version of the app
 		cleanUpServerName();
 
 		activeSyncManager.setActiveSyncVersion(mPreferences.getString(
-				Configure.KEY_ACTIVESYNCVERSION_PREFERENCE, ""));
+				getString(R.string.PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE), ""));
 		activeSyncManager.setPolicyKey(mPreferences.getString(
-				Configure.KEY_POLICY_KEY_PREFERENCE, ""));
+				getString(R.string.PREFS_KEY_POLICY_KEY_PREFERENCE), ""));
 		activeSyncManager.setAcceptAllCerts(mPreferences.getBoolean(
-				Configure.KEY_ACCEPT_ALL_CERTS, true));
+				getString(R.string.PREFS_KEY_ACCEPT_ALL_CERTS), true));
 		activeSyncManager.setUseSSL(mPreferences.getBoolean(
-				Configure.KEY_USE_SSL, true));
+				getString(R.string.PREFS_KEY_USE_SSL), true));
 		activeSyncManager.setDeviceId(mPreferences.getInt(
-				Configure.KEY_DEVICE_ID, 0));
+				getString(R.string.PREFS_KEY_DEVICE_ID), 0));
 
 
 		if (activeSyncManager.Initialize() == false)
@@ -376,7 +378,7 @@ public class CorporateAddressBook extends FragmentActivity
 
 		// Check to see if we have successfully connected to an Exchange server
 		// Do we have a previous successful connect with these settings?
-		if(!mPreferences.getBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED, false))
+		if(!mPreferences.getBoolean(getString(R.string.PREFS_KEY_SUCCESSFULLY_CONNECTED), false))
 			// If not, let's try
 			if (activeSyncManager.getActiveSyncVersion().equalsIgnoreCase("")) {
 				// If we fail, let's return
@@ -388,7 +390,7 @@ public class CorporateAddressBook extends FragmentActivity
 				// This record will be reset when any change is made to the
 				// settings
 				SharedPreferences.Editor editor = mPreferences.edit();
-				editor.putBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED, true);
+				editor.putBoolean(getString(R.string.PREFS_KEY_SUCCESSFULLY_CONNECTED), true);
 				editor.commit();
 			}
 
@@ -445,14 +447,14 @@ public class CorporateAddressBook extends FragmentActivity
 		// Make sure that the activesync version and policy key get written
 		// to the preferences
 		final SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putString(Configure.KEY_ACTIVESYNCVERSION_PREFERENCE,
+		editor.putString(getString(R.string.PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE),
 				activeSyncManager.getActiveSyncVersion());
-		editor.putInt(Configure.KEY_DEVICE_ID, activeSyncManager.getDeviceId());
-		editor.putString(Configure.KEY_POLICY_KEY_PREFERENCE,
+		editor.putInt(getString(R.string.PREFS_KEY_DEVICE_ID), activeSyncManager.getDeviceId());
+		editor.putString(getString(R.string.PREFS_KEY_POLICY_KEY_PREFERENCE),
 				activeSyncManager.getPolicyKey());
-		editor.putString(Configure.KEY_RESULTS_PREFERENCE, searchResultXML);
+		editor.putString(getString(R.string.PREFS_KEY_RESULTS_PREFERENCE), searchResultXML);
 		// EditText text = (EditText) findViewById(R.id.Name);
-		editor.putString(Configure.KEY_SEARCH_TERM_PREFERENCE, latestSearchTerm);
+		editor.putString(getString(R.string.PREFS_KEY_SEARCH_TERM_PREFERENCE), latestSearchTerm);
 
 		// Commit the edits!
 		editor.commit();

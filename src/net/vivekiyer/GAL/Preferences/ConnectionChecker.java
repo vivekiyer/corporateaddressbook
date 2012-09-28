@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
-package net.vivekiyer.GAL;
+package net.vivekiyer.GAL.Preferences;
 
+import net.vivekiyer.GAL.ActiveSyncManager;
+import net.vivekiyer.GAL.TaskCompleteCallback;
 import android.os.AsyncTask;
 
 /**
