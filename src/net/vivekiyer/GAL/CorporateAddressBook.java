@@ -36,7 +36,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
@@ -130,7 +129,7 @@ public class CorporateAddressBook extends FragmentActivity
 			performSearch(query);
 			
 		}		
-	};
+	}
 	
 	// Assist user by showing search box whenever returning
 	@Override
@@ -324,7 +323,7 @@ public class CorporateAddressBook extends FragmentActivity
 	 * 
 	 */
 	public boolean loadPreferences() {
-		activeSyncManager.setmUsername(mPreferences.getString(
+		activeSyncManager.setUsername(mPreferences.getString(
 				Configure.KEY_USERNAME_PREFERENCE, ""));
 		activeSyncManager.setPassword(mPreferences.getString(
 				Configure.KEY_PASSWORD_PREFERENCE, ""));
@@ -349,7 +348,7 @@ public class CorporateAddressBook extends FragmentActivity
 		
 		activeSyncManager.setDeviceId(device_id);
 		
-		if (activeSyncManager.Initialize() == false)
+		if (!activeSyncManager.Initialize())
 			return false;
 		
 		// Fix for null device_id
@@ -501,7 +500,7 @@ public class CorporateAddressBook extends FragmentActivity
 			}
 		}
 		return super.onSearchRequested();
-	};
+	}
 
 	@Override
 	public void OnSearchCompleted(int result,
@@ -509,9 +508,7 @@ public class CorporateAddressBook extends FragmentActivity
 		if((progressdialog != null) && progressdialog.isShowing()) {
 			try {
 				progressdialog.dismiss();
-			} catch (java.lang.IllegalArgumentException e) {
-				;
-			}
+			} catch (java.lang.IllegalArgumentException e) { }
 		}
 		if(result == 0)
 			displaySearchResult(contacts, latestSearchTerm);
@@ -531,5 +528,5 @@ public class CorporateAddressBook extends FragmentActivity
 	public void onChoiceDialogOptionPressed(int action) {
 		if(action == 1)
 			showConfiguration(this);
-	};
-};
+	}
+}
