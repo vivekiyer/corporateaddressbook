@@ -39,7 +39,6 @@ import android.provider.SearchRecentSuggestions;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -154,42 +153,6 @@ public class CorporateAddressBook extends FragmentActivity
 		}
 	}
 
-//	// Create an anonymous implementation of OnItemClickListener
-//	// that is used by the listview that displays the results
-//	private final OnItemClickListener mListViewListener = new OnItemClickListener() {
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see
-//		 * android.widget.AdapterView.OnItemClickListener#onItemClick(android
-//		 * .widget.AdapterView, android.view.View, int, long)
-//		 * 
-//		 * When the user clicks a particular entry in the list view launch the
-//		 * CorporateContactRecord activity
-//		 */
-//		@Override
-//		public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-//
-//			// Get the selected display name from the list view
-//			final Contact selectedItem = (Contact) ((ListView))
-//					.getItemAtPosition(position);
-//
-//			// Create a parcel with the associated contact object
-//			// This parcel is used to send data to the activity
-//			final Bundle b = new Bundle();
-//			b.putParcelable("net.vivekiyer.GAL", selectedItem);
-//
-//			// Launch the activity
-//			final Intent myIntent = new Intent();
-//			myIntent.setClassName("net.vivekiyer.GAL",
-//					"net.vivekiyer.GAL.CorporateContactRecord");
-//
-//			myIntent.putExtras(b);
-//			startActivity(myIntent);
-//		}
-//	};
-
 	private void performSearch(String name) {
 		
 		if(progressdialog != null) {
@@ -212,18 +175,6 @@ public class CorporateAddressBook extends FragmentActivity
 		search.onSearchCompletedListener = this;
 		search.execute(name);
 	}
-
-//	/*
-//	 * (non-Javadoc)
-//	 * 
-//	 * @see android.view.View.OnClickListener#onClick(android.view.View)
-//	 * 
-//	 * Implement the OnClickListener callback for the Go button
-//	 */
-//	@Override
-//	public void onClick(View v) {
-//		performSearch();
-//	}
 
 	/*
 	 * (non-Javadoc)
@@ -417,15 +368,6 @@ public class CorporateAddressBook extends FragmentActivity
 	    list.getView().requestFocus();
 	}
 	
-	
-	@TargetApi(11)
-	private void hideKeyboard(){
-		if(searchView != null){
-	    	InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-	    	imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-	    }
-	}
-
 	private void resetAndHideDetails(final FragmentManager fragmentManager) {
 
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
