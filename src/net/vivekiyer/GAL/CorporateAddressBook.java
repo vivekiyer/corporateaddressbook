@@ -33,6 +33,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
@@ -72,6 +76,9 @@ public class CorporateAddressBook extends FragmentActivity
 	// Progress bar
 	private ProgressDialog progressdialog;
 
+	// Version String
+	public static String VERSION_STRING;
+	
 	// Last search term
 	private String latestSearchTerm;
 
@@ -109,7 +116,8 @@ public class CorporateAddressBook extends FragmentActivity
 			CorporateAddressBook.showConfiguration(this);
 		}
 
-
+		// Get the version string
+		VERSION_STRING = "CorporateAddressbook_"+getAppVersion();
 		// Get the intent, verify the action and get the query
 		final Intent intent = getIntent();
 		onNewIntent(intent);
@@ -293,7 +301,21 @@ public class CorporateAddressBook extends FragmentActivity
 		activeSyncManager.setServerName(serverName);
 	}
 
-
+	/**
+	 * Returns the version of the application
+	 * @return Version number of the application
+	 */
+	public String getAppVersion(){
+		PackageManager manager = getApplicationContext().getPackageManager();
+		PackageInfo info;
+		try {
+			info = manager.getPackageInfo(
+					getApplicationContext().getPackageName(), 0);
+		} catch (NameNotFoundException e) {
+			return "";
+		}
+		return info.versionName;
+	}
 	/**
 	 * Reads the stored preferences and initializes the
 	 * 

@@ -20,6 +20,7 @@ public class Debug {
 	
 	public static void Log(String s){
 		logger.append(s+"\n");
+		android.util.Log.v("CorporateAddressbook", s);
 	}
 	
 	public static void sendDebugEmail(Context context){
