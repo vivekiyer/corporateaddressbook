@@ -51,9 +51,6 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 							mContacts = activeSyncManager.getResults();
 							break;
 						case 449: // RETRY AFTER PROVISIONING
-						case 142: // DeviceNotProvisioned
-						case 143: // PolicyRefresh
-						case 144: // InvalidPolicyKey
 							// Looks like we need to provision again
 							activeSyncManager.provisionDevice();
 							break;

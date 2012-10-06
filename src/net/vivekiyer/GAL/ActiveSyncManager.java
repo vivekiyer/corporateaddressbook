@@ -20,7 +20,6 @@ import java.net.URISyntaxException;
 import java.util.Random;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import com.android.exchange.adapter.GalParser;
 import com.android.exchange.adapter.ProvisionParser;
 import com.google.common.collect.HashMultimap;
 
@@ -96,7 +95,7 @@ public class ActiveSyncManager {
 		this.mServerName = serverName;
 	}
 
-	public void setmUsername(String username) {
+	public void setUsername(String username) {
 		this.mUsername = username;
 	}
 
@@ -142,7 +141,7 @@ public class ActiveSyncManager {
 
 		while(mDeviceId <= 0)
 		{
-			mDeviceId = rand.nextInt();;
+			mDeviceId = rand.nextInt();
 		}
 		
 		// If we don't have a server name, 
@@ -248,9 +247,7 @@ public class ActiveSyncManager {
 
 	/**
 	 * @param query The name to search the GAL for
-	 * @param mContacts 
-	 * @param result The XML contacts returned by the Exchange server
-	 * 
+	 *
 	 * @return The status code returned from the Exchange server
 	 * @throws Exception
 	 * 
@@ -277,8 +274,20 @@ public class ActiveSyncManager {
 		
 		if(ret == 200)
 		{			
-			GalParser gp = new GalParser(resp.getWBXMLInputStream());
+			Parser gp = new Parser(resp.getWBXMLInputStream());
 			gp.parse();
+			if(gp.getSearchStatus() != Parser.STATUS_OK)
+			{
+				switch(gp.getSearchStatus()) {
+					case Parser.STATUS_DEVICE_NOT_PROVISIONED:
+					case Parser.STATUS_POLICY_REFRESH:
+					case Parser.STATUS_INVALID_POLICY_KEY:
+						provisionDevice();
+						return searchGAL(query);
+					default:
+						Debug.Log(String.format("Unknown search status returned: %d", gp.getSearchStatus()));
+				}
+			}
 			mResults = gp.getResults();
 		}
 		return ret;
@@ -314,7 +323,7 @@ public class ActiveSyncManager {
 			}
 
 			ProvisionParser pp = new ProvisionParser(resp.getWBXMLInputStream());
-			if(pp.parse() == false)
+			if(!pp.parse())
 			{
 				Debug.Log("Failed to parse policy key");
 				return;
@@ -349,7 +358,7 @@ public class ActiveSyncManager {
 			}
 
 			pp = new ProvisionParser(resp.getWBXMLInputStream());
-			if(pp.parse() == false)
+			if(!pp.parse())
 			{
 				Debug.Log("Error in acknowledging Provision request");
 				return;
@@ -362,7 +371,6 @@ public class ActiveSyncManager {
 		catch(Exception ex)
 		{
 			Debug.Log("Provisioning failed. Error string:\n" + ex.toString());
-			return;
 		}
 
 	}
