@@ -39,6 +39,7 @@ import android.provider.SearchRecentSuggestions;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -120,6 +121,7 @@ public class CorporateAddressBook extends FragmentActivity
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			final String query = intent.getStringExtra(SearchManager.QUERY);
 			performSearch(query);
+			
 		}		
 	};
 	
@@ -410,9 +412,18 @@ public class CorporateAddressBook extends FragmentActivity
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
 		    .findFragmentById(R.id.main_fragment);
 	    list.displayResult(contacts, searchTerm);
-
-	    resetAndHideDetails(fragmentManager);
-		    
+	    
+	    resetAndHideDetails(fragmentManager);    
+	    list.getView().requestFocus();
+	}
+	
+	
+	@TargetApi(11)
+	private void hideKeyboard(){
+		if(searchView != null){
+	    	InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+	    	imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+	    }
 	}
 
 	private void resetAndHideDetails(final FragmentManager fragmentManager) {
