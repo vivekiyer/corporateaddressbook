@@ -367,16 +367,23 @@ public class CorporateAddressBook extends FragmentActivity
 				Configure.KEY_ACCEPT_ALL_CERTS, true));
 		activeSyncManager.setUseSSL(mPreferences.getBoolean(
 				Configure.KEY_USE_SSL, true));
-		activeSyncManager.setDeviceId(mPreferences.getInt(
-				Configure.KEY_DEVICE_ID, 0));
-
-
+		
+		// Fix for null device_id
+		int device_id = mPreferences.getInt(
+				Configure.KEY_DEVICE_ID, 0);
+		
+		activeSyncManager.setDeviceId(device_id);
+		
 		if (activeSyncManager.Initialize() == false)
 			return false;
-
+		
+		// Fix for null device_id
+		if(device_id == 0)
+			return false;
+		
 		// Check to see if we have successfully connected to an Exchange server
 		// Do we have a previous successful connect with these settings?
-		if(!mPreferences.getBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED, false))
+		if(!mPreferences.getBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED, false)){
 			// If not, let's try
 			if (activeSyncManager.getActiveSyncVersion().equalsIgnoreCase("")) {
 				// If we fail, let's return
@@ -391,6 +398,7 @@ public class CorporateAddressBook extends FragmentActivity
 				editor.putBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED, true);
 				editor.commit();
 			}
+		}
 
 		return true;
 	}

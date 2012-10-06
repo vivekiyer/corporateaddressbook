@@ -140,11 +140,9 @@ public class ActiveSyncManager {
 
 		Random rand = new Random();
 
-		if(mDeviceId == -1){
-			while(mDeviceId <= 0)
-			{
-				mDeviceId = rand.nextInt();;
-			}
+		while(mDeviceId <= 0)
+		{
+			mDeviceId = rand.nextInt();;
 		}
 		
 		// If we don't have a server name, 
