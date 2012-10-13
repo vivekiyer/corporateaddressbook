@@ -161,7 +161,6 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 		}
 	};
 	
-	@SuppressWarnings("deprecation")
 	protected void setViewBackground(Boolean shaded){
 		if(shaded){
 			getView().findViewById(R.id.resultheader).setBackgroundDrawable(getResources().getDrawable(R.drawable.header_border_shading));
@@ -281,4 +280,4 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 		
 		assert(contactListListener != null);
 	}
-}
+};

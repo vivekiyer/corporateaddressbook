@@ -19,14 +19,12 @@ public class Debug {
 	private static final StringBuffer logger = new StringBuffer();
 	
 	public static void Log(String s){
-		logger.append(s);
-		logger.append("\n");
-		android.util.Log.v("CorporateAddressbook", s);
+		logger.append(s+"\n");
 	}
 	
 	public static void sendDebugEmail(Context context){
 		// Do not send any emails unless Debugging is enabled
-		if(!Enabled)
+		if(Enabled == false)
 			return;
 			
 		// Generate an email with the appropriate data

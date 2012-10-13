@@ -2,8 +2,6 @@ package net.vivekiyer.GAL;
 
 import java.io.IOException;
 
-import android.os.Build;
-
 import com.android.exchange.adapter.Serializer;
 import com.android.exchange.adapter.Tags;
 
@@ -32,10 +30,9 @@ public class ProvisionRequest extends CommandRequest {
 		if (getProtocolVersionFloat() >= 14.0) {
 			// Send settings information in 14.1 and greater
 			s.start(Tags.SETTINGS_DEVICE_INFORMATION).start(Tags.SETTINGS_SET);
-			s.data(Tags.SETTINGS_FRIENDLY_NAME, "Corporate Addressbook");
-			s.data(Tags.SETTINGS_MODEL, Build.MODEL);
-			s.data(Tags.SETTINGS_OS, "Android " + Build.VERSION.RELEASE);
-			s.data(Tags.SETTINGS_USER_AGENT, CorporateAddressBook.VERSION_STRING);
+			s.data(Tags.SETTINGS_MODEL, "Galaxy Nexus");
+			s.data(Tags.SETTINGS_OS, "Android 4.1.1");
+			s.data(Tags.SETTINGS_USER_AGENT, "Android/4.1.1-EAS-1.3");
 			s.end().end();  // SETTINGS_SET, SETTINGS_DEVICE_INFORMATION
 		}
 		s.start(Tags.PROVISION_POLICIES);

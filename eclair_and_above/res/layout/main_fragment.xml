@@ -4,6 +4,7 @@
     android:name="net.vivekiyer.GAL.CorporateAddressBookFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    class="net.vivekiyer.GAL.CorporateAddressBookFragment"
     tools:context=".CorporateAddressBook"
     tools:layout="@layout/main" >
 
