@@ -51,7 +51,6 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 							mContacts = activeSyncManager.getResults();
 							break;
 						case 449: // RETRY AFTER PROVISIONING
-						case 142: // RETRY AFTER PROVISIONING
 							// Looks like we need to provision again
 							activeSyncManager.provisionDevice();
 							break;

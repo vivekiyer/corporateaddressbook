@@ -54,7 +54,7 @@ public class Listeners {
 			}
 			
 		};
-	};
+	}
 
 	public static OnClickListener getMailListener(final String mailAddress) {
 		return getMailListener(mailAddress, null);

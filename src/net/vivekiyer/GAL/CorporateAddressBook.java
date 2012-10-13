@@ -33,6 +33,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
@@ -72,6 +75,9 @@ public class CorporateAddressBook extends FragmentActivity
 	// Progress bar
 	private ProgressDialog progressdialog;
 
+	// Version String
+	public static String VERSION_STRING;
+	
 	// Last search term
 	private String latestSearchTerm;
 
@@ -109,7 +115,8 @@ public class CorporateAddressBook extends FragmentActivity
 			CorporateAddressBook.showConfiguration(this);
 		}
 
-
+		// Get the version string
+		VERSION_STRING = "CorporateAddressbook_"+getAppVersion();
 		// Get the intent, verify the action and get the query
 		final Intent intent = getIntent();
 		onNewIntent(intent);
@@ -120,8 +127,9 @@ public class CorporateAddressBook extends FragmentActivity
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			final String query = intent.getStringExtra(SearchManager.QUERY);
 			performSearch(query);
+			
 		}		
-	};
+	}
 	
 	// Assist user by showing search box whenever returning
 	@Override
@@ -152,42 +160,6 @@ public class CorporateAddressBook extends FragmentActivity
 		}
 	}
 
-//	// Create an anonymous implementation of OnItemClickListener
-//	// that is used by the listview that displays the results
-//	private final OnItemClickListener mListViewListener = new OnItemClickListener() {
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see
-//		 * android.widget.AdapterView.OnItemClickListener#onItemClick(android
-//		 * .widget.AdapterView, android.view.View, int, long)
-//		 * 
-//		 * When the user clicks a particular entry in the list view launch the
-//		 * CorporateContactRecord activity
-//		 */
-//		@Override
-//		public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-//
-//			// Get the selected display name from the list view
-//			final Contact selectedItem = (Contact) ((ListView))
-//					.getItemAtPosition(position);
-//
-//			// Create a parcel with the associated contact object
-//			// This parcel is used to send data to the activity
-//			final Bundle b = new Bundle();
-//			b.putParcelable("net.vivekiyer.GAL", selectedItem);
-//
-//			// Launch the activity
-//			final Intent myIntent = new Intent();
-//			myIntent.setClassName("net.vivekiyer.GAL",
-//					"net.vivekiyer.GAL.CorporateContactRecord");
-//
-//			myIntent.putExtras(b);
-//			startActivity(myIntent);
-//		}
-//	};
-
 	private void performSearch(String name) {
 		
 		if(progressdialog != null) {
@@ -210,18 +182,6 @@ public class CorporateAddressBook extends FragmentActivity
 		search.onSearchCompletedListener = this;
 		search.execute(name);
 	}
-
-//	/*
-//	 * (non-Javadoc)
-//	 * 
-//	 * @see android.view.View.OnClickListener#onClick(android.view.View)
-//	 * 
-//	 * Implement the OnClickListener callback for the Go button
-//	 */
-//	@Override
-//	public void onClick(View v) {
-//		performSearch();
-//	}
 
 	/*
 	 * (non-Javadoc)
@@ -340,7 +300,21 @@ public class CorporateAddressBook extends FragmentActivity
 		activeSyncManager.setServerName(serverName);
 	}
 
-
+	/**
+	 * Returns the version of the application
+	 * @return Version number of the application
+	 */
+	public String getAppVersion(){
+		PackageManager manager = getApplicationContext().getPackageManager();
+		PackageInfo info;
+		try {
+			info = manager.getPackageInfo(
+					getApplicationContext().getPackageName(), 0);
+		} catch (NameNotFoundException e) {
+			return "";
+		}
+		return info.versionName;
+	}
 	/**
 	 * Reads the stored preferences and initializes the
 	 * 
@@ -349,7 +323,7 @@ public class CorporateAddressBook extends FragmentActivity
 	 * 
 	 */
 	public boolean loadPreferences() {
-		activeSyncManager.setmUsername(mPreferences.getString(
+		activeSyncManager.setUsername(mPreferences.getString(
 				Configure.KEY_USERNAME_PREFERENCE, ""));
 		activeSyncManager.setPassword(mPreferences.getString(
 				Configure.KEY_PASSWORD_PREFERENCE, ""));
@@ -367,16 +341,23 @@ public class CorporateAddressBook extends FragmentActivity
 				Configure.KEY_ACCEPT_ALL_CERTS, true));
 		activeSyncManager.setUseSSL(mPreferences.getBoolean(
 				Configure.KEY_USE_SSL, true));
-		activeSyncManager.setDeviceId(mPreferences.getInt(
-				Configure.KEY_DEVICE_ID, 0));
-
-
-		if (activeSyncManager.Initialize() == false)
+		
+		// Fix for null device_id
+		int device_id = mPreferences.getInt(
+				Configure.KEY_DEVICE_ID, 0);
+		
+		activeSyncManager.setDeviceId(device_id);
+		
+		if (!activeSyncManager.Initialize())
 			return false;
-
+		
+		// Fix for null device_id
+		if(device_id == 0)
+			return false;
+		
 		// Check to see if we have successfully connected to an Exchange server
 		// Do we have a previous successful connect with these settings?
-		if(!mPreferences.getBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED, false))
+		if(!mPreferences.getBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED, false)){
 			// If not, let's try
 			if (activeSyncManager.getActiveSyncVersion().equalsIgnoreCase("")) {
 				// If we fail, let's return
@@ -391,6 +372,7 @@ public class CorporateAddressBook extends FragmentActivity
 				editor.putBoolean(Configure.KEY_SUCCESSFULLY_CONNECTED, true);
 				editor.commit();
 			}
+		}
 
 		return true;
 	}
@@ -402,11 +384,11 @@ public class CorporateAddressBook extends FragmentActivity
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
 		    .findFragmentById(R.id.main_fragment);
 	    list.displayResult(contacts, searchTerm);
-
-	    resetAndHideDetails(fragmentManager);
-		    
+	    
+	    resetAndHideDetails(fragmentManager);    
+	    list.getView().requestFocus();
 	}
-
+	
 	private void resetAndHideDetails(final FragmentManager fragmentManager) {
 
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
@@ -518,7 +500,7 @@ public class CorporateAddressBook extends FragmentActivity
 			}
 		}
 		return super.onSearchRequested();
-	};
+	}
 
 	@Override
 	public void OnSearchCompleted(int result,
@@ -526,9 +508,7 @@ public class CorporateAddressBook extends FragmentActivity
 		if((progressdialog != null) && progressdialog.isShowing()) {
 			try {
 				progressdialog.dismiss();
-			} catch (java.lang.IllegalArgumentException e) {
-				;
-			}
+			} catch (java.lang.IllegalArgumentException e) { }
 		}
 		if(result == 0)
 			displaySearchResult(contacts, latestSearchTerm);
@@ -548,5 +528,5 @@ public class CorporateAddressBook extends FragmentActivity
 	public void onChoiceDialogOptionPressed(int action) {
 		if(action == 1)
 			showConfiguration(this);
-	};
-};
+	}
+}
