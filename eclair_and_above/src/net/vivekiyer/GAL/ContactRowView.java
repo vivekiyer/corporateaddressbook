@@ -26,7 +26,7 @@ public class ContactRowView extends RelativeLayout implements Checkable {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 		findViewById(R.id.selectedMark).setVisibility(View.GONE);
-	};
+	}
 	
 	@Override
 	public boolean isChecked() {

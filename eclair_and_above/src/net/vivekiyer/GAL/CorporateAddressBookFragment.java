@@ -280,4 +280,4 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 		
 		assert(contactListListener != null);
 	}
-};
+}

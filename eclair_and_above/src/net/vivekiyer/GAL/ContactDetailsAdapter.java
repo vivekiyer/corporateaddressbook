@@ -63,7 +63,7 @@ public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {
 				break;
 			default:
 				this.add(kvp);
-			};
+			}
 		}			
 		for(KeyValuePair kvp : email)
 			this.add(kvp);

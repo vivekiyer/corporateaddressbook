@@ -164,7 +164,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 	private void connect(){
 		// Make sure that the user has entered the username
 		// password and the server name
-		if (getTextFromId(R.id.txtDomainUserName) == "") {
+		if (getTextFromId(R.id.txtDomainUserName).equals("")) {
 			showAlert(getString(R.string.valid_domain_and_username_error));
 			return;
 		}
