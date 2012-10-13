@@ -152,7 +152,7 @@ public class CommandRequest {
 
 		// Set the common headers
 		HttpPost httpPost = new HttpPost(uri);
-		httpPost.setHeader("User-Agent", CorporateAddressBook.VERSION_STRING);
+		httpPost.setHeader("User-Agent", "Android/4.1.1-EAS-1.3");
 		httpPost.setHeader("DeviceType", "Android");		
 		
 		httpPost.setHeader("Accept", "*/*");
@@ -194,7 +194,7 @@ public class CommandRequest {
 	 */
 	public HttpResponse getOptions() throws Exception {
 		HttpOptions httpOptions = new HttpOptions(getUri());
-		httpOptions.setHeader("User-Agent", CorporateAddressBook.VERSION_STRING);
+		httpOptions.setHeader("User-Agent", "Android");
 		httpOptions.setHeader("Authorization", getAuthString());
 
 		// Send the OPTIONS message

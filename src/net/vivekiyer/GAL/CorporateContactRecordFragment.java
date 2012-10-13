@@ -82,8 +82,10 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 	@Override
 	public View onCreateView(android.view.LayoutInflater inflater,
 		android.view.ViewGroup container, Bundle savedInstanceState) {
-	    return inflater.inflate(R.layout.contact, container, false);
-	}
+	    View view = inflater.inflate(R.layout.contact, container, false);
+
+		return view;		
+	};
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -99,12 +101,13 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 		contactActions.setVisibility(View.GONE);
 
 		ImageButton saveContacts = (ImageButton) getView().findViewById(R.id.save_contact);
+		assert(contactActions != null);
 		saveContacts.setOnClickListener(this);
 		// Seems to be some logic gone wrong, no way to 
 		// save contacts exists in phone layout. Commenting
 		// this out for now.
 		//saveContacts.setVisibility(View.GONE);
-	}
+	};
 	
 	public void setContact(Contact contact) {
 		mContact = contact;
@@ -353,4 +356,4 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 		if(contactWriter != null)
 			contactWriter.cleanUp();
 	}
-}
+};

@@ -144,6 +144,6 @@ public class CorporateContactRecord extends FragmentActivity {
 			}
 		}
 		return super.onSearchRequested();
-	}
+	};
 
-}
+};
