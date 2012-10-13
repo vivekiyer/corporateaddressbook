@@ -147,7 +147,7 @@ public abstract class Parser {
      * Initialize the tag tables; they are constant
      *
      */
-    {
+    static {
         String[][] pages = Tags.pages;
         for (int i = 0; i < pages.length; i++) {
             String[] page = pages[i];
