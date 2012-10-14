@@ -3,7 +3,7 @@
     package="net.vivekiyer.GAL"
     android:installLocation="auto"
     android:versionCode="19"
-    android:versionName="2.0.2" >
+    android:versionName="2.0.3-DEV" >
 
     <uses-sdk
         android:minSdkVersion="5"

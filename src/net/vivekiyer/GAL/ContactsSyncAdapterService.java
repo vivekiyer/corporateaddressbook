@@ -111,7 +111,6 @@ public class ContactsSyncAdapterService extends Service {
 				mContentResolver.applyBatch(ContactsContract.AUTHORITY,
 						operationList);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
@@ -154,7 +153,6 @@ public class ContactsSyncAdapterService extends Service {
 			mContentResolver.applyBatch(ContactsContract.AUTHORITY,
 					operationList);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

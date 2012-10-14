@@ -3,11 +3,12 @@
     android:icon="@drawable/icon"
     android:title="@string/settings" >
     <PreferenceCategory android:title="Server" >
-        <EditTextPreference
-            android:dialogTitle="@string/serverText"
+        <net.vivekiyer.GAL.Preferences.SummarizedEditTextPreference
+            android:dialogTitle="@string/enterServerName"
+            android:dialogMessage="Name or IP address of the server"
             android:key="@string/PREFS_KEY_SERVER_PREFERENCE"
-            android:summary="Name or IP address of the server"
-            android:title="@string/serverText" />
+            android:summary="[Not set]"
+            android:title="@string/serverName" />
         <CheckBoxPreference
             android:key="@string/PREFS_KEY_USE_SSL"
             android:summaryOff="Uses non-secure communication to server"
@@ -20,13 +21,13 @@
             android:title="@string/acceptAllSllText" />
     </PreferenceCategory>
     <PreferenceCategory android:title="User credentials" >
-        <EditTextPreference
+        <net.vivekiyer.GAL.Preferences.SummarizedEditTextPreference
             android:dialogMessage="DOMAIN\\user or user@domain.com"
             android:dialogTitle="Please enter username"
             android:key="@string/PREFS_KEY_USERNAME_PREFERENCE"
             android:summary="@string/domainUnameHint"
             android:title="@string/unameLabel" />
-        <EditTextPreference
+        <net.vivekiyer.GAL.Preferences.SummarizedEditTextPreference
             android:inputType="textPassword"
             android:key="@string/PREFS_KEY_PASSWORD_PREFERENCE"
             android:summary="@string/passwordHint"

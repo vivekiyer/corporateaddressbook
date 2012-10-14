@@ -32,7 +32,6 @@ public class ContactRowView extends RelativeLayout implements Checkable {
 	
 	@Override
 	public boolean isChecked() {
-		// TODO Auto-generated method stub
 		return isChecked;
 	}
 
