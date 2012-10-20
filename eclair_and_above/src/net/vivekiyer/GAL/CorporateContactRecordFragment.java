@@ -292,7 +292,7 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 			intent.setType("text/plain");
 			intent.putExtra(android.content.Intent.EXTRA_EMAIL,
 					new String[] { kvp.getValue() });
-			startActivity(Intent.createChooser(intent, "Send mail..."));
+			startActivity(Intent.createChooser(intent, getActivity().getString(R.string.send_mail)));
 			break;
 		default:
 			return super.onContextItemSelected(item);
