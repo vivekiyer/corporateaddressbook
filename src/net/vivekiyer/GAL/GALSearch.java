@@ -1,26 +1,24 @@
 package net.vivekiyer.GAL;
 
-import com.google.common.collect.HashMultimap;
-
 import android.os.AsyncTask;
+import com.google.common.collect.HashMultimap;
 
 public class GALSearch extends AsyncTask<String, Void, Boolean>
 {
 	public interface OnSearchCompletedListener{
-		void OnSearchCompleted(int result, HashMultimap<String, Contact> mContacts);
+		void OnSearchCompleted(int result, GALSearch search);
 	}
 
 	private ActiveSyncManager activeSyncManager;
 
-	// It IS used...
-	@SuppressWarnings("unused")
-	private String errorMesg;
-
 	private int errorCode = 0;
+	private String errorMesg = "";
+	private String errorDetail = "";
 
 	public OnSearchCompletedListener onSearchCompletedListener;
 	
 	HashMultimap<String,Contact> mContacts = null;
+
 
 	public HashMultimap<String,Contact> getContacts() {
 		return mContacts;
@@ -48,6 +46,22 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 					switch (statusCode) {
 						case 200:
 							// All went ok, get the results
+							switch(activeSyncManager.getSearchStatus()) {
+								case Parser.STATUS_TOO_MANY_DEVICES:
+									errorCode = Parser.STATUS_TOO_MANY_DEVICES;
+									errorMesg = "Too many device partnerships";
+									errorDetail = "Delete partnerships on the server before proceeding. " +
+											"This is normally done via Outlook Web Access or by contacting your administrator.";
+									return false;
+								case Parser.STATUS_OK:
+									break;
+								default:
+									errorCode = activeSyncManager.getSearchStatus();
+									errorMesg = String.format("%d: Unhandled error", activeSyncManager.getSearchStatus());
+									errorDetail = "An error occured that Corporate Addressbook currently cannot handle. " +
+											"Please contact the authors to have this addressed.";
+									return false;
+							}
 							mContacts = activeSyncManager.getResults();
 							break;
 						case 449: // RETRY AFTER PROVISIONING
@@ -57,12 +71,20 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 						case 401: // UNAUTHORIZED
 							// Looks like the password expired
 							errorCode = 401;
-							errorMesg = "Authentication failed. Please check your credentials";
+							errorMesg = "Authentication failed";
+							errorDetail = "Please check your credentials";
+							return false;
+						case 403: // FORBIDDEN
+							// Looks like the password expired
+							errorCode = 403;
+							errorMesg = "Forbidden by server";
+							errorDetail = "Either your Exchange server is not configured for connecting with ActiveSync or your user is not enabled for ActiveSync. Please contact your server administrator.";
 							return false;
 						default:
 							errorCode = statusCode;
-							errorMesg = "Exchange server rejected request with error:"
-									+ errorCode;
+							errorMesg = String.format("%d: Connection error", statusCode);
+							errorDetail = "Your server rejected the search request with the following error:"
+								+ errorCode;
 							return false;
 					}
 				} while (statusCode != 200);
@@ -80,6 +102,15 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 		return true;
 	}
 
+	public int getErrorCode() {
+		return errorCode;
+	}
+	public String getErrorMesg() {
+		return errorMesg;
+	}
+	public String getErrorDetail() {
+		return errorDetail;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -91,7 +122,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	protected void onPostExecute(Boolean result) {
 		super.onPostExecute(result);
 		if(onSearchCompletedListener != null)
-			onSearchCompletedListener.OnSearchCompleted(result ? 0 : errorCode, mContacts);
+			onSearchCompletedListener.OnSearchCompleted(result ? 0 : errorCode, this);
 	}
 
 }

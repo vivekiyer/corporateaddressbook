@@ -15,10 +15,11 @@
 
 package net.vivekiyer.GAL;
 
-import java.util.ArrayList;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * @author Vivek Iyer
@@ -27,7 +28,12 @@ import android.os.Parcelable;
  *         between two activities without loss of data. It does this by writing
  *         the display name followed by all the contacts details into the parcel
  */
-public class Contact implements Parcelable, Comparable<Contact> {
+public class Contact implements Parcelable, Comparable<Contact>, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1824471215889445550L;
 
 	private ArrayList<KeyValuePair> Details;
 

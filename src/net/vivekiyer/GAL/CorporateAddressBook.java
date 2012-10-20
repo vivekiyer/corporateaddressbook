@@ -15,17 +15,8 @@
 
 package net.vivekiyer.GAL;
 
-import java.util.Set;
-
-import com.google.common.collect.HashMultimap;
-
-import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
-import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -33,17 +24,21 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
-import android.widget.Toast;
+import com.google.common.collect.HashMultimap;
+import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
+import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
+
+import java.util.Set;
 
 /**
  * @author Vivek Iyer
@@ -75,13 +70,18 @@ public class CorporateAddressBook extends FragmentActivity
 	// Progress bar
 	private ProgressDialog progressdialog;
 
-	// Version String
-	public static String VERSION_STRING;
-	
 	// Last search term
 	private String latestSearchTerm;
 
 	private SearchView searchView;
+
+	// TAG used for logging
+	// private static String TAG = "CorporateAddressBook";
+	
+	// Stores the list of contacts returned
+	private HashMultimap<String, Contact> mContacts;
+
+	private Contact selectedContact;
 
 	/*
 	 * (non-Javadoc)
@@ -115,11 +115,12 @@ public class CorporateAddressBook extends FragmentActivity
 			CorporateAddressBook.showConfiguration(this);
 		}
 
-		// Get the version string
-		VERSION_STRING = "CorporateAddressbook_"+getAppVersion();
 		// Get the intent, verify the action and get the query
-		final Intent intent = getIntent();
-		onNewIntent(intent);
+		// but not if the activity is being recreated (would cause a new search)
+		if(savedInstanceState == null || !savedInstanceState.containsKey("mContacts")) {
+			final Intent intent = getIntent();
+			onNewIntent(intent);
+		}
 	}
 	
 	@Override
@@ -159,7 +160,38 @@ public class CorporateAddressBook extends FragmentActivity
 			}
 		}
 	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		
+		if(savedInstanceState != null && savedInstanceState.containsKey("mContacts")) {
+			@SuppressWarnings("unchecked")
+			HashMultimap<String, Contact> contactsMap = (HashMultimap<String, Contact>) savedInstanceState.get("mContacts");
+			mContacts = contactsMap;
+			latestSearchTerm = savedInstanceState.getString("latestSearchTerm");
+			selectedContact = (Contact) savedInstanceState.get("selectedContact");
+			displaySearchResult(mContacts, latestSearchTerm);
+			if(selectedContact != null) {
+				selectContact(selectedContact);
+			}
+		}
+	};
 
+	private void selectContact(Contact selectedContact) {
+		CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) getSupportFragmentManager()
+				.findFragmentById(R.id.main_fragment);
+		contacts.setSelectedContact(selectedContact);
+		onContactSelected(selectedContact);		
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putSerializable("mContacts", this.mContacts);
+		outState.putString("latestSearchTerm", this.latestSearchTerm);
+		outState.putSerializable("selectedContact", this.selectedContact);
+	};
+	
 	private void performSearch(String name) {
 		
 		if(progressdialog != null) {
@@ -301,21 +333,6 @@ public class CorporateAddressBook extends FragmentActivity
 	}
 
 	/**
-	 * Returns the version of the application
-	 * @return Version number of the application
-	 */
-	public String getAppVersion(){
-		PackageManager manager = getApplicationContext().getPackageManager();
-		PackageInfo info;
-		try {
-			info = manager.getPackageInfo(
-					getApplicationContext().getPackageName(), 0);
-		} catch (NameNotFoundException e) {
-			return "";
-		}
-		return info.versionName;
-	}
-	/**
 	 * Reads the stored preferences and initializes the
 	 * 
 	 * @return True if a valid Exchange server settings was saved during the
@@ -379,11 +396,14 @@ public class CorporateAddressBook extends FragmentActivity
 
 	private void displaySearchResult(HashMultimap<String, Contact> contacts, String searchTerm) {
 		
+		this.mContacts = contacts;
+		this.latestSearchTerm = searchTerm;
+		
 		final FragmentManager fragmentManager = getSupportFragmentManager();
 		
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
 		    .findFragmentById(R.id.main_fragment);
-	    list.displayResult(contacts, searchTerm);
+	    list.displayResult(mContacts, latestSearchTerm);
 	    
 	    resetAndHideDetails(fragmentManager);    
 	    list.getView().requestFocus();
@@ -411,6 +431,7 @@ public class CorporateAddressBook extends FragmentActivity
 		}
 
 	    list.setViewBackground(false);
+	    selectedContact = null;
 	}
 
 	/*
@@ -446,6 +467,8 @@ public class CorporateAddressBook extends FragmentActivity
 		// Create a parcel with the associated contact object
 		// This parcel is used to send data to the activity
 		
+		this.selectedContact = contact;
+		
 		final FragmentManager fragmentManager = getSupportFragmentManager();
 		
 	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
@@ -453,7 +476,7 @@ public class CorporateAddressBook extends FragmentActivity
 		 
 	    if (details == null || !details.isInLayout()) {
 			final Bundle b = new Bundle();
-			b.putParcelable("net.vivekiyer.GAL", contact);
+			b.putParcelable("net.vivekiyer.GAL", selectedContact);
 
 			// Launch the activity
 			final Intent myIntent = new Intent();
@@ -467,7 +490,7 @@ public class CorporateAddressBook extends FragmentActivity
 				.findFragmentById(R.id.main_fragment);
 			list.setViewBackground(true);
 				
-	        details.setContact(contact);
+	        details.setContact(selectedContact);
 	        
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
 			//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -504,29 +527,44 @@ public class CorporateAddressBook extends FragmentActivity
 
 	@Override
 	public void OnSearchCompleted(int result,
-			HashMultimap<String, Contact> contacts) {
+			GALSearch search) {
 		if((progressdialog != null) && progressdialog.isShowing()) {
 			try {
 				progressdialog.dismiss();
 			} catch (java.lang.IllegalArgumentException e) { }
 		}
-		if(result == 0)
-			displaySearchResult(contacts, latestSearchTerm);
-		else if(result == 401) {
-			String title = getResources().getString(R.string.could_not_connect_to_server);
-	        String message = getResources().getString(R.string.authentication_failed_error);
+		if(result==0) {
+			displaySearchResult(search.getContacts(), latestSearchTerm);
+			return;
+		}
+		ChoiceDialogFragment dialogFragment;
+		String title = search.getErrorMesg(); //getResources().getString(R.string.could_not_connect_to_server);
+        String message = search.getErrorDetail(); //getResources().getString(R.string.authentication_failed_error);
+		switch(result) {
+		// Errors that might be remedied by updating server settings
+		case 401:
 	        String positiveButtonText = getString(R.string.show_settings);
 	        String negativeButtonText = getString(android.R.string.cancel);
-	        ChoiceDialogFragment dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText);
+	        dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText);
 	        dialogFragment.setListener(this);
-	        dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag");
-			
+	        try {
+				dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag");
+			} catch (java.lang.IllegalStateException e) {
+				Debug.Log(e.getMessage());
+			}
+	        break;
+		// Errors that depend on external (non app-related) circumstances
+		case 177:
+	        dialogFragment = ChoiceDialogFragment.newInstance(title, message);
+	        try {
+				dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag");
+			} catch (java.lang.IllegalStateException e) {
+				Debug.Log(e.getMessage());
+			}
 		}
-		else
-			Toast.makeText(getApplicationContext(), "Error: " + String.valueOf(result), Toast.LENGTH_SHORT).show();
 	}
 	public void onChoiceDialogOptionPressed(int action) {
-		if(action == 1)
+		if(action == DISPLAY_CONFIGURATION_REQUEST)
 			showConfiguration(this);
 	}
 }

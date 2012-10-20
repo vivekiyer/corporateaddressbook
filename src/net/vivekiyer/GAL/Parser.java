@@ -29,6 +29,7 @@ public class Parser extends GalParser {
 	public static final int STATUS_POLICY_REFRESH                           = 143;
 	public static final int STATUS_INVALID_POLICY_KEY                       = 144;
 	public static final int STATUS_EXTERNALLY_MANAGED_DEVICES_NOT_ALLOWED   = 145;
+	public static final int STATUS_TOO_MANY_DEVICES							= 177;
 
 	private int searchStatus = STATUS_OK;
 

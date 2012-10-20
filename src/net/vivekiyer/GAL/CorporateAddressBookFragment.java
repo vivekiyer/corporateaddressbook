@@ -15,9 +15,6 @@
 
 package net.vivekiyer.GAL;
 
-import java.util.Arrays;
-import com.google.common.collect.HashMultimap;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Bundle;
@@ -30,6 +27,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.common.collect.HashMultimap;
+
+import java.util.Arrays;
 
 /**
  * @author Vivek Iyer
@@ -58,14 +58,8 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 	// TAG used for logging
 	// private static String TAG = "CorporateAddressBook";
 
-	// Stores the list of contacts returned
-	private HashMultimap<String, Contact> mContacts;
-
 	// List of names in the list view control
 	private Contact[] contactList;
-
-	// Last search term
-	private String latestSearchTerm;
 
 	protected ContactListListener contactListListener;
 	
@@ -106,6 +100,7 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		//setRetainInstance(true);
 	}
 	
 	@Override
@@ -117,6 +112,16 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 		return view;
 	}
 	
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+//		if(savedInstanceState != null && savedInstanceState.containsKey("mContacts")) {
+//			@SuppressWarnings("unchecked")
+//			HashMultimap<String, Contact> contacts = (HashMultimap<String, Contact>) savedInstanceState.getSerializable("mContacts");
+//			String searchTerm = savedInstanceState.getString("latestSearchTerm");
+//			this.displayResult(contacts, searchTerm);
+//		}
+	};
 	
     /* (non-Javadoc)
      * Overridden so that any Activity this Fragment is attached to is hooked up
@@ -220,26 +225,17 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 		super.onStop();
 	}
 
-	public void displayResult(HashMultimap<String, Contact> contacts, String searchTerm) {
-		this.mContacts = contacts;
-		this.latestSearchTerm = searchTerm;
-		this.displayResult();
-	}
-
-	/**
-	 * Displays the search results in the Listview
-	 */
-	private void displayResult() {
+	public void displayResult(HashMultimap<String, Contact> mContacts, String latestSearchTerm) {
 		if(mContacts == null)
 		{
 			Toast.makeText(getActivity(), R.string.undefined_result_please_try_again, Toast.LENGTH_LONG).show();
 			return;
 		}
 		TextView tv = (TextView) this.getView().findViewById(R.id.resultheader);
-		if(this.latestSearchTerm == null || this.latestSearchTerm.length() == 0)
+		if(latestSearchTerm == null || latestSearchTerm.length() == 0)
 			tv.setText(String.format(getString(R.string.last_search_produced_x_results), mContacts.size()));
 		else
-			tv.setText(String.format(getString(R.string.found_x_results_for_y), mContacts.size(), this.latestSearchTerm));
+			tv.setText(String.format(getString(R.string.found_x_results_for_y), mContacts.size(), latestSearchTerm));
 		
 		// Get the result and sort the alphabetically
 		contactList = new Contact[mContacts.size()];
@@ -279,5 +275,12 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 		v.setText(R.string.EnterSearchTerm);
 		
 		assert(contactListListener != null);
+	}
+
+	public void setSelectedContact(Contact selectedContact) {
+		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
+		for(int i = 0; i < contactList.length ; i++)
+			if(contactList[i].compareTo(selectedContact) == 0)
+				lv.setSelection(i);
 	}
 }
