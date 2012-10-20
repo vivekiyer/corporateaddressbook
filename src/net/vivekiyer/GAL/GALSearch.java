@@ -49,17 +49,15 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 							switch(activeSyncManager.getSearchStatus()) {
 								case Parser.STATUS_TOO_MANY_DEVICES:
 									errorCode = Parser.STATUS_TOO_MANY_DEVICES;
-									errorMesg = "Too many device partnerships";
-									errorDetail = "Delete partnerships on the server before proceeding. " +
-											"This is normally done via Outlook Web Access or by contacting your administrator.";
+									errorMesg = App.getInstance().getString(R.string.too_many_device_partnerships);
+									errorDetail = App.getInstance().getString(R.string.delete_partnerships);
 									return false;
 								case Parser.STATUS_OK:
 									break;
 								default:
 									errorCode = activeSyncManager.getSearchStatus();
-									errorMesg = String.format("%d: Unhandled error", activeSyncManager.getSearchStatus());
-									errorDetail = "An error occured that Corporate Addressbook currently cannot handle. " +
-											"Please contact the authors to have this addressed.";
+									errorMesg = App.getInstance().getString(R.string.unhandled_error, activeSyncManager.getSearchStatus());
+									errorDetail = App.getInstance().getString(R.string.unhandled_error_occured);
 									return false;
 							}
 							mContacts = activeSyncManager.getResults();
@@ -71,20 +69,19 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 						case 401: // UNAUTHORIZED
 							// Looks like the password expired
 							errorCode = 401;
-							errorMesg = "Authentication failed";
-							errorDetail = "Please check your credentials";
+							errorMesg = App.getInstance().getString(R.string.authentication_failed_title);
+							errorDetail = App.getInstance().getString(R.string.authentication_failed_detail);
 							return false;
 						case 403: // FORBIDDEN
 							// Looks like the password expired
 							errorCode = 403;
-							errorMesg = "Forbidden by server";
-							errorDetail = "Either your Exchange server is not configured for connecting with ActiveSync or your user is not enabled for ActiveSync. Please contact your server administrator.";
+							errorMesg = App.getInstance().getString(R.string.forbidden_by_server_title);
+							errorDetail = App.getInstance().getString(R.string.forbidden_by_server_detail);
 							return false;
 						default:
 							errorCode = statusCode;
-							errorMesg = String.format("%d: Connection error", statusCode);
-							errorDetail = "Your server rejected the search request with the following error:"
-								+ errorCode;
+							errorMesg = App.getInstance().getString(R.string.connection_failed_title);
+							errorDetail = App.getInstance().getString(R.string.connection_failed_detail, statusCode);
 							return false;
 					}
 				} while (statusCode != 200);

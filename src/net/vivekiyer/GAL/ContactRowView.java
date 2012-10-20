@@ -40,11 +40,15 @@ public class ContactRowView extends RelativeLayout implements Checkable {
 			toggle();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void toggle() {
 		isChecked = !isChecked;
 		if(isChecked){
-			this.setBackgroundDrawable(getResources().getDrawable(R.drawable.selected_border_shading));
+			if(Utility.isPreHoneycomb())
+				this.setBackgroundDrawable(getResources().getDrawable(R.drawable.selected_border_shading));
+			else
+				this.setBackground(getResources().getDrawable(R.drawable.selected_border_shading));
 			findViewById(R.id.selectedMark).setVisibility(View.VISIBLE);
 		}
 		else {
