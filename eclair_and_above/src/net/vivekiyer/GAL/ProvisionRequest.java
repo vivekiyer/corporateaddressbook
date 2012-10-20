@@ -1,11 +1,10 @@
 package net.vivekiyer.GAL;
 
-import java.io.IOException;
-
 import android.os.Build;
-
 import com.android.exchange.adapter.Serializer;
 import com.android.exchange.adapter.Tags;
+
+import java.io.IOException;
 
 public class ProvisionRequest extends CommandRequest {
 
@@ -35,7 +34,7 @@ public class ProvisionRequest extends CommandRequest {
 			s.data(Tags.SETTINGS_FRIENDLY_NAME, "Corporate Addressbook");
 			s.data(Tags.SETTINGS_MODEL, Build.MODEL);
 			s.data(Tags.SETTINGS_OS, "Android " + Build.VERSION.RELEASE);
-			s.data(Tags.SETTINGS_USER_AGENT, CorporateAddressBook.VERSION_STRING);
+			s.data(Tags.SETTINGS_USER_AGENT, App.VERSION_STRING);
 			s.end().end();  // SETTINGS_SET, SETTINGS_DEVICE_INFORMATION
 		}
 		s.start(Tags.PROVISION_POLICIES);

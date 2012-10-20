@@ -15,13 +15,14 @@
 
 package net.vivekiyer.GAL;
 
+import com.android.exchange.adapter.ProvisionParser;
+import com.google.common.collect.HashMultimap;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Random;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import com.android.exchange.adapter.ProvisionParser;
-import com.google.common.collect.HashMultimap;
 
 /**
  * @author Vivek Iyer
@@ -46,6 +47,7 @@ public class ActiveSyncManager {
 	private String mActiveSyncVersion = "";	
 	private int mDeviceId = -1;
 	private HashMultimap<String, Contact> mResults;
+	private int searchStatus;
 
 	public boolean isUseSSLSet() {
 		return mUseSSL;
@@ -276,9 +278,10 @@ public class ActiveSyncManager {
 		{			
 			Parser gp = new Parser(resp.getWBXMLInputStream());
 			gp.parse();
-			if(gp.getSearchStatus() != Parser.STATUS_OK)
+			searchStatus = gp.getSearchStatus();
+			if(searchStatus != Parser.STATUS_OK)
 			{
-				switch(gp.getSearchStatus()) {
+				switch(searchStatus) {
 					case Parser.STATUS_DEVICE_NOT_PROVISIONED:
 					case Parser.STATUS_POLICY_REFRESH:
 					case Parser.STATUS_INVALID_POLICY_KEY:
@@ -291,6 +294,10 @@ public class ActiveSyncManager {
 			mResults = gp.getResults();
 		}
 		return ret;
+	}
+
+	public int getSearchStatus() {
+		return searchStatus;
 	}
 
 	/**
