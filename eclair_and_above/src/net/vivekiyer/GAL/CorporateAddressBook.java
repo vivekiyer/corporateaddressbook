@@ -403,6 +403,10 @@ public class CorporateAddressBook extends FragmentActivity
 		
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
 		    .findFragmentById(R.id.main_fragment);
+		if(list ==  null) {
+			Debug.Log("List fragment missing from main activity, discarding search result");
+			return;
+		}
 	    list.displayResult(mContacts, latestSearchTerm);
 	    
 	    resetAndHideDetails(fragmentManager);    

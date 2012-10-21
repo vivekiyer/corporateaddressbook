@@ -49,8 +49,8 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 							switch(activeSyncManager.getSearchStatus()) {
 								case Parser.STATUS_TOO_MANY_DEVICES:
 									errorCode = Parser.STATUS_TOO_MANY_DEVICES;
-									errorMesg = App.getInstance().getString(R.string.too_many_device_partnerships);
-									errorDetail = App.getInstance().getString(R.string.delete_partnerships);
+									errorMesg = App.getInstance().getString(R.string.too_many_device_partnerships_title);
+									errorDetail = App.getInstance().getString(R.string.too_many_device_partnerships_detail);
 									return false;
 								case Parser.STATUS_OK:
 									break;

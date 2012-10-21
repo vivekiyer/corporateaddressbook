@@ -42,8 +42,10 @@
   <string name="invalid_exchange_url_error">Ange en giltig Exchange webbadress</string>
   <string name="please_check_settings">Fel vid anslutning till servern. Kontrollera dina inställningar</string>
   <string name="validating_settings">Verifierar inställningar</string>
-  <string name="authentication_failed_error">Autentiseringen misslyckades. Vänligen kontrollera din inloggningsinformation.</string>
-  <string name="connection_failed_with_error_code">Anslutning till servern misslyckades med felkod: %1$d</string>
+  <string name="authentication_failed_title">Autentisering misslyckades</string>
+  <string name="authentication_failed_detail">Vänligen kontrollera dina inloggningsuppgifter</string>
+  <string name="connection_failed_title">Anslutningen misslyckades</string>
+  <string name="connection_failed_detail">Anslutningen till servern misslyckades med felkod: %1$d</string>
   <string name="error_detail">Felbeskrivning: \n</string>
   <string name="send_email">Skicka e-post</string>
   <string name="send_sms_to">"Skicka SMS till "</string>
@@ -59,4 +61,11 @@
   <string name="show_settings">Visa inställningar</string>
   <string name="undefined_result_please_try_again">Odefinierat resultat, var vänlig försök igen</string>
   <string name="could_not_find_sms_application">Tyvärr, det gick inte att hitta en app för att skicka SMS</string>
+  <string name="send_mail">Skicka e-post…</string>
+  <string name="too_many_device_partnerships_title">För många enhetskopplingar</string>
+  <string name="too_many_device_partnerships_detail">Ta bort enhetskopplingar på servern innan du fortsätter.\nDetta sker normalt via Outlook Web Access eller genom att kontakta din administratör.</string>
+  <string name="unhandled_error">%d: Fel som inte kan hanteras</string>
+  <string name="unhandled_error_occured">Ett fel uppstod som Corporate Addressbook för närvarande inte kan hantera.\nVar vänlig kontakta författarna för att få detta åtgärdat.</string>
+  <string name="forbidden_by_server_title">Nekad av servern</string>
+  <string name="forbidden_by_server_detail">Antingen är din Exchange-server inte konfigurerad för att ansluta med ActiveSync eller så är användaren är inte aktiverad för ActiveSync. Kontakta serveradministratören.</string>
 </resources>

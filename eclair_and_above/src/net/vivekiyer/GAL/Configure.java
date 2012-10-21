@@ -267,14 +267,14 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 				// All other error codes are unknown
 				switch (statusCode){
 				case 401: // UNAUTHORIZED
-					showAlert(getString(R.string.authentication_failed_error));
+					showAlert(getString(R.string.authentication_failed_detail));
 					break;
 				case ConnectionChecker.SSL_PEER_UNVERIFIED:
 					showAlert(String.format(getString(R.string.unable_to_find_matching_certificate),System.getProperty("line.separator"), getString(R.string.acceptAllSllText)));
 					break;
 				default:
 					StringBuilder sb = new StringBuilder();
-					sb.append(String.format(getString(R.string.connection_failed_with_error_code), statusCode));
+					sb.append(String.format(getString(R.string.connection_failed_detail), statusCode));
 					
 					if(errorString.compareToIgnoreCase("") != 0){
 						sb.append(System.getProperty("line.separator"));
