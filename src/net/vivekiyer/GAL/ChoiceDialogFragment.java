@@ -69,7 +69,9 @@ public class ChoiceDialogFragment extends DialogFragment implements OnClickListe
         if(message != null && message.length() > 0)
         	builder.setMessage(message);
 
-        String positiveButtonText = args.getString(ARG_POSITIVE_BUTTON_TEXT, getResources().getString(android.R.string.ok));
+        String positiveButtonText = args.getString(ARG_POSITIVE_BUTTON_TEXT);
+        if (positiveButtonText == null)
+        	positiveButtonText = getResources().getString(android.R.string.ok);
         builder.setPositiveButton(positiveButtonText, this);
         
         String negativeButtonText = args.getString(ARG_NEGATIVE_BUTTON_TEXT);

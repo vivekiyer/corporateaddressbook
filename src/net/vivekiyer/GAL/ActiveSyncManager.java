@@ -15,14 +15,18 @@
 
 package net.vivekiyer.GAL;
 
+import android.provider.Settings.Secure;
+
+import com.android.exchange.adapter.GalParser;
 import com.android.exchange.adapter.ProvisionParser;
 import com.google.common.collect.HashMultimap;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Random;
+import java.util.UUID;
 
 /**
  * @author Vivek Iyer
@@ -45,9 +49,9 @@ public class ActiveSyncManager {
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";	
-	private int mDeviceId = -1;
+	private String mDeviceId;
 	private HashMultimap<String, Contact> mResults;
-	private int searchStatus;
+	private int requestStatus;
 
 	public boolean isUseSSLSet() {
 		return mUseSSL;
@@ -105,11 +109,11 @@ public class ActiveSyncManager {
 		this.mPassword = password;
 	}
 
-	public int getDeviceId(){
+	public String getDeviceId(){
 		return mDeviceId;
 	}
 
-	public void setDeviceId(int deviceId){
+	public void setDeviceId(String deviceId){
 		mDeviceId = deviceId;
 	}
 
@@ -139,12 +143,8 @@ public class ActiveSyncManager {
 
 		generateAuthString();
 
-		Random rand = new Random();
-
-		while(mDeviceId <= 0)
-		{
-			mDeviceId = rand.nextInt();
-		}
+		if(mDeviceId == null)
+			mDeviceId = getUniqueId();
 		
 		// If we don't have a server name, 
 		// there is no way we can proceed
@@ -161,7 +161,8 @@ public class ActiveSyncManager {
 							+ mUsername
 							+ "&DeviceId=" 
 							+ mDeviceId
-							+ "&DeviceType=Android" 
+							+ "&DeviceType="
+							+ android.os.Build.MODEL
 							+ "&Cmd=",
 							null							// fragment
 					);
@@ -186,7 +187,7 @@ public class ActiveSyncManager {
 			boolean acceptAllCerts,
 			String policyKey, 
 			String activeSyncVersion,
-			int deviceId) {
+			String deviceId) {
 
 		mServerName = serverName;
 		mDomain = domain;
@@ -276,19 +277,19 @@ public class ActiveSyncManager {
 		
 		if(ret == 200)
 		{			
-			Parser gp = new Parser(resp.getWBXMLInputStream());
+			GalParser gp = new GalParser(resp.getWBXMLInputStream());
 			gp.parse();
-			searchStatus = gp.getSearchStatus();
-			if(searchStatus != Parser.STATUS_OK)
+			requestStatus = gp.getStatus();
+			if(requestStatus != Parser.STATUS_OK)
 			{
-				switch(searchStatus) {
+				switch(requestStatus) {
 					case Parser.STATUS_DEVICE_NOT_PROVISIONED:
 					case Parser.STATUS_POLICY_REFRESH:
 					case Parser.STATUS_INVALID_POLICY_KEY:
 						provisionDevice();
 						return searchGAL(query);
 					default:
-						Debug.Log(String.format("Unknown search status returned: %d", gp.getSearchStatus()));
+						Debug.Log(String.format("Unknown search status returned: %d", gp.getStatus()));
 				}
 			}
 			mResults = gp.getResults();
@@ -296,8 +297,8 @@ public class ActiveSyncManager {
 		return ret;
 	}
 
-	public int getSearchStatus() {
-		return searchStatus;
+	public int getRequestStatus() {
+		return requestStatus;
 	}
 
 	/**
@@ -332,7 +333,8 @@ public class ActiveSyncManager {
 			ProvisionParser pp = new ProvisionParser(resp.getWBXMLInputStream());
 			if(!pp.parse())
 			{
-				Debug.Log("Failed to parse policy key");
+				requestStatus = pp.getStatus();
+				Debug.Log("Failed to parse policy key, status "+ requestStatus);
 				return;
 			}
 
@@ -360,19 +362,22 @@ public class ActiveSyncManager {
 			// Make sure there were no errors
 			if(resp.getStatusCode() != 200)
 			{
-				Debug.Log(resp.getErrorString());
+				requestStatus = pp.getStatus();
+				Debug.Log(resp.getErrorString() + ", status " + requestStatus);
 				return;
 			}
 
 			pp = new ProvisionParser(resp.getWBXMLInputStream());
 			if(!pp.parse())
 			{
-				Debug.Log("Error in acknowledging Provision request");
+				requestStatus = pp.getStatus();
+				Debug.Log("Error in acknowledging Provision request, status "+ requestStatus);
 				return;
 			}
 			System.out.println("Final policy Key = "+ pp.getSecuritySyncKey());
 
 			mPolicyKey = pp.getSecuritySyncKey();
+			requestStatus = pp.getStatus();
 
 		}
 		catch(Exception ex)
@@ -380,5 +385,23 @@ public class ActiveSyncManager {
 			Debug.Log("Provisioning failed. Error string:\n" + ex.toString());
 		}
 
+	}
+	
+	static String getUniqueId() {
+		
+        final String androidId = Secure.getString(App.getInstance().getContentResolver(), Secure.ANDROID_ID);
+
+        // Use the Android ID unless it's broken, in which case fallback on a random number 
+        try {
+            UUID uuid;
+			if (!"9774d56d682e549c".equals(androidId)) {
+                uuid = UUID.nameUUIDFromBytes(androidId.getBytes("utf8"));
+            } else {
+                uuid = UUID.randomUUID();
+            }
+			return uuid.toString().replace("-", "");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
 	}
 }

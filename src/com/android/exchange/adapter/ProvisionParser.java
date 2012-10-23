@@ -87,9 +87,9 @@ public class ProvisionParser extends Parser {
         while (nextTag(START_DOCUMENT) != END_DOCUMENT) {
             switch (tag) {
                 case Tags.PROVISION_STATUS:
-                    int status = getValueInt();
+                    status = getValueInt();
                     Debug.Log("Provision status: " + status);
-                    res = (status == 1);
+                    res = (status == STATUS_OK);
                     break;
                 case Tags.PROVISION_POLICIES:
                     parsePolicies();
