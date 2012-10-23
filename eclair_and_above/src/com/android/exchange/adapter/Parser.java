@@ -47,6 +47,22 @@ public abstract class Parser {
     private boolean logging = false;
     private boolean capture = false;
 
+	// Status according to http://blogs.msdn.com/b/exchangedev/archive/2011/08/19/provisioning-policies-remote-wipe-and-abq-in-exchange-activesync.aspx
+	// In Exchange versions 12.1 and earlier, these were all summarized in the server sending a HTTP 449
+	// Versions later than 12.1 support a more fine tuned mechanism for provisioning status
+	// 142-144 are transient errors that should go away by (re)provisioning. the others are
+	// non-transient, they need config change on server to disappear.
+	public static final int STATUS_NOT_SET                                  = -1;
+	public static final int STATUS_OK                                       = 1;
+	public static final int STATUS_NOT_FULLY_PROVISIONABLE                  = 139;
+	public static final int STATUS_REMOTE_WIPE_REQUESTED                    = 140;
+	public static final int STATUS_LEGACY_DEVICE_ON_STRICT_POLICY           = 141;
+	public static final int STATUS_DEVICE_NOT_PROVISIONED                   = 142;
+	public static final int STATUS_POLICY_REFRESH                           = 143;
+	public static final int STATUS_INVALID_POLICY_KEY                       = 144;
+	public static final int STATUS_EXTERNALLY_MANAGED_DEVICES_NOT_ALLOWED   = 145;
+	public static final int STATUS_TOO_MANY_DEVICES							= 177;
+    
     // It IS used...
 	@SuppressWarnings("unused")
     private String logTag;
@@ -107,8 +123,15 @@ public abstract class Parser {
 
     // The value read, as bytes
     public byte[] bytes;
+    
+    // The status of the last stream parsed
+    protected int status = STATUS_NOT_SET;
 
-    /**
+    public int getStatus() {
+		return status;
+	}
+
+	/**
      * Generated when the parser comes to EOF prematurely during parsing (i.e. in error)
      */
     public class EofException extends IOException {
@@ -136,6 +159,36 @@ public abstract class Parser {
 
         EasParserException(String reason) {
             super(reason);
+        }
+    }
+    
+    /*
+     * Exception class to indicate an unexpected parse result, ie one other than STATUS_OK. This includes
+     * HTTP errors and EAS/WBXML status tags.
+     */
+    public class EasNotSuccessfulException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        public int status = STATUS_NOT_SET;
+        public int httpStatus = STATUS_NOT_SET;
+        public String description = "";
+        
+        EasNotSuccessfulException() {
+        	this("Response status indicated non-successful query");
+        }
+
+        EasNotSuccessfulException(String reason) {
+        	super(reason);
+        }
+
+        EasNotSuccessfulException(String reason, int status) {
+        	this(reason);
+        	this.status = status;
+        }
+
+        EasNotSuccessfulException(String reason, int status, String description) {
+        	this(reason, status);
+        	this.description = description;
         }
     }
 

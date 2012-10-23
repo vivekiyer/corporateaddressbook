@@ -24,6 +24,7 @@ public interface TaskCompleteCallback {
 	public void taskComplete(
 			boolean taskStatus, 
 			int statusCode,
+			int requestStatus,
 			String errorString
 			);
 }

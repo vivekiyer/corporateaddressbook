@@ -23,7 +23,7 @@ public class App extends Application {
 		super.onCreate();
 		instance = this;
 		// Get the version string
-		App.VERSION_STRING = "CorporateAddressbook_"+getAppVersion();
+		App.VERSION_STRING = "CorporateAddressbook/"+getAppVersion();
 	}
 
 	public static App getInstance() {

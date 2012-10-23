@@ -55,9 +55,6 @@ public class CorporateAddressBook extends FragmentActivity
 	// Object that performs all the ActiveSync magic
 	private ActiveSyncManager activeSyncManager;
 
-	// Stores the XML returned by Exchange
-	private String searchResultXML;
-
 	// Preference object that stores the account credentials
 	private SharedPreferences mPreferences;
 
@@ -125,6 +122,8 @@ public class CorporateAddressBook extends FragmentActivity
 	
 	@Override
 	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		setIntent(intent);
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			final String query = intent.getStringExtra(SearchManager.QUERY);
 			performSearch(query);
@@ -360,17 +359,25 @@ public class CorporateAddressBook extends FragmentActivity
 				Configure.KEY_USE_SSL, true));
 		
 		// Fix for null device_id
-		int device_id = mPreferences.getInt(
-				Configure.KEY_DEVICE_ID, 0);
+		String device_id_string = mPreferences.getString(Configure.KEY_DEVICE_ID_STRING, null);
+		if(device_id_string == null)
+		{
+			int device_id = mPreferences.getInt(
+					Configure.KEY_DEVICE_ID, 0);
+			if(device_id > 0)
+				device_id_string = String.valueOf(device_id);
+			else
+				device_id_string = ActiveSyncManager.getUniqueId();
+		}
 		
-		activeSyncManager.setDeviceId(device_id);
+		activeSyncManager.setDeviceId(device_id_string);
 		
 		if (!activeSyncManager.Initialize())
 			return false;
 		
-		// Fix for null device_id
-		if(device_id == 0)
-			return false;
+//		// Fix for null device_id
+//		if(device_id == 0)
+//			return false;
 		
 		// Check to see if we have successfully connected to an Exchange server
 		// Do we have a previous successful connect with these settings?
@@ -394,6 +401,7 @@ public class CorporateAddressBook extends FragmentActivity
 		return true;
 	}
 
+	@TargetApi(11)
 	private void displaySearchResult(HashMultimap<String, Contact> contacts, String searchTerm) {
 		
 		this.mContacts = contacts;
@@ -410,6 +418,8 @@ public class CorporateAddressBook extends FragmentActivity
 	    list.displayResult(mContacts, latestSearchTerm);
 	    
 	    resetAndHideDetails(fragmentManager);    
+	    if(!Utility.isPreHoneycomb() && (searchView != null))
+	    	searchView.setQuery("", false);
 	    list.getView().requestFocus();
 	}
 	
@@ -454,12 +464,12 @@ public class CorporateAddressBook extends FragmentActivity
 		final SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putString(Configure.KEY_ACTIVESYNCVERSION_PREFERENCE,
 				activeSyncManager.getActiveSyncVersion());
-		editor.putInt(Configure.KEY_DEVICE_ID, activeSyncManager.getDeviceId());
+//		editor.putString(Configure.KEY_DEVICE_ID_STRING, activeSyncManager.getDeviceId());
 		editor.putString(Configure.KEY_POLICY_KEY_PREFERENCE,
 				activeSyncManager.getPolicyKey());
-		editor.putString(Configure.KEY_RESULTS_PREFERENCE, searchResultXML);
-		// EditText text = (EditText) findViewById(R.id.Name);
-		editor.putString(Configure.KEY_SEARCH_TERM_PREFERENCE, latestSearchTerm);
+//		editor.putString(Configure.KEY_RESULTS_PREFERENCE, searchResultXML);
+//		// EditText text = (EditText) findViewById(R.id.Name);
+//		editor.putString(Configure.KEY_SEARCH_TERM_PREFERENCE, latestSearchTerm);
 
 		// Commit the edits!
 		editor.commit();

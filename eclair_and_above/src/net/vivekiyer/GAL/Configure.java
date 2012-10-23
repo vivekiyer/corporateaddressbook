@@ -17,7 +17,6 @@ package net.vivekiyer.GAL;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
@@ -25,6 +24,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,7 +39,7 @@ import android.widget.TextView;
  *
  * This class handles the configuration pane for the application.
  */
-public class Configure extends Activity implements OnClickListener, TaskCompleteCallback{
+public class Configure extends FragmentActivity implements OnClickListener, TaskCompleteCallback{
 	
 	private SharedPreferences mPreferences;
 	private ProgressDialog progressdialog;
@@ -53,6 +53,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 	public static final String KEY_SERVER_PREFERENCE = "server";
 	public static final String KEY_ACTIVESYNCVERSION_PREFERENCE = "activesyncversion";
 	public static final String KEY_DEVICE_ID = "deviceid";
+	public static final String KEY_DEVICE_ID_STRING = "deviceidstring";
 	public static final String KEY_POLICY_KEY_PREFERENCE = "policykey";	
 	public static final String KEY_USE_SSL = "usessl";
 	public static final String KEY_ACCEPT_ALL_CERTS = "acceptallcerts";
@@ -212,7 +213,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 				getValueFromCheckbox(R.id.chkAcceptAllSSLCert),
 				"", 
 				"",
-				0);
+				null);
 
 		// If we get an error from Initialize
 		// That means the URL is just bad
@@ -252,6 +253,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 	public void taskComplete(
 			boolean taskStatus, 
 			int statusCode,
+			int requestStatus,
 			String errorString) {		
 		progressdialog.dismiss();
 		
@@ -263,26 +265,27 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 			}
 			else
 			{				
-				// We can only handle 401 at this point
-				// All other error codes are unknown
+				// Handle all errors we're capable of,
+				// inform user of others
 				switch (statusCode){
+				case 200: // Successful, but obviously something went wrong
+					switch(requestStatus){
+					case Parser.STATUS_TOO_MANY_DEVICES:
+						ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices");
+						break;
+					default:
+						ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices");
+						break;
+					}
+					break;
 				case 401: // UNAUTHORIZED
 					showAlert(getString(R.string.authentication_failed_detail));
 					break;
 				case ConnectionChecker.SSL_PEER_UNVERIFIED:
-					showAlert(String.format(getString(R.string.unable_to_find_matching_certificate),System.getProperty("line.separator"), getString(R.string.acceptAllSllText)));
+					ChoiceDialogFragment.newInstance(getString(R.string.unable_to_find_matching_certificate), getString(R.string.acceptAllSllText)).show(getSupportFragmentManager(), "SslUnverified");
 					break;
 				default:
-					StringBuilder sb = new StringBuilder();
-					sb.append(String.format(getString(R.string.connection_failed_detail), statusCode));
-					
-					if(errorString.compareToIgnoreCase("") != 0){
-						sb.append(System.getProperty("line.separator"));
-						sb.append(getString(R.string.error_detail));
-						sb.append(errorString);
-					}
-					
-					showAlert(sb.toString());
+					ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode)).show(getSupportFragmentManager(), "connError");
 					break;				 
 				}
 			}
@@ -304,7 +307,7 @@ public class Configure extends Activity implements OnClickListener, TaskComplete
 					getValueFromCheckbox(R.id.chkAcceptAllSSLCert));			
 			editor.putString(KEY_ACTIVESYNCVERSION_PREFERENCE,
 					activeSyncManager.getActiveSyncVersion());
-			editor.putInt(KEY_DEVICE_ID,
+			editor.putString(KEY_DEVICE_ID_STRING,
 					activeSyncManager.getDeviceId());
 			editor.putString(KEY_POLICY_KEY_PREFERENCE,
 					activeSyncManager.getPolicyKey());

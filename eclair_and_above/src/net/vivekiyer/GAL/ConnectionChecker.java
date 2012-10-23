@@ -32,8 +32,12 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	// Callback to call once the check is complete
 	private TaskCompleteCallback callback;	
 	
-	// variable that stores the status of the connect
+	// variable that stores the status of the HTTP connection
 	private int statusCode = 0;
+	
+	// variable that stores the status of the parsed message
+	// (if available; if not it is equal to Parser.STATUS_NOT_SET)
+	private int requestStatus = Parser.STATUS_NOT_SET;
 	
 	// variable that stores the error string
 	private String errorString = "";
@@ -45,9 +49,7 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 		this.callback = callback;
 	}
 	
-	public ConnectionChecker(			
-			TaskCompleteCallback _callback
-			){
+	public ConnectionChecker(TaskCompleteCallback _callback){
 		callback = _callback;
 	}
 	
@@ -55,12 +57,15 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	@Override
 	protected Boolean doInBackground(ActiveSyncManager... params) {
 		try {
+			ActiveSyncManager syncMgr = params[0];
 			// Let's try to connect to the server
-			statusCode = params[0].getExchangeServerVersion();
+			statusCode = syncMgr.getExchangeServerVersion();
 			
-			if(statusCode != 200)
-				return false;
+			requestStatus = syncMgr.getRequestStatus();
 			
+			return ((statusCode == 200) &&
+					((requestStatus == Parser.STATUS_NOT_SET) || (requestStatus == Parser.STATUS_OK)));
+				
 		} catch (javax.net.ssl.SSLPeerUnverifiedException spue) {
 			statusCode = SSL_PEER_UNVERIFIED;
 			errorString = spue.toString();
@@ -69,13 +74,12 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 			errorString = e.toString();
 			return false;
 		}
-		return true;
 	}
 
 	@Override
 	protected void onPostExecute(Boolean result) {		
 		// now that the task is complete
 		// call the callback with the status
-		callback.taskComplete(result, statusCode, errorString);
+		callback.taskComplete(result, statusCode, requestStatus, errorString);
 	}
 }
