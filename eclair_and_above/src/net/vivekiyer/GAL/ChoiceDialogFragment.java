@@ -51,8 +51,9 @@ public class ChoiceDialogFragment extends DialogFragment implements OnClickListe
         return fragment;
     }
  
-    public void setListener(OnChoiceDialogOptionClickListener clickListener){
+    public ChoiceDialogFragment setListener(OnChoiceDialogOptionClickListener clickListener){
         this.clickListener = clickListener;
+	    return this;
     }
  
     @Override

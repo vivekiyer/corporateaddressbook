@@ -19,6 +19,8 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -39,7 +41,7 @@ import android.widget.TextView;
  *
  * This class handles the configuration pane for the application.
  */
-public class Configure extends FragmentActivity implements OnClickListener, TaskCompleteCallback{
+public class Configure extends FragmentActivity implements OnClickListener, TaskCompleteCallback, ChoiceDialogFragment.OnChoiceDialogOptionClickListener {
 	
 	private SharedPreferences mPreferences;
 	private ProgressDialog progressdialog;
@@ -57,8 +59,6 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 	public static final String KEY_POLICY_KEY_PREFERENCE = "policykey";	
 	public static final String KEY_USE_SSL = "usessl";
 	public static final String KEY_ACCEPT_ALL_CERTS = "acceptallcerts";
-	public static final String KEY_RESULTS_PREFERENCE = "results";
-	public static final String KEY_SEARCH_TERM_PREFERENCE = "searchTerm";
 	public static final String KEY_SUCCESSFULLY_CONNECTED = "successfullyConnected";
 	
 	/* (non-Javadoc)
@@ -111,7 +111,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 		{
 			ActionBar actionBar = getActionBar();
 			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
+//			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
 		}
 	}	
 	
@@ -256,8 +256,8 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			int requestStatus,
 			String errorString) {		
 		progressdialog.dismiss();
-		
-		// Looks like there was an error in the settings		
+
+		// Looks like there was an error in the settings
 		if (!taskStatus) {
 			if(Debug.Enabled){
 				// Send the error message via email				
@@ -281,11 +281,20 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 				case 401: // UNAUTHORIZED
 					showAlert(getString(R.string.authentication_failed_detail));
 					break;
+				case 403: // FORBIDDEN, typically means that the DeviceID is not accepted and needs to be set in Exchange
+					String title = getString(R.string.forbidden_by_server_title);
+					String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
+					ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
+						.setListener(this)
+						.show(getSupportFragmentManager(), "forbidden");
+					break;
 				case ConnectionChecker.SSL_PEER_UNVERIFIED:
-					ChoiceDialogFragment.newInstance(getString(R.string.unable_to_find_matching_certificate), getString(R.string.acceptAllSllText)).show(getSupportFragmentManager(), "SslUnverified");
+					ChoiceDialogFragment.newInstance(getString(R.string.unable_to_find_matching_certificate), getString(R.string.acceptAllSllText))
+						.show(getSupportFragmentManager(), "SslUnverified");
 					break;
 				default:
-					ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode)).show(getSupportFragmentManager(), "connError");
+					ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
+						.show(getSupportFragmentManager(), "connError");
 					break;				 
 				}
 			}
@@ -320,6 +329,24 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			// Close the activity
 			finish();
 		}			
+	}
+
+	@Override
+	@SuppressLint("deprecated")
+	public void onChoiceDialogOptionPressed(int action) {
+		switch(action) {
+			case android.R.id.copy:
+				if(Utility.isPreHoneycomb()) {
+					final android.text.ClipboardManager clipboard;
+					clipboard = (android.text.ClipboardManager) getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+					clipboard.setText(activeSyncManager.getDeviceId());
+				}
+				else {
+					ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+					clip.setPrimaryClip(ClipData.newPlainText("Android Device ID", activeSyncManager.getDeviceId()));
+				}
+				break;
+		}
 	}
 
 }

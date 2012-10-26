@@ -401,12 +401,19 @@ public class Tags {
     public static final int SEARCH_FREE_TEXT = SEARCH_PAGE + 0x15;
     public static final int SEARCH_SUBSTRING_OP = SEARCH_PAGE + 0x16;
     public static final int SEARCH_DEEP_TRAVERSAL = SEARCH_PAGE + 0x17;
-    public static final int SEARCH_LONG_ID = SEARCH_PAGE + 0x18;
-    public static final int SEARCH_REBUILD_RESULTS = SEARCH_PAGE + 0x19;
-    public static final int SEARCH_LESS_THAN = SEARCH_PAGE + 0x1A;
-    public static final int SEARCH_GREATER_THAN = SEARCH_PAGE + 0x1B;
-    public static final int SEARCH_SCHEMA = SEARCH_PAGE + 0x1C;
-    public static final int SEARCH_SUPPORTED = SEARCH_PAGE + 0x1D;
+	public static final int SEARCH_LONG_ID = SEARCH_PAGE + 0x18;
+	public static final int SEARCH_REBUILD_RESULTS = SEARCH_PAGE + 0x19;
+	public static final int SEARCH_LESS_THAN = SEARCH_PAGE + 0x1A;
+	public static final int SEARCH_GREATER_THAN = SEARCH_PAGE + 0x1B;
+	public static final int SEARCH_SCHEMA = SEARCH_PAGE + 0x1C;
+	public static final int SEARCH_SUPPORTED = SEARCH_PAGE + 0x1D;
+	public static final int SEARCH_USER_NAME = SEARCH_PAGE + 0x1E;
+	public static final int SEARCH_PASSWORD = SEARCH_PAGE + 0x1F;
+	public static final int SEARCH_CONVERSATION_ID = SEARCH_PAGE + 0x20;
+	// The following tags are supported in MS-AS 14.1 and above
+	public static final int SEARCH_PICTURE = SEARCH_PAGE + 0x21;
+	public static final int SEARCH_MAX_SIZE = SEARCH_PAGE + 0x22;
+	public static final int SEARCH_MAX_PICTURES = SEARCH_PAGE + 0x23;
 
     public static final int GAL_PAGE = GAL << PAGE_SHIFT;
     public static final int GAL_DISPLAY_NAME = GAL_PAGE + 5;
@@ -419,7 +426,11 @@ public class Tags {
     public static final int GAL_LAST_NAME = GAL_PAGE + 0xC;
     public static final int GAL_HOME_PHONE = GAL_PAGE + 0xD;
     public static final int GAL_MOBILE_PHONE = GAL_PAGE + 0xE;
-    public static final int GAL_EMAIL_ADDRESS = GAL_PAGE + 0xF;
+	public static final int GAL_EMAIL_ADDRESS = GAL_PAGE + 0xF;
+	// The following tags are supported in MS-AS 14.1 and above
+	public static final int GAL_PICTURE = GAL_PAGE + 0x10;
+	public static final int GAL_STATUS = GAL_PAGE + 0x11;
+	public static final int GAL_DATA = GAL_PAGE + 0x12;
 
     public static final int PROVISION_PAGE = PROVISION << PAGE_SHIFT;
     // EAS 2.5
@@ -749,12 +760,14 @@ public class Tags {
             "SearchOptions", "Range", "SearchStatus", "Response", "Result",
             "Properties", "Total", "EqualTo", "Value", "And",
             "Or", "FreeText", "SubstringOp", "DeepTraversal", "LongId",
-            "RebuildResults", "LessThan", "GreateerThan", "Schema", "SearchSupported"
+            "RebuildResults", "LessThan", "GreateerThan", "Schema", "SearchSupported",
+		    "UserName", "Password", "ConversationId", "Picture", "MaxSize", "MaxPictures"
         },
         {
             // 0x10 Gal
             "GalDisplayName", "GalPhone", "GalOffice", "GalTitle", "GalCompany", "GalAlias",
-            "GalFirstName", "GalLastName", "GalHomePhone", "GalMobilePhone", "GalEmailAddress"
+            "GalFirstName", "GalLastName", "GalHomePhone", "GalMobilePhone", "GalEmailAddress",
+		    "Picture", "Status", "Data"
         },
         {
             // 0x11 AirSyncBase

@@ -62,7 +62,7 @@ public class CorporateAddressBook extends FragmentActivity
 	static final int DISPLAY_PREFERENCES_REQUEST = 0;
 
 	// Used to launch the initial configuration pane
-	static final int DISPLAY_CONFIGURATION_REQUEST = 1;
+	static final int DISPLAY_CONFIGURATION_REQUEST = 2;
 
 	// Progress bar
 	private ProgressDialog progressdialog;
@@ -552,14 +552,16 @@ public class CorporateAddressBook extends FragmentActivity
 			return;
 		}
 		ChoiceDialogFragment dialogFragment;
-		String title = search.getErrorMesg(); //getResources().getString(R.string.could_not_connect_to_server);
-        String message = search.getErrorDetail(); //getResources().getString(R.string.authentication_failed_error);
+		String title = search.getErrorMesg();
+        String message = search.getErrorDetail();
+		String positiveButtonText;
+		String negativeButtonText;
 		switch(result) {
 		// Errors that might be remedied by updating server settings
 		case 401:
-	        String positiveButtonText = getString(R.string.show_settings);
-	        String negativeButtonText = getString(android.R.string.cancel);
-	        dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText);
+			positiveButtonText = getString(android.R.string.cancel);
+	        negativeButtonText = getString(R.string.show_settings);
+	        dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, android.R.id.closeButton, DISPLAY_CONFIGURATION_REQUEST);
 	        dialogFragment.setListener(this);
 	        try {
 				dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag");
@@ -568,13 +570,25 @@ public class CorporateAddressBook extends FragmentActivity
 			}
 	        break;
 		// Errors that depend on external (non app-related) circumstances
-		case 177:
+		case 403:
+			positiveButtonText = getString(android.R.string.ok);
+			negativeButtonText = getString(android.R.string.copy);
+			dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, android.R.id.closeButton, android.R.id.copy);
+			dialogFragment.setListener(this);
+			try {
+				dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag");
+			} catch (java.lang.IllegalStateException e) {
+				Debug.Log(e.getMessage());
+			}
+			break;
+		default:
 	        dialogFragment = ChoiceDialogFragment.newInstance(title, message);
 	        try {
 				dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag");
 			} catch (java.lang.IllegalStateException e) {
 				Debug.Log(e.getMessage());
 			}
+			break;
 		}
 	}
 	public void onChoiceDialogOptionPressed(int action) {

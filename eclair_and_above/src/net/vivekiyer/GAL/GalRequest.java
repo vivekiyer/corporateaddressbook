@@ -24,7 +24,15 @@ public class GalRequest extends CommandRequest {
 		s.data(Tags.SEARCH_NAME, "GAL").data(Tags.SEARCH_QUERY, query);
 		s.start(Tags.SEARCH_OPTIONS);
 		s.data(Tags.SEARCH_RANGE, "0-" + Integer.toString(limit - 1));
-		s.end().end().end().done();
+
+//      Pictures disabled for now since we have no way of testing
+//		if(getProtocolVersionFloat() >= 14.1) {
+//			s.start(Tags.SEARCH_PICTURE);
+//			s.data(Tags.SEARCH_MAX_PICTURES, String.valueOf(limit));
+//			s.end(); // SEARCH
+//		}
+
+		s.end().end().end().done(); // STORE / OPTIONS / PICTURE
 
 		setWbxmlBytes(s.toByteArray());
 	}
