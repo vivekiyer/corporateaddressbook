@@ -73,10 +73,10 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 							errorDetail = App.getInstance().getString(R.string.authentication_failed_detail);
 							return false;
 						case 403: // FORBIDDEN
-							// Looks like the password expired
+							// Device ID not accepted by server
 							errorCode = 403;
 							errorMesg = App.getInstance().getString(R.string.forbidden_by_server_title);
-							errorDetail = App.getInstance().getString(R.string.forbidden_by_server_detail);
+							errorDetail = App.getInstance().getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
 							return false;
 						default:
 							errorCode = statusCode;

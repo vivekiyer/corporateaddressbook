@@ -161,8 +161,7 @@ public class ActiveSyncManager {
 							+ mUsername
 							+ "&DeviceId=" 
 							+ mDeviceId
-							+ "&DeviceType="
-							+ android.os.Build.MODEL
+							+ "&DeviceType=Android"
 							+ "&Cmd=",
 							null							// fragment
 					);
@@ -289,7 +288,7 @@ public class ActiveSyncManager {
 						provisionDevice();
 						return searchGAL(query);
 					default:
-						Debug.Log(String.format("Unknown search status returned: %d", gp.getStatus()));
+						Debug.Log(String.format("Unknown request status returned: %d", gp.getStatus()));
 				}
 			}
 			mResults = gp.getResults();

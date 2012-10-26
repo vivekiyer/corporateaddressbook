@@ -63,9 +63,11 @@
     <string name="could_not_find_sms_application">Sorry, could not find an application to send SMS</string>
     <string name="send_mail">Send mail…</string>
     <string name="too_many_device_partnerships_title">Too many device partnerships</string>
-    <string name="too_many_device_partnerships_detail">Delete partnerships on the server before proceeding.\nThis is normally done via Outlook Web Access or by contacting your administrator.</string>
+    <string name="too_many_device_partnerships_detail">Delete partnerships on the server before proceeding.
+\nThis is normally done via Outlook Web Access or by contacting your administrator.</string>
     <string name="unhandled_error">%d: Unhandled error</string>
-    <string name="unhandled_error_occured">An error occured that Corporate Addressbook currently cannot handle.\nPlease contact the authors to have this addressed.</string>
+    <string name="unhandled_error_occured">An error occured that Corporate Addressbook currently cannot handle.
+\nPlease contact the authors to have this addressed.</string>
     <string name="forbidden_by_server_title">Forbidden by server</string>
-    <string name="forbidden_by_server_detail">Either your Exchange server is not configured for connecting with ActiveSync or your user is not enabled for ActiveSync. Please contact your server administrator.</string>
+    <string name="forbidden_by_server_detail" formatted="false">Your device is not allowed to connect to the server.%nThis typically means that an administrator needs to allow your Device ID to connect.%n%nYour Device ID is:%n%1$s</string>
 </resources>

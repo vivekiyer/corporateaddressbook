@@ -104,6 +104,9 @@ public class GalParser extends Parser {
 				contact.add("MobilePhone",getValue());
 				break;
 			default:
+				Debug.Log(String.format("Skipping tag '%1$s', value '%2$s'",
+						Tags.pages[Tags.GAL][tag - Tags.GAL_PAGE -4], getValue()));
+				Debug.Log(getValue());
 				skipTag();
 			}
 		}
