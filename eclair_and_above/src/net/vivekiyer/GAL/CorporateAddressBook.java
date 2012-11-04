@@ -24,6 +24,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
@@ -63,6 +64,10 @@ public class CorporateAddressBook extends FragmentActivity
 
 	// Used to launch the initial configuration pane
 	static final int DISPLAY_CONFIGURATION_REQUEST = 2;
+	
+	// Tags for finding and retrieving fragments
+	static final String mainTag = "R.id.main_fragment";
+	static final String contactTag = "R.id.contact_fragment";
 
 	// Progress bar
 	private ProgressDialog progressdialog;
@@ -79,6 +84,8 @@ public class CorporateAddressBook extends FragmentActivity
 	private HashMultimap<String, Contact> mContacts;
 
 	private Contact selectedContact;
+
+	private GALSearch search;
 
 	/*
 	 * (non-Javadoc)
@@ -122,12 +129,13 @@ public class CorporateAddressBook extends FragmentActivity
 	
 	@Override
 	protected void onNewIntent(Intent intent) {
+		if(Intent.ACTION_SEARCH.equals(intent.getAction()))
+			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		super.onNewIntent(intent);
 		setIntent(intent);
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			final String query = intent.getStringExtra(SearchManager.QUERY);
 			performSearch(query);
-			
 		}		
 	}
 	
@@ -141,11 +149,11 @@ public class CorporateAddressBook extends FragmentActivity
 		    	.findFragmentById(R.id.contact_fragment);
 			 
 	    if (details != null && details.isInLayout()) {
-			CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) getSupportFragmentManager()
+			CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) fm
 				.findFragmentById(R.id.main_fragment);
 			contacts.setIsSelectable(true);
 			contacts.setViewBackground(false);
-			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
+			FragmentTransaction ft = fm.beginTransaction();  
 			ft.hide(details);  
 			ft.commit();
 		}
@@ -168,11 +176,23 @@ public class CorporateAddressBook extends FragmentActivity
 			@SuppressWarnings("unchecked")
 			HashMultimap<String, Contact> contactsMap = (HashMultimap<String, Contact>) savedInstanceState.get("mContacts");
 			mContacts = contactsMap;
-			latestSearchTerm = savedInstanceState.getString("latestSearchTerm");
+			String latestSearchTerm = savedInstanceState.getString("latestSearchTerm");
 			selectedContact = (Contact) savedInstanceState.get("selectedContact");
 			displaySearchResult(mContacts, latestSearchTerm);
 			if(selectedContact != null) {
 				selectContact(selectedContact);
+			}
+			Integer searchHash = savedInstanceState.getInt("search");
+			if(searchHash != 0) {
+				search = App.taskManager.get(searchHash);
+				if(search != null){
+					search.setOnSearchCompletedListener(this);
+					App.taskManager.remove(searchHash);
+					if(progressdialog != null) {
+						progressdialog.setMessage(getString(R.string.retrievingResults));
+						progressdialog.show();
+					}
+				}
 			}
 		}
 	};
@@ -189,6 +209,10 @@ public class CorporateAddressBook extends FragmentActivity
 		outState.putSerializable("mContacts", this.mContacts);
 		outState.putString("latestSearchTerm", this.latestSearchTerm);
 		outState.putSerializable("selectedContact", this.selectedContact);
+		if(search != null && search.getStatus().equals(Status.RUNNING)) {
+			outState.putInt("search", search.hashCode());
+			App.taskManager.put(search.hashCode(), search);
+		}
 	};
 	
 	private void performSearch(String name) {
@@ -198,18 +222,13 @@ public class CorporateAddressBook extends FragmentActivity
 			progressdialog.show();
 		}
 
-		latestSearchTerm = name;
-		
 		// Save search in recent list
 		final SearchRecentSuggestions suggestions = new SearchRecentSuggestions(
 				this, RecentGALSearchTermsProvider.AUTHORITY,
 				RecentGALSearchTermsProvider.MODE);
 		suggestions.saveRecentQuery(name, null);
 
-		// Launch the progress bar, so the user knows his request is being
-		// processed
-		// Retrieve the results via an AsyncTask
-		GALSearch search = new GALSearch(activeSyncManager);
+		search = new GALSearch(activeSyncManager);
 		search.onSearchCompletedListener = this;
 		search.execute(name);
 	}
@@ -475,6 +494,17 @@ public class CorporateAddressBook extends FragmentActivity
 		editor.commit();
 	}
 
+	@Override
+	protected void onDestroy() {
+		if((progressdialog != null) && progressdialog.isShowing()) {
+			try {
+				progressdialog.dismiss();
+			} catch (java.lang.IllegalArgumentException e) { }
+		}
+		if(search != null)
+			search.setOnSearchCompletedListener(null);
+		super.onDestroy();
+	};
 
 	@Override
 	public void onContactSelected(Contact contact) {
@@ -548,7 +578,7 @@ public class CorporateAddressBook extends FragmentActivity
 			} catch (java.lang.IllegalArgumentException e) { }
 		}
 		if(result==0) {
-			displaySearchResult(search.getContacts(), latestSearchTerm);
+			displaySearchResult(search.getContacts(), search.getSearchTerm());
 			return;
 		}
 		ChoiceDialogFragment dialogFragment;

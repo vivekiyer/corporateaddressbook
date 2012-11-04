@@ -16,6 +16,7 @@
 package net.vivekiyer.GAL;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -292,6 +293,9 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 					ChoiceDialogFragment.newInstance(getString(R.string.unable_to_find_matching_certificate), getString(R.string.acceptAllSllText))
 						.show(getSupportFragmentManager(), "SslUnverified");
 					break;
+				case ConnectionChecker.UNKNOWN_HOST:
+					ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified");
+					break;
 				default:
 					ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
 						.show(getSupportFragmentManager(), "connError");
@@ -331,8 +335,9 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 		}			
 	}
 
+	@SuppressWarnings("deprecation")
+	@TargetApi(11)
 	@Override
-	@SuppressLint("deprecated")
 	public void onChoiceDialogOptionPressed(int action) {
 		switch(action) {
 			case android.R.id.copy:

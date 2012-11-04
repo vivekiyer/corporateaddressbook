@@ -46,12 +46,17 @@ public class ActiveSyncManager {
 	private String mDomain;
 	private String mUsername;
 	private String mPassword;
+	private String mQuery = "";
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";	
 	private String mDeviceId;
 	private HashMultimap<String, Contact> mResults;
 	private int requestStatus;
+
+	public String getSearchTerm() {
+		return mQuery;
+	}
 
 	public boolean isUseSSLSet() {
 		return mUseSSL;
@@ -222,9 +227,10 @@ public class ActiveSyncManager {
 		// 200 indicates a success
 		int statusCode = response.getStatusLine().getStatusCode() ; 
 
-		if( statusCode == 200){
-
-			Header [] headers = response.getHeaders("MS-ASProtocolVersions");
+		Header[] headers;
+		switch(statusCode) {
+		case 200:
+			headers = response.getHeaders("MS-ASProtocolVersions");
 
 			if (headers.length != 0) {
 
@@ -241,10 +247,22 @@ public class ActiveSyncManager {
 				// Provision the device if necessary
 				provisionDevice();
 			}
+			break;
+		// Deal with redirect messages stemming from Exchange CAS mismatch
+		// (see http://technet.microsoft.com/en-us/library/dd439372(v=exchg.80).aspx)
+		// Not tested due to lack of access to CAS enabled servers 
+		case 451:
+			headers = response.getHeaders("X-MS-Location");
+			if(headers.length != 0) {
+				String url = headers[0].getValue();
+				if(!mUri.equals(url)) {
+					mUri = url;
+					return getExchangeServerVersion();
+				}
+			}
 		}
 		return statusCode;
 	}
-
 
 
 	/**
@@ -257,6 +275,8 @@ public class ActiveSyncManager {
 	 */
 	public int searchGAL(String query) throws Exception 
 	{
+		mQuery = query;
+		
 		int ret = 0;
 		GalRequest request = new GalRequest(
 				mUri,

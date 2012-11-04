@@ -70,4 +70,6 @@
 \nPlease contact the authors to have this addressed.</string>
     <string name="forbidden_by_server_title">Forbidden by server</string>
     <string name="forbidden_by_server_detail" formatted="false">Your device is not allowed to connect to the server.%nThis typically means that an administrator needs to allow your Device ID to connect.%n%nYour Device ID is:%n%1$s</string>
+    <string name="invalid_server_title">Invalid server name</string>
+    <string name="invalid_server_detail">Could not find the server, are you sure the name is right?</string>
 </resources>

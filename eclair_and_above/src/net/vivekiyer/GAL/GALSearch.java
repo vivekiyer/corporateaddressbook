@@ -15,13 +15,27 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	private String errorMesg = "";
 	private String errorDetail = "";
 
-	public OnSearchCompletedListener onSearchCompletedListener;
+	protected volatile OnSearchCompletedListener onSearchCompletedListener;
 	
 	HashMultimap<String,Contact> mContacts = null;
 
 
 	public HashMultimap<String,Contact> getContacts() {
 		return mContacts;
+	}
+	public String getSearchTerm() {
+		return activeSyncManager.getSearchTerm();
+	}
+	public OnSearchCompletedListener getOnSearchCompletedListener() {
+		synchronized (this) {
+			return onSearchCompletedListener;
+		}
+	}
+	public void setOnSearchCompletedListener(
+			OnSearchCompletedListener onSearchCompletedListener) {
+		synchronized (this) {
+			this.onSearchCompletedListener = onSearchCompletedListener;
+		}
 	}
 	public GALSearch(ActiveSyncManager activeSyncManager) {
 		this.activeSyncManager = activeSyncManager;
@@ -118,8 +132,8 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	@Override
 	protected void onPostExecute(Boolean result) {
 		super.onPostExecute(result);
-		if(onSearchCompletedListener != null)
-			onSearchCompletedListener.OnSearchCompleted(result ? 0 : errorCode, this);
+		if(getOnSearchCompletedListener() != null)
+			getOnSearchCompletedListener().OnSearchCompleted(result ? 0 : errorCode, this);
 	}
 
 }
