@@ -48,7 +48,7 @@ import java.util.Set;
  */
 public class CorporateAddressBook extends FragmentActivity
 	implements ContactListListener, GALSearch.OnSearchCompletedListener, OnChoiceDialogOptionClickListener
-	{
+{
 
 	// TAG used for logging
 	// private static String TAG = "CorporateAddressBook";
@@ -87,11 +87,13 @@ public class CorporateAddressBook extends FragmentActivity
 
 	private GALSearch search;
 
+	private boolean isPaused = false;
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
-	 * 
+	 *
 	 * Called when the activity is first created.
 	 */
 	@Override
@@ -196,6 +198,18 @@ public class CorporateAddressBook extends FragmentActivity
 			}
 		}
 	};
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		isPaused = true;
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		isPaused = false;
+	}
 
 	private void selectContact(Contact selectedContact) {
 		CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) getSupportFragmentManager()
@@ -450,7 +464,7 @@ public class CorporateAddressBook extends FragmentActivity
 		CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
 		    	.findFragmentById(R.id.contact_fragment);
 			 
-	    if (details != null && details.isInLayout()) {
+	    if (details != null && details.isInLayout() && !this.isPaused) {
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
 			//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
 
