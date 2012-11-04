@@ -68,4 +68,6 @@
   <string name="unhandled_error_occured">Ett fel uppstod som Corporate Addressbook för närvarande inte kan hantera.\nVar vänlig kontakta författarna för att få detta åtgärdat.</string>
   <string name="forbidden_by_server_title">Nekad av servern</string>
   <string name="forbidden_by_server_detail">Antingen är din Exchange-server inte konfigurerad för att ansluta med ActiveSync eller så är användaren är inte aktiverad för ActiveSync. Kontakta serveradministratören.</string>
+  <string name="invalid_server_title">Ogiltigt servernamn</string>
+  <string name="invalid_server_detail">Kunde inte hitta servern, är du säker på att namnet är rätt?</string>
 </resources>
