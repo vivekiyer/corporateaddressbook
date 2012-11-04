@@ -5,7 +5,7 @@
         android:id="@+id/menu_search"
         android:actionViewClass="android.widget.SearchView"
         android:icon="@android:drawable/ic_menu_search"
-        android:showAsAction="always|withText"
+        android:showAsAction="ifRoom|withText"
         android:title="@string/searchDirectory"
         android:titleCondensed="@string/search" android:menuCategory="container" android:orderInCategory="1">
     </item>

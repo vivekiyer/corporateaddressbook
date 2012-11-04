@@ -166,7 +166,7 @@ public class Configure extends Activity implements OnClickListener,
 	 */
 	private void showAlert(String s) {
 		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
-		alt_bld.setMessage(s).setPositiveButton("Ok", null);
+		alt_bld.setMessage(s).setPositiveButton(getResources().getString(android.R.string.ok), null);
 		AlertDialog alert = alt_bld.create();
 		alert.show();
 	}

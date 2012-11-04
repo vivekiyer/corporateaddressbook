@@ -33,8 +33,7 @@ public class Utility {
         if (encoded == null) {
             return null;
         }
-        byte[] decoded = new Base64().decode(encoded);
-        return decoded;
+        return new Base64().decode(encoded);
     }
 
     /**
