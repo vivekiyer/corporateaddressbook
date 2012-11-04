@@ -3,6 +3,8 @@
  */
 package net.vivekiyer.GAL;
 
+import java.util.Hashtable;
+
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -17,6 +19,8 @@ public class App extends Application {
 	private static App instance = null;
 	// Version String
 	public static String VERSION_STRING;
+	
+	public static final Hashtable<Integer, GALSearch> taskManager = new Hashtable<Integer, GALSearch>();
 	
 	@Override
 	public void onCreate() {
@@ -45,4 +49,6 @@ public class App extends Application {
 		}
 		return info.versionName;
 	}
+	
+	
 }

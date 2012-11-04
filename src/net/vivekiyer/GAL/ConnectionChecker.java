@@ -15,6 +15,8 @@
 
 package net.vivekiyer.GAL;
 
+import java.net.UnknownHostException;
+
 import android.os.AsyncTask;
 
 /**
@@ -28,6 +30,7 @@ import android.os.AsyncTask;
 class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	
 	public static final int SSL_PEER_UNVERIFIED = -1;
+	public static final int UNKNOWN_HOST = -2;
 
 	// Callback to call once the check is complete
 	private TaskCompleteCallback callback;	
@@ -69,11 +72,13 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 		} catch (javax.net.ssl.SSLPeerUnverifiedException spue) {
 			statusCode = SSL_PEER_UNVERIFIED;
 			errorString = spue.toString();
-			return false;
+		} catch (UnknownHostException e) {
+			statusCode = UNKNOWN_HOST;
+			errorString = e.toString();
 		} catch (Exception e) {
 			errorString = e.toString();
-			return false;
 		}
+		return false;
 	}
 
 	@Override
