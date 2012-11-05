@@ -46,7 +46,7 @@ public class ContactRowView extends RelativeLayout implements Checkable {
 	public void toggle() {
 		isChecked = !isChecked;
 		if(isChecked){
-			if(Utility.isPreHoneycomb())
+			if(Utility.isPreJellyBean())
 				this.setBackgroundDrawable(getResources().getDrawable(R.drawable.selected_border_shading));
 			else
 				this.setBackground(getResources().getDrawable(R.drawable.selected_border_shading));
