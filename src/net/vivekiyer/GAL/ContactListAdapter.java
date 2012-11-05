@@ -81,8 +81,8 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 			
 			// Set the bottom text
 			if (bt != null) {
-				String s;
-				if((s = c.getTitle()).length() != 0)
+				String s = c.getTitle();
+				if(s != null && s.length() > 0)
 					s = s + ", ";
 				{
 					bt.setText(s + c.getCompany());

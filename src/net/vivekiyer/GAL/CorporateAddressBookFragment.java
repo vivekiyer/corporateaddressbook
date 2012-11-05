@@ -171,7 +171,7 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 	@SuppressWarnings("deprecation")
 	protected void setViewBackground(Boolean shaded){
 		if(shaded){
-			if(Utility.isPreHoneycomb()) {
+			if(Utility.isPreJellyBean()) {
 				getView().findViewById(R.id.resultheader).setBackgroundDrawable(getResources().getDrawable(R.drawable.header_border_shading));
 				getView().findViewById(R.id.contactsListView).setBackgroundDrawable(getResources().getDrawable(R.drawable.border_shading));
 			}

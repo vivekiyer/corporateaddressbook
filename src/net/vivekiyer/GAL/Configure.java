@@ -253,8 +253,13 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			boolean taskStatus, 
 			int statusCode,
 			int requestStatus,
-			String errorString) {		
-		progressdialog.dismiss();
+			String errorString) {
+		
+		if((progressdialog != null) && progressdialog.isShowing()) {
+			try {
+				progressdialog.dismiss();
+			} catch (java.lang.IllegalArgumentException e) { }
+		}
 
 		// Looks like there was an error in the settings
 		if (!taskStatus) {
