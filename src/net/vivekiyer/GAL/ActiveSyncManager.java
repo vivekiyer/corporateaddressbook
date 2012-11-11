@@ -15,13 +15,18 @@
 
 package net.vivekiyer.GAL;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Random;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
+import android.provider.Settings.Secure;
+
+import com.android.exchange.adapter.GalParser;
 import com.android.exchange.adapter.ProvisionParser;
 import com.google.common.collect.HashMultimap;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.UUID;
 
 /**
  * @author Vivek Iyer
@@ -41,11 +46,17 @@ public class ActiveSyncManager {
 	private String mDomain;
 	private String mUsername;
 	private String mPassword;
+	private String mQuery = "";
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = "";	
-	private int mDeviceId = -1;
+	private String mDeviceId;
 	private HashMultimap<String, Contact> mResults;
+	private int requestStatus;
+
+	public String getSearchTerm() {
+		return mQuery;
+	}
 
 	public boolean isUseSSLSet() {
 		return mUseSSL;
@@ -103,11 +114,11 @@ public class ActiveSyncManager {
 		this.mPassword = password;
 	}
 
-	public int getDeviceId(){
+	public String getDeviceId(){
 		return mDeviceId;
 	}
 
-	public void setDeviceId(int deviceId){
+	public void setDeviceId(String deviceId){
 		mDeviceId = deviceId;
 	}
 
@@ -137,12 +148,8 @@ public class ActiveSyncManager {
 
 		generateAuthString();
 
-		Random rand = new Random();
-
-		while(mDeviceId <= 0)
-		{
-			mDeviceId = rand.nextInt();
-		}
+		if(mDeviceId == null)
+			mDeviceId = getUniqueId();
 		
 		// If we don't have a server name, 
 		// there is no way we can proceed
@@ -159,7 +166,7 @@ public class ActiveSyncManager {
 							+ mUsername
 							+ "&DeviceId=" 
 							+ mDeviceId
-							+ "&DeviceType=Android" 
+							+ "&DeviceType=Android"
 							+ "&Cmd=",
 							null							// fragment
 					);
@@ -184,7 +191,7 @@ public class ActiveSyncManager {
 			boolean acceptAllCerts,
 			String policyKey, 
 			String activeSyncVersion,
-			int deviceId) {
+			String deviceId) {
 
 		mServerName = serverName;
 		mDomain = domain;
@@ -220,9 +227,10 @@ public class ActiveSyncManager {
 		// 200 indicates a success
 		int statusCode = response.getStatusLine().getStatusCode() ; 
 
-		if( statusCode == 200){
-
-			Header [] headers = response.getHeaders("MS-ASProtocolVersions");
+		Header[] headers;
+		switch(statusCode) {
+		case 200:
+			headers = response.getHeaders("MS-ASProtocolVersions");
 
 			if (headers.length != 0) {
 
@@ -239,10 +247,22 @@ public class ActiveSyncManager {
 				// Provision the device if necessary
 				provisionDevice();
 			}
+			break;
+		// Deal with redirect messages stemming from Exchange CAS mismatch
+		// (see http://technet.microsoft.com/en-us/library/dd439372(v=exchg.80).aspx)
+		// Not tested due to lack of access to CAS enabled servers 
+		case 451:
+			headers = response.getHeaders("X-MS-Location");
+			if(headers.length != 0) {
+				String url = headers[0].getValue();
+				if(!mUri.equals(url)) {
+					mUri = url;
+					return getExchangeServerVersion();
+				}
+			}
 		}
 		return statusCode;
 	}
-
 
 
 	/**
@@ -255,6 +275,8 @@ public class ActiveSyncManager {
 	 */
 	public int searchGAL(String query) throws Exception 
 	{
+		mQuery = query;
+		
 		int ret = 0;
 		GalRequest request = new GalRequest(
 				mUri,
@@ -274,23 +296,28 @@ public class ActiveSyncManager {
 		
 		if(ret == 200)
 		{			
-			Parser gp = new Parser(resp.getWBXMLInputStream());
+			GalParser gp = new GalParser(resp.getWBXMLInputStream());
 			gp.parse();
-			if(gp.getSearchStatus() != Parser.STATUS_OK)
+			requestStatus = gp.getStatus();
+			if(requestStatus != Parser.STATUS_OK)
 			{
-				switch(gp.getSearchStatus()) {
+				switch(requestStatus) {
 					case Parser.STATUS_DEVICE_NOT_PROVISIONED:
 					case Parser.STATUS_POLICY_REFRESH:
 					case Parser.STATUS_INVALID_POLICY_KEY:
 						provisionDevice();
 						return searchGAL(query);
 					default:
-						Debug.Log(String.format("Unknown search status returned: %d", gp.getSearchStatus()));
+						Debug.Log(String.format("Unknown request status returned: %d", gp.getStatus()));
 				}
 			}
 			mResults = gp.getResults();
 		}
 		return ret;
+	}
+
+	public int getRequestStatus() {
+		return requestStatus;
 	}
 
 	/**
@@ -325,7 +352,8 @@ public class ActiveSyncManager {
 			ProvisionParser pp = new ProvisionParser(resp.getWBXMLInputStream());
 			if(!pp.parse())
 			{
-				Debug.Log("Failed to parse policy key");
+				requestStatus = pp.getStatus();
+				Debug.Log("Failed to parse policy key, status "+ requestStatus);
 				return;
 			}
 
@@ -353,19 +381,22 @@ public class ActiveSyncManager {
 			// Make sure there were no errors
 			if(resp.getStatusCode() != 200)
 			{
-				Debug.Log(resp.getErrorString());
+				requestStatus = pp.getStatus();
+				Debug.Log(resp.getErrorString() + ", status " + requestStatus);
 				return;
 			}
 
 			pp = new ProvisionParser(resp.getWBXMLInputStream());
 			if(!pp.parse())
 			{
-				Debug.Log("Error in acknowledging Provision request");
+				requestStatus = pp.getStatus();
+				Debug.Log("Error in acknowledging Provision request, status "+ requestStatus);
 				return;
 			}
 			System.out.println("Final policy Key = "+ pp.getSecuritySyncKey());
 
 			mPolicyKey = pp.getSecuritySyncKey();
+			requestStatus = pp.getStatus();
 
 		}
 		catch(Exception ex)
@@ -373,5 +404,23 @@ public class ActiveSyncManager {
 			Debug.Log("Provisioning failed. Error string:\n" + ex.toString());
 		}
 
+	}
+	
+	static String getUniqueId() {
+		
+        final String androidId = Secure.getString(App.getInstance().getContentResolver(), Secure.ANDROID_ID);
+
+        // Use the Android ID unless it's broken, in which case fallback on a random number 
+        try {
+            UUID uuid;
+			if (!"9774d56d682e549c".equals(androidId)) {
+                uuid = UUID.nameUUIDFromBytes(androidId.getBytes("utf8"));
+            } else {
+                uuid = UUID.randomUUID();
+            }
+			return uuid.toString().replace("-", "");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
 	}
 }

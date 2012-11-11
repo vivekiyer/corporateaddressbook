@@ -1,29 +1,41 @@
 package net.vivekiyer.GAL;
 
-import com.google.common.collect.HashMultimap;
-
 import android.os.AsyncTask;
+import com.google.common.collect.HashMultimap;
 
 public class GALSearch extends AsyncTask<String, Void, Boolean>
 {
 	public interface OnSearchCompletedListener{
-		void OnSearchCompleted(int result, HashMultimap<String, Contact> mContacts);
+		void OnSearchCompleted(int result, GALSearch search);
 	}
 
 	private ActiveSyncManager activeSyncManager;
 
-	// It IS used...
-	@SuppressWarnings("unused")
-	private String errorMesg;
-
 	private int errorCode = 0;
+	private String errorMesg = "";
+	private String errorDetail = "";
 
-	public OnSearchCompletedListener onSearchCompletedListener;
+	protected volatile OnSearchCompletedListener onSearchCompletedListener;
 	
 	HashMultimap<String,Contact> mContacts = null;
 
+
 	public HashMultimap<String,Contact> getContacts() {
 		return mContacts;
+	}
+	public String getSearchTerm() {
+		return activeSyncManager.getSearchTerm();
+	}
+	public OnSearchCompletedListener getOnSearchCompletedListener() {
+		synchronized (this) {
+			return onSearchCompletedListener;
+		}
+	}
+	public void setOnSearchCompletedListener(
+			OnSearchCompletedListener onSearchCompletedListener) {
+		synchronized (this) {
+			this.onSearchCompletedListener = onSearchCompletedListener;
+		}
 	}
 	public GALSearch(ActiveSyncManager activeSyncManager) {
 		this.activeSyncManager = activeSyncManager;
@@ -48,6 +60,20 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 					switch (statusCode) {
 						case 200:
 							// All went ok, get the results
+							switch(activeSyncManager.getRequestStatus()) {
+								case Parser.STATUS_TOO_MANY_DEVICES:
+									errorCode = Parser.STATUS_TOO_MANY_DEVICES;
+									errorMesg = App.getInstance().getString(R.string.too_many_device_partnerships_title);
+									errorDetail = App.getInstance().getString(R.string.too_many_device_partnerships_detail);
+									return false;
+								case Parser.STATUS_OK:
+									break;
+								default:
+									errorCode = activeSyncManager.getRequestStatus();
+									errorMesg = App.getInstance().getString(R.string.unhandled_error, activeSyncManager.getRequestStatus());
+									errorDetail = App.getInstance().getString(R.string.unhandled_error_occured);
+									return false;
+							}
 							mContacts = activeSyncManager.getResults();
 							break;
 						case 449: // RETRY AFTER PROVISIONING
@@ -57,12 +83,19 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 						case 401: // UNAUTHORIZED
 							// Looks like the password expired
 							errorCode = 401;
-							errorMesg = "Authentication failed. Please check your credentials";
+							errorMesg = App.getInstance().getString(R.string.authentication_failed_title);
+							errorDetail = App.getInstance().getString(R.string.authentication_failed_detail);
+							return false;
+						case 403: // FORBIDDEN
+							// Device ID not accepted by server
+							errorCode = 403;
+							errorMesg = App.getInstance().getString(R.string.forbidden_by_server_title);
+							errorDetail = App.getInstance().getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
 							return false;
 						default:
 							errorCode = statusCode;
-							errorMesg = "Exchange server rejected request with error:"
-									+ errorCode;
+							errorMesg = App.getInstance().getString(R.string.connection_failed_title);
+							errorDetail = App.getInstance().getString(R.string.connection_failed_detail, statusCode);
 							return false;
 					}
 				} while (statusCode != 200);
@@ -80,6 +113,15 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 		return true;
 	}
 
+	public int getErrorCode() {
+		return errorCode;
+	}
+	public String getErrorMesg() {
+		return errorMesg;
+	}
+	public String getErrorDetail() {
+		return errorDetail;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -90,8 +132,8 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	@Override
 	protected void onPostExecute(Boolean result) {
 		super.onPostExecute(result);
-		if(onSearchCompletedListener != null)
-			onSearchCompletedListener.OnSearchCompleted(result ? 0 : errorCode, mContacts);
+		if(getOnSearchCompletedListener() != null)
+			getOnSearchCompletedListener().OnSearchCompleted(result ? 0 : errorCode, this);
 	}
 
 }

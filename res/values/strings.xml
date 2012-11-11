@@ -2,27 +2,11 @@
 <resources>
 
     <string name="app_name">Corporate Addressbook</string>
-    <!-- <string name="text01">Enter name to lookup</string> -->
-    <!-- <string name="accountSpinnerLabel">Account</string> -->
-    <!-- <string name="addContactButtonLabel">Add Contact</string> -->
-    <!-- <string name="addContactTitle">Add Contact</string> -->
-    <!-- <string name="allAccounts">All Accounts</string> -->
-    <!-- <string name="contactCreationFailure">Contact creation failed, check logs.</string> -->
-    <!-- <string name="contactEmailLabel">Contact Email</string> -->
-    <!-- <string name="contactNameLabel">Contact Name</string> -->
-    <!-- <string name="contactPhoneLabel">Contact Phone</string> -->
-    <!-- <string name="save">Save</string> -->
-    <!-- <string name="selectAccountLabel">Select</string> -->
-    <!-- <string name="selectLabel">Select label</string> -->
-    <!-- <string name="showInvisible">Show Invisible Contacts (Only)</string> -->
-    <!-- <string name="targetAccountLabel">Target Account</string> -->
-    <!-- <string name="undefinedTypeLabel">(Undefined)</string> -->
     <string name="loginButton">Log In</string>
     <string name="contactPicture">Contact picture</string>
     <string name="EnterSearchTerm">Enter search term</string>
     <string name="unameLabel">User name</string>
     <string name="domainUnameHint">DOMAIN\\Username</string>
-    <!-- string name="typeOfDetail">Type of detail</string -->
     <string name="passwordLabel">Password</string>
     <string name="passwordHint">Password</string>
     <string name="acceptAllSllText">Accept all SSL certificates</string>
@@ -60,8 +44,10 @@
     <string name="invalid_exchange_url_error">Please provide a valid Exchange URL</string>
     <string name="please_check_settings">Error connecting to server. Please check your settings</string>
     <string name="validating_settings">Validating settings</string>
-    <string name="authentication_failed_error">Authentication failed. Please check your credentials</string>
-    <string name="connection_failed_with_error_code">Connection to server failed with error code: %1$d</string>
+    <string name="authentication_failed_title">Authentication failed</string>
+    <string name="authentication_failed_detail">Please check your credentials</string>
+    <string name="connection_failed_title">Connection failed</string>
+    <string name="connection_failed_detail">Connection to server failed with error code: %1$d</string>
     <string name="error_detail">Error Detail:\n</string>
     <string name="send_email">Send email</string>
     <string name="send_sms_to">"Send SMS to "</string>
@@ -79,4 +65,15 @@
     <string name="could_not_find_sms_application">Sorry, could not find an application to send SMS</string>
     <string name="server_settings">Server settings</string>
     <string name="about_app">About Corporate Addressbook</string>
+    <string name="send_mail">Send mail…</string>
+    <string name="too_many_device_partnerships_title">Too many device partnerships</string>
+    <string name="too_many_device_partnerships_detail">Delete partnerships on the server before proceeding.
+\nThis is normally done via Outlook Web Access or by contacting your administrator.</string>
+    <string name="unhandled_error">%d: Unhandled error</string>
+    <string name="unhandled_error_occured">An error occured that Corporate Addressbook currently cannot handle.
+\nPlease contact the authors to have this addressed.</string>
+    <string name="forbidden_by_server_title">Forbidden by server</string>
+    <string name="forbidden_by_server_detail" formatted="false">Your device is not allowed to connect to the server.%nThis typically means that an administrator needs to allow your Device ID to connect.%n%nYour Device ID is:%n%1$s</string>
+    <string name="invalid_server_title">Invalid server name</string>
+    <string name="invalid_server_detail">Could not find the server, are you sure the name is right?</string>
 </resources>

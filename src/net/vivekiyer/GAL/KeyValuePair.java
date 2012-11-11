@@ -15,12 +15,18 @@
 
 package net.vivekiyer.GAL;
 
+import java.io.Serializable;
+
 /**
  * @author Vivek Iyer
  *
  * Helper class that stores contact details as KeyValuePairs
  */
-public class KeyValuePair {
+public class KeyValuePair implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3185965894261101985L;
 	public enum Type{
 		UNDEFINED,
 		MOBILE,

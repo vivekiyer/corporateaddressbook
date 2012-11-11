@@ -17,6 +17,7 @@ package com.android.exchange.adapter;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import com.google.common.collect.HashMultimap;
 import net.vivekiyer.GAL.Contact;
 import net.vivekiyer.GAL.Debug;
@@ -51,10 +52,16 @@ public class GalParser extends Parser {
 		while (nextTag(START_DOCUMENT) != END_DOCUMENT) {
 			if (tag == Tags.SEARCH_RESPONSE) {
 				parseResponse();
+			} else if (tag == Tags.SEARCH_STATUS){
+				status = getValueInt();
+				Debug.Log("GAL search status: " + status);
 			} else {
 				skipTag();
 			}
 		}
+// Maybe later...
+//		if((status != STATUS_NOT_SET) && (status != STATUS_OK))
+//			throw new EasNotSuccessfulException("Search not successful", status);
 		return numResults > 0;
 	}
 
@@ -97,6 +104,9 @@ public class GalParser extends Parser {
 				contact.add("MobilePhone",getValue());
 				break;
 			default:
+				Debug.Log(String.format("Skipping tag '%1$s', value '%2$s'",
+						Tags.pages[Tags.GAL][tag - Tags.GAL_PAGE -4], getValue()));
+				Debug.Log(getValue());
 				skipTag();
 			}
 		}
@@ -132,7 +142,7 @@ public class GalParser extends Parser {
 			if (tag == Tags.SEARCH_RESULT) {
 				parseResult();
 			} else if (tag == Tags.SEARCH_STATUS){
-				System.out.println("Status = "+getValue());
+				Debug.Log("Store status = "+getValue());
 			}else if (tag == Tags.SEARCH_RANGE) {
 				// Retrieve value, even if we're not using it for debug logging
 				String range = getValue();

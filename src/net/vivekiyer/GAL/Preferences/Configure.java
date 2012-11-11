@@ -15,12 +15,9 @@
 
 package net.vivekiyer.GAL.Preferences;
 
-import net.vivekiyer.GAL.ActiveSyncManager;
-import net.vivekiyer.GAL.Debug;
-import net.vivekiyer.GAL.R;
-import net.vivekiyer.GAL.TaskCompleteCallback;
-import net.vivekiyer.GAL.Utility;
+import net.vivekiyer.GAL.*;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
@@ -28,11 +25,12 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,9 +45,8 @@ import android.widget.TextView;
  * 
  *         This class handles the configuration pane for the application.
  */
-public class Configure extends Activity implements OnClickListener,
-		TaskCompleteCallback {
-
+public class Configure extends FragmentActivity implements OnClickListener, TaskCompleteCallback, ChoiceDialogFragment.OnChoiceDialogOptionClickListener {
+	
 	private SharedPreferences mPreferences;
 	private ProgressDialog progressdialog;
 	ActiveSyncManager activeSyncManager;
@@ -119,7 +116,7 @@ public class Configure extends Activity implements OnClickListener,
 		{
 			ActionBar actionBar = getActionBar();
 			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
+//			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
 		}
 	}	
 	
@@ -177,7 +174,7 @@ public class Configure extends Activity implements OnClickListener,
 	private void connect() {
 		// Make sure that the user has entered the username
 		// password and the server name
-		if (getTextFromId(R.id.txtDomainUserName) == "") {
+		if (getTextFromId(R.id.txtDomainUserName).equals("")) {
 			showAlert(getString(R.string.valid_domain_and_username_error));
 			return;
 		}
@@ -221,7 +218,7 @@ public class Configure extends Activity implements OnClickListener,
 				username,
 				getTextFromId(R.id.txtPassword),
 				getValueFromCheckbox(R.id.chkUseSSL),
-				getValueFromCheckbox(R.id.chkAcceptAllSSLCert), "", "", 0);
+				getValueFromCheckbox(R.id.chkAcceptAllSSLCert), "", "", null);
 
 		// If we get an error from Initialize
 		// That means the URL is just bad
@@ -261,8 +258,11 @@ public class Configure extends Activity implements OnClickListener,
 	 * quit this activity, or ask the user to fix the issue
 	 */
 	@Override
-	public void taskComplete(boolean taskStatus, int statusCode,
-			String errorString) {
+	public void taskComplete(
+			boolean taskStatus, 
+			int statusCode,
+			int requestStatus,
+			String errorString) {		
 		progressdialog.dismiss();
 
 		// Looks like there was an error in the settings
@@ -271,26 +271,39 @@ public class Configure extends Activity implements OnClickListener,
 				// Send the error message via email
 				Debug.sendDebugEmail(this);
 			} else {
-				// We can only handle 401 at this point
-				// All other error codes are unknown
+				// Handle all errors we're capable of,
+				// inform user of others
 				switch (statusCode) {
+				case 200: // Successful, but obviously something went wrong
+					switch(requestStatus){
+					case Parser.STATUS_TOO_MANY_DEVICES:
+						ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices");
+						break;
+					default:
+						ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices");
+						break;
+					}
+					break;
 				case 401: // UNAUTHORIZED
-					showAlert(getString(R.string.authentication_failed_error));
+					showAlert(getString(R.string.authentication_failed_detail));
+					break;
+				case 403: // FORBIDDEN, typically means that the DeviceID is not accepted and needs to be set in Exchange
+					String title = getString(R.string.forbidden_by_server_title);
+					String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
+					ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
+						.setListener(this)
+						.show(getSupportFragmentManager(), "forbidden");
 					break;
 				case ConnectionChecker.SSL_PEER_UNVERIFIED:
-					showAlert(String.format(getString(R.string.unable_to_find_matching_certificate),System.getProperty("line.separator"), getString(R.string.acceptAllSllText)));
+					ChoiceDialogFragment.newInstance(getString(R.string.unable_to_find_matching_certificate), getString(R.string.acceptAllSllText))
+						.show(getSupportFragmentManager(), "SslUnverified");
+					break;
+				case ConnectionChecker.UNKNOWN_HOST:
+					ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified");
 					break;
 				default:
-					StringBuilder sb = new StringBuilder();
-					sb.append(String.format(getString(R.string.connection_failed_with_error_code), statusCode));
-
-					if (errorString.compareToIgnoreCase("") != 0) {
-						sb.append(System.getProperty("line.separator"));
-						sb.append(getString(R.string.error_detail));
-						sb.append(errorString);
-					}
-
-					showAlert(sb.toString());
+					ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
+						.show(getSupportFragmentManager(), "connError");
 					break;
 				}
 			}
@@ -309,7 +322,7 @@ public class Configure extends Activity implements OnClickListener,
 					getValueFromCheckbox(R.id.chkAcceptAllSSLCert));
 			editor.putString(getString(R.string.PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE),
 					activeSyncManager.getActiveSyncVersion());
-			editor.putInt(getString(R.string.PREFS_KEY_DEVICE_ID), activeSyncManager.getDeviceId());
+			editor.putString(getString(R.string.PREFS_KEY_DEVICE_ID_STRING), activeSyncManager.getDeviceId());
 			editor.putString(getString(R.string.PREFS_KEY_POLICY_KEY_PREFERENCE),
 					activeSyncManager.getPolicyKey());
 			editor.putBoolean(getString(R.string.PREFS_KEY_SUCCESSFULLY_CONNECTED),
@@ -339,6 +352,25 @@ public class Configure extends Activity implements OnClickListener,
 
 			// Close the activity
 			finish();
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	@TargetApi(11)
+	@Override
+	public void onChoiceDialogOptionPressed(int action) {
+		switch(action) {
+			case android.R.id.copy:
+				if(Utility.isPreHoneycomb()) {
+					final android.text.ClipboardManager clipboard;
+					clipboard = (android.text.ClipboardManager) getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+					clipboard.setText(activeSyncManager.getDeviceId());
+				}
+				else {
+					ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+					clip.setPrimaryClip(ClipData.newPlainText("Android Device ID", activeSyncManager.getDeviceId()));
+				}
+				break;
 		}
 	}
 
