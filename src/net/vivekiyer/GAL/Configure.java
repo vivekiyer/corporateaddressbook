@@ -268,41 +268,45 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 				Debug.sendDebugEmail(this);
 			}
 			else
-			{				
-				// Handle all errors we're capable of,
-				// inform user of others
-				switch (statusCode){
-				case 200: // Successful, but obviously something went wrong
-					switch(requestStatus){
-					case Parser.STATUS_TOO_MANY_DEVICES:
-						ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices");
+			{
+				try {
+					// Handle all errors we're capable of,
+					// inform user of others
+					switch (statusCode){
+					case 200: // Successful, but obviously something went wrong
+						switch(requestStatus){
+						case Parser.STATUS_TOO_MANY_DEVICES:
+							ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices");
+							break;
+						default:
+							ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices");
+							break;
+						}
+						break;
+					case 401: // UNAUTHORIZED
+						showAlert(getString(R.string.authentication_failed_detail));
+						break;
+					case 403: // FORBIDDEN, typically means that the DeviceID is not accepted and needs to be set in Exchange
+						String title = getString(R.string.forbidden_by_server_title);
+						String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
+						ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
+							.setListener(this)
+							.show(getSupportFragmentManager(), "forbidden");
+						break;
+					case ConnectionChecker.SSL_PEER_UNVERIFIED:
+						ChoiceDialogFragment.newInstance(getString(R.string.unable_to_find_matching_certificate), getString(R.string.acceptAllSllText))
+							.show(getSupportFragmentManager(), "SslUnverified");
+						break;
+					case ConnectionChecker.UNKNOWN_HOST:
+						ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified");
 						break;
 					default:
-						ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices");
-						break;
-					}
-					break;
-				case 401: // UNAUTHORIZED
-					showAlert(getString(R.string.authentication_failed_detail));
-					break;
-				case 403: // FORBIDDEN, typically means that the DeviceID is not accepted and needs to be set in Exchange
-					String title = getString(R.string.forbidden_by_server_title);
-					String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
-					ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
-						.setListener(this)
-						.show(getSupportFragmentManager(), "forbidden");
-					break;
-				case ConnectionChecker.SSL_PEER_UNVERIFIED:
-					ChoiceDialogFragment.newInstance(getString(R.string.unable_to_find_matching_certificate), getString(R.string.acceptAllSllText))
-						.show(getSupportFragmentManager(), "SslUnverified");
-					break;
-				case ConnectionChecker.UNKNOWN_HOST:
-					ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified");
-					break;
-				default:
-					ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
-						.show(getSupportFragmentManager(), "connError");
-					break;				 
+						ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
+							.show(getSupportFragmentManager(), "connError");
+						break;				 
+					}					
+				} catch (java.lang.IllegalStateException e) {
+					Debug.Log("Server configuration window was dismissed before Connection check was finished:\n" + e.toString());
 				}
 			}
 		}
