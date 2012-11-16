@@ -66,10 +66,12 @@
     <string name="too_many_device_partnerships_detail">Delete partnerships on the server before proceeding.
 \nThis is normally done via Outlook Web Access or by contacting your administrator.</string>
     <string name="unhandled_error">%d: Unhandled error</string>
-    <string name="unhandled_error_occured">An error occured that Corporate Addressbook currently cannot handle.
+    <string name="unhandled_error_occured">An error occurred that Corporate Addressbook currently cannot handle.
 \nPlease contact the authors to have this addressed.</string>
     <string name="forbidden_by_server_title">Forbidden by server</string>
     <string name="forbidden_by_server_detail" formatted="false">Your device is not allowed to connect to the server.%nThis typically means that an administrator needs to allow your Device ID to connect.%n%nYour Device ID is:%n%1$s</string>
     <string name="invalid_server_title">Invalid server name</string>
     <string name="invalid_server_detail">Could not find the server, are you sure the name is right?</string>
+    <string name="timeout_title">Connection timeout</string>
+    <string name="timeout_detail">The connection timed out. This might be caused by an unreliable network or trying to access using the wrong method.\nPlease try again or check the option \'%1$s\' if it is currently unchecked.</string>
 </resources>

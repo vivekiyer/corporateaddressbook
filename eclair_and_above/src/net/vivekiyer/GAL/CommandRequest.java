@@ -217,8 +217,8 @@ public class CommandRequest {
         HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
 
         // Default connection and socket timeout of 120 seconds.  Tweak to taste.
-        HttpConnectionParams.setConnectionTimeout(httpParams, 120 * 1000);
-        HttpConnectionParams.setSoTimeout(httpParams, 120 * 1000);
+        HttpConnectionParams.setConnectionTimeout(httpParams, 15 * 1000);
+        HttpConnectionParams.setSoTimeout(httpParams, 15 * 1000);
         HttpConnectionParams.setSocketBufferSize(httpParams, 131072);
         
 		SchemeRegistry registry = new SchemeRegistry();
