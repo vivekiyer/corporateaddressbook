@@ -52,7 +52,7 @@ public class ActiveSyncManager {
 	private String mActiveSyncVersion = "";	
 	private String mDeviceId;
 	private HashMultimap<String, Contact> mResults;
-	private int requestStatus;
+	private int requestStatus = Parser.STATUS_NOT_SET;
 
 	public String getSearchTerm() {
 		return mQuery;
@@ -245,7 +245,7 @@ public class ActiveSyncManager {
 						.lastIndexOf(",") + 1);
 
 				// Provision the device if necessary
-				provisionDevice();
+				statusCode = provisionDevice();
 			}
 			break;
 		// Deal with redirect messages stemming from Exchange CAS mismatch
@@ -322,10 +322,10 @@ public class ActiveSyncManager {
 
 	/**
 	 * @throws Exception
-	 * 
+	 * @returns Server HTTP response code
 	 * Sends a Provision command to the Exchange server. Only needed for Exchange 2007 and above 
 	 */
-	public void provisionDevice() {
+	public int provisionDevice() {
 
 		try{
 			ProvisionRequest provRequest = new ProvisionRequest(
@@ -346,7 +346,7 @@ public class ActiveSyncManager {
 			if(resp.getStatusCode() != 200)
 			{
 				Debug.Log(resp.getErrorString());
-				return;
+				return resp.getStatusCode();
 			}
 
 			ProvisionParser pp = new ProvisionParser(resp.getWBXMLInputStream());
@@ -354,7 +354,7 @@ public class ActiveSyncManager {
 			{
 				requestStatus = pp.getStatus();
 				Debug.Log("Failed to parse policy key, status "+ requestStatus);
-				return;
+				return resp.getStatusCode();
 			}
 
 			Debug.Log("Key = "+ pp.getSecuritySyncKey());
@@ -362,7 +362,7 @@ public class ActiveSyncManager {
 			
 			if(pp.getPolicyStatus() == Parser.STATUS_NO_POLICY_NEEDED) {
 				this.requestStatus = Parser.STATUS_OK;
-				return;
+				return resp.getStatusCode();
 			}
 
 			// Now that we have the temp policy key
@@ -389,7 +389,7 @@ public class ActiveSyncManager {
 			{
 				requestStatus = pp.getStatus();
 				Debug.Log(resp.getErrorString() + ", status " + requestStatus);
-				return;
+				return resp.getStatusCode();
 			}
 
 			pp = new ProvisionParser(resp.getWBXMLInputStream());
@@ -397,20 +397,20 @@ public class ActiveSyncManager {
 			{
 				requestStatus = pp.getStatus();
 				Debug.Log("Error in acknowledging Provision request, status "+ requestStatus);
-				return;
+				return resp.getStatusCode();
 			}
 			
 			mPolicyKey = pp.getSecuritySyncKey();
 			Debug.Log("Final policy Key = "+ mPolicyKey);
 			requestStatus = pp.getStatus();
-			Debug.Log("Final request status = "+ mPolicyKey);
-
+			Debug.Log("Final request status = "+ requestStatus);
+			return resp.getStatusCode();
 		}
 		catch(Exception ex)
 		{
 			Debug.Log("Provisioning failed. Error string:\n" + ex.toString());
 		}
-
+		return Parser.STATUS_NOT_SET;
 	}
 	
 	static String getUniqueId() {

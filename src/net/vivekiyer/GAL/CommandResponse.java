@@ -22,7 +22,7 @@ public class CommandResponse {
 		return wbxmlInputStream;
 	}
 
-	private String errorString;
+	private String errorString = "";
 	protected String getErrorString(){
 		return errorString;
 	}
@@ -73,6 +73,9 @@ public class CommandResponse {
 			{
 				errorString = "No response received from server";
 			}
+		}
+		else {
+			errorString = String.format("Server responded %d", statusCode);
 		}
 	}
 }

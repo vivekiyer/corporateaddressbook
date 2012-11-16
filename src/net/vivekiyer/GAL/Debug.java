@@ -32,7 +32,7 @@ public class Debug {
 		// Generate an email with the appropriate data
 		Intent intent = new Intent(android.content.Intent.ACTION_SEND);
 		intent.setType("text/plain");
-		String[] recipients = new String[]{"vivekiyer@gmail.com", "",};
+		String[] recipients = new String[]{"corporateaddressbook@googlegroups.com", "",};
 		intent.putExtra(android.content.Intent.EXTRA_EMAIL, recipients);
 		intent.putExtra(android.content.Intent.EXTRA_SUBJECT,"GAL log");
 		intent.putExtra(

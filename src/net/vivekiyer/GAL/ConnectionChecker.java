@@ -15,7 +15,10 @@
 
 package net.vivekiyer.GAL;
 
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+
+import org.apache.http.conn.ConnectTimeoutException;
 
 import android.os.AsyncTask;
 
@@ -29,8 +32,10 @@ import android.os.AsyncTask;
  */
 class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	
-	public static final int SSL_PEER_UNVERIFIED = -1;
-	public static final int UNKNOWN_HOST = -2;
+	public static final int UNDEFINED = -100;
+	public static final int SSL_PEER_UNVERIFIED = -101;
+	public static final int UNKNOWN_HOST = -102;
+	public static final int TIMEOUT = -103;
 
 	// Callback to call once the check is complete
 	private TaskCompleteCallback callback;	
@@ -72,11 +77,23 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 		} catch (javax.net.ssl.SSLPeerUnverifiedException spue) {
 			statusCode = SSL_PEER_UNVERIFIED;
 			errorString = spue.toString();
+			Debug.Log(errorString);
 		} catch (UnknownHostException e) {
 			statusCode = UNKNOWN_HOST;
 			errorString = e.toString();
-		} catch (Exception e) {
+			Debug.Log(errorString);
+		} catch (ConnectTimeoutException e) {
+			statusCode = TIMEOUT;
 			errorString = e.toString();
+			Debug.Log(errorString);
+		} catch (SocketTimeoutException e) {
+			statusCode = TIMEOUT;
+			errorString = e.toString();
+			Debug.Log(errorString);
+		} catch (Exception e) {
+			statusCode = UNDEFINED;
+			errorString = e.toString();
+			Debug.Log(errorString);
 		}
 		return false;
 	}

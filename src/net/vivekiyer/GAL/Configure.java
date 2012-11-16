@@ -279,12 +279,11 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 							ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices");
 							break;
 						default:
-							ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices");
 							break;
 						}
 						break;
 					case 401: // UNAUTHORIZED
-						showAlert(getString(R.string.authentication_failed_detail));
+						ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.authentication_failed_detail)).show(getSupportFragmentManager(), "tooManyDevices");
 						break;
 					case 403: // FORBIDDEN, typically means that the DeviceID is not accepted and needs to be set in Exchange
 						String title = getString(R.string.forbidden_by_server_title);
@@ -299,6 +298,9 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 						break;
 					case ConnectionChecker.UNKNOWN_HOST:
 						ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified");
+						break;
+					case ConnectionChecker.TIMEOUT:
+						ChoiceDialogFragment.newInstance(getString(R.string.timeout_title), String.format(getString(R.string.timeout_detail), getString(R.string.useSecureSslText))).show(getSupportFragmentManager(), "Timeout");
 						break;
 					default:
 						ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
