@@ -233,11 +233,11 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
         if (containsBase64Byte(lineSeparator)) {
             String sep;
             try {
-                sep = new String(lineSeparator, "UTF-8");
+                sep = new String(lineSeparator, "UTF-8"); //$NON-NLS-1$
             } catch (UnsupportedEncodingException uee) {
                 sep = new String(lineSeparator);
             }
-            throw new IllegalArgumentException("lineSeperator must not contain base64 characters: [" + sep + "]");
+            throw new IllegalArgumentException("lineSeperator must not contain base64 characters: [" + sep + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -535,7 +535,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
      */
     public Object decode(Object pObject) throws DecoderException {
         if (!(pObject instanceof byte[])) {
-            throw new DecoderException("Parameter supplied to Base64 decode is not a byte[]");
+            throw new DecoderException("Parameter supplied to Base64 decode is not a byte[]"); //$NON-NLS-1$
         }
         return decode((byte[]) pObject);
     }
@@ -579,7 +579,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
 
         if (len > Integer.MAX_VALUE) {
             throw new IllegalArgumentException(
-                    "Input array too big, output array would be bigger than Integer.MAX_VALUE=" + Integer.MAX_VALUE);
+                    "Input array too big, output array would be bigger than Integer.MAX_VALUE=" + Integer.MAX_VALUE); //$NON-NLS-1$
         }
         byte[] buf = new byte[(int) len];
         b64.setInitialBuffer(buf, 0, buf.length);
@@ -707,7 +707,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
      */
     public Object encode(Object pObject) throws EncoderException {
         if (!(pObject instanceof byte[])) {
-            throw new EncoderException("Parameter supplied to Base64 encode is not a byte[]");
+            throw new EncoderException("Parameter supplied to Base64 encode is not a byte[]"); //$NON-NLS-1$
         }
         return encode((byte[]) pObject);
     }
@@ -745,7 +745,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
      */
     public static byte[] encodeInteger(BigInteger bigInt) {
         if(bigInt == null)  {
-            throw new NullPointerException("encodeInteger called with null parameter");
+            throw new NullPointerException("encodeInteger called with null parameter"); //$NON-NLS-1$
         }
 
         return encodeBase64(toIntegerBytes(bigInt), false);

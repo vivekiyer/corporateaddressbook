@@ -27,7 +27,7 @@ public class App extends Application {
 		super.onCreate();
 		instance = this;
 		// Get the version string
-		App.VERSION_STRING = "CorporateAddressbook/"+getAppVersion();
+		App.VERSION_STRING = "CorporateAddressbook/"+getAppVersion(); //$NON-NLS-1$
 	}
 
 	public static App getInstance() {
@@ -45,7 +45,7 @@ public class App extends Application {
 			info = manager.getPackageInfo(
 					getApplicationContext().getPackageName(), 0);
 		} catch (NameNotFoundException e) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		return info.versionName;
 	}

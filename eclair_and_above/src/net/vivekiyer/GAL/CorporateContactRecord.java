@@ -51,7 +51,7 @@ public class CorporateContactRecord extends FragmentActivity {
 
 		final Bundle b = getIntent().getExtras();
 
-		Contact contact = b.getParcelable("net.vivekiyer.GAL");
+		Contact contact = b.getParcelable("net.vivekiyer.GAL"); //$NON-NLS-1$
 
 		CorporateContactRecordFragment contacts = (CorporateContactRecordFragment) getSupportFragmentManager().findFragmentById(R.id.contact_fragment);
 		contacts.setIsDualFrame(false);
@@ -139,7 +139,7 @@ public class CorporateContactRecord extends FragmentActivity {
 			    return true;
 			}
 			else {
-				Debug.Log("Running HC+ without SearchView");
+				Debug.Log("Running HC+ without SearchView"); //$NON-NLS-1$
 				return false;
 			}
 		}

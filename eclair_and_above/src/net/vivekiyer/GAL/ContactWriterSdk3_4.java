@@ -42,7 +42,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 		values.put(
 				People.NAME, 
 					mContact.getFirstName() + 
-					" " + 
+					" " +  //$NON-NLS-1$
 					mContact.getLastName()
 				);
 
@@ -65,7 +65,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 
 	private void addContactFields(ContentValues values, Uri newPerson) {
 
-		if (!mContact.getWorkPhone().equalsIgnoreCase("")) {
+		if (!mContact.getWorkPhone().equalsIgnoreCase("")) { //$NON-NLS-1$
 			ContentValues workPhoneValues = new ContentValues();
 			Uri workPhoneUri = Uri.withAppendedPath(newPerson,
 					Contacts.People.Phones.CONTENT_DIRECTORY);
@@ -79,7 +79,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			}
 		}
 		
-		if (!mContact.getOfficeLocation().equalsIgnoreCase("")) {
+		if (!mContact.getOfficeLocation().equalsIgnoreCase("")) { //$NON-NLS-1$
 			ContentValues addressValues = new ContentValues();
 			Uri addressUri = Uri.withAppendedPath(newPerson,
 					Contacts.People.ContactMethods.CONTENT_DIRECTORY);
@@ -100,7 +100,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 //		}
 //		
 		
-		if (!mContact.getHomePhone().equalsIgnoreCase("")) {
+		if (!mContact.getHomePhone().equalsIgnoreCase("")) { //$NON-NLS-1$
 			ContentValues homePhoneValues = new ContentValues();
 			Uri homePhoneUri = Uri.withAppendedPath(newPerson,
 					Contacts.People.Phones.CONTENT_DIRECTORY);
@@ -114,7 +114,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			}
 		} 
 		
-		if (!mContact.getMobilePhone().equalsIgnoreCase("")) {
+		if (!mContact.getMobilePhone().equalsIgnoreCase("")) { //$NON-NLS-1$
 			ContentValues mobileValues = new ContentValues();
 			Uri mobileUri = Uri.withAppendedPath(newPerson,
 					Contacts.People.Phones.CONTENT_DIRECTORY);
@@ -126,7 +126,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			}
 		} 
 		
-		if (!mContact.getEmail().equalsIgnoreCase("")) {
+		if (!mContact.getEmail().equalsIgnoreCase("")) { //$NON-NLS-1$
 			ContentValues emailValues = new ContentValues();
 			Uri emailUri = Uri.withAppendedPath(newPerson,
 					Contacts.People.ContactMethods.CONTENT_DIRECTORY);

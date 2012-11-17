@@ -16,6 +16,7 @@
 package net.vivekiyer.GAL;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * @author Vivek Iyer
@@ -39,14 +40,14 @@ public class KeyValuePair implements Serializable{
 	public Type get_type() {
 		if(_type == Type.UNDEFINED)
 		{
-			String key = _key.toLowerCase();
-			if (key.contains("mobilephone")) {
+			String key = _key.toLowerCase(Locale.getDefault());
+			if (key.contains("mobilephone")) { //$NON-NLS-1$
 				_type = Type.MOBILE;
 			}
-			else if(key.contains("phone")){
+			else if(key.contains("phone")){ //$NON-NLS-1$
 				_type = Type.PHONE;
 			}
-			else if(key.contains("email")){
+			else if(key.contains("email")){ //$NON-NLS-1$
 				_type = Type.EMAIL;
 			}
 			// For others: type "OTHER"
@@ -83,6 +84,6 @@ public class KeyValuePair implements Serializable{
 		_value = value;
 	}
 	public String toString(){
-		return("Key="+_key+"\nValue="+_value);
+		return("Key="+_key+"\nValue="+_value); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

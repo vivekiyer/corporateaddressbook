@@ -9,9 +9,9 @@ public class AckProvisionRequest extends CommandRequest {
 
 	public String getPolicyType(){
 		if (getProtocolVersionFloat() >= 12.0)
-			return "MS-EAS-Provisioning-WBXML";		
+			return PROVISION_WBXML;		
 		else
-			return  "MS-WAP-Provisioning-XML";
+			return PROVISION_XML;
 	}
 	
 	private String tempKey;
@@ -22,7 +22,7 @@ public class AckProvisionRequest extends CommandRequest {
 		super(_uri, _authString, _useSSL, _protocolVersion, _acceptAllCerts, _policyKey);
 
 		// Create the request
-		setUri(getUri() + "Provision");
+		setUri(getUri() + "Provision"); //$NON-NLS-1$
 		
 		tempKey = _tempKey;
 		remoteWipe = _bRemoteWipe;
@@ -39,11 +39,11 @@ public class AckProvisionRequest extends CommandRequest {
         s.data(Tags.PROVISION_POLICY_TYPE, getPolicyType());
 
         s.data(Tags.PROVISION_POLICY_KEY, tempKey);
-        s.data(Tags.PROVISION_STATUS, "1");
+        s.data(Tags.PROVISION_STATUS, "1"); //$NON-NLS-1$
         s.end().end(); // PROVISION_POLICY, PROVISION_POLICIES
         if (remoteWipe) {
             s.start(Tags.PROVISION_REMOTE_WIPE);
-            s.data(Tags.PROVISION_STATUS, "1");
+            s.data(Tags.PROVISION_STATUS, "1"); //$NON-NLS-1$
             s.end();
         }
         s.end().done(); // PROVISION_PROVISION

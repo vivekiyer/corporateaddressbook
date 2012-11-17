@@ -9,13 +9,13 @@
   <string name="domainUnameHint">DOMAIN\\Benutzername</string>
   <string name="passwordLabel">Passwort</string>
   <string name="passwordHint">Passwort</string>
-  <string name="acceptAllSllText">Alle SSL-Zertifikate des Exchangeservers akzeptieren</string>
+  <string name="acceptAllSllText">Alle SSL-Zertifikate des Exchange-Servers akzeptieren</string>
   <string name="useSecureSslText">Sichere Verbindung zum Exchange-Server verwenden (SSL)</string>
   <string name="serverHint">mail.example.com</string>
   <string name="serverText">Server</string>
-  <string name="searchDirectory">Durchsuche das Unternehmensadressbuch</string>
+  <string name="searchDirectory">Durchsuche das Adressbuch</string>
   <string name="search">Suche</string>
-  <string name="icon">Icon</string>
+  <string name="icon">Symbol</string>
   <string name="clearHistory">Suchhistorie löschen</string>
   <string name="saveAsContact">Als Kontakt speichern</string>
   <string name="startBySelectingSearch">Suchsymbol drücken zum Starten der Suche</string>
@@ -36,7 +36,7 @@
   <string name="sendEmail">Email</string>
   <string name="copyToClipboard">In die Zwischenablage kopieren</string>
   <string name="valid_domain_and_username_error">Bitte gib einen gültigen Domain- und Benutzernamen ein</string>
-  <string name="domain_and_username_format_error">Domainname und Benutzername müssen in dem Format DOMAIN\Benutzername vorliegen</string>
+  <string name="domain_and_username_format_error">Domainname und Benutzername müssen in dem Format DOMAIN\\Benutzername vorliegen</string>
   <string name="invalid_username_error">Bitte gib einen gültigen Benutzernamen ein</string>
   <string name="invalid_password_error">Bitte geben Sie ein gültiges Passwort ein</string>
   <string name="invalid_exchange_url_error">Bitte geben sie eine gültige Exchangeadresse ein</string>
@@ -61,15 +61,21 @@
   <string name="show_settings">Einstellungen aufrufen</string>
   <string name="undefined_result_please_try_again">Serverdaten können nicht gelesen werden. Bitte versuchen Sie es noch einmal</string>
   <string name="could_not_find_sms_application">Es konnte keine Applikation zum Versenden einer SMS gefunden werden</string>
-  <string name="send_mail">EMail senden...</string>
+  <string name="send_mail">EMail senden…</string>
   <string name="too_many_device_partnerships_title">Sie haben zu viele Mobiltelefone mit dem Exchangeserver verbunden</string>
   <string name="too_many_device_partnerships_detail">Löschen Sie zu erst Verbindungen auf dem Exchange Server, bevor sie fortfahren.
 \n Dies ist direkt in Outlook Web Acess (OWA) möglich oder kontaktieren Sie hierzu ihren Server Administrator.</string>
   <string name="unhandled_error">%d: Unbekannter Fehler</string>
-  <string name="unhandled_error_occured">Es ist ein unerwartetes Problem aufgetreten.
-\nBitte kontaktieren Sie den Entwickler.</string>
+  <string name="unhandled_error_occured">An error occurred that Corporate Addressbook currently cannot handle.
+\nPlease contact the authors to have this addressed.</string>
   <string name="forbidden_by_server_title">Unterbunden durch den Exchange-Server</string>
-  <string name="forbidden_by_server_detail">Entweder ist ActiveSync für ihren Exchange Server oder Ihr Benutzer nicht für die Nutzung von ActiveSync aktiviert. Bitte kontaktieren Sie Ihren Serveradministrator zu diesem Problem.</string>
+  <string name="forbidden_by_server_detail" formatted="false">Your device is not allowed to connect to the server.%nThis typically means that an administrator needs to allow your Device ID to connect.%n%nYour Device ID is:%n%1$s</string>
   <string name="invalid_server_title">Ungültiger Servername</string>
   <string name="invalid_server_detail">Werden den Server konnte nicht gefunden, sind Sie sicher, dass der Name richtig ist?</string>
+  <string name="timeout_title">Connection timeout</string>
+  <string name="timeout_detail">The connection timed out. This might be caused by an unreliable network or trying to access using the wrong method.\nPlease try again or check the option \'%1$s\' if it is currently unchecked.</string>
+  <string name="no_response_from_server">No response received from server</string>
+  <string name="server_responded_x">Der Server hat %1$d geantwortet</string>
+  <string name="text_copied_to_clipboard">Text copied to clipboard</string>
+  <string name="select_account">Select account</string>
 </resources>

@@ -48,17 +48,17 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 	private String domain;
 	private String username;
 	
-	public static final String KEY_USERNAME_PREFERENCE = "username";
-	public static final String KEY_PASSWORD_PREFERENCE = "password";
-	public static final String KEY_DOMAIN_PREFERENCE = "domain";
-	public static final String KEY_SERVER_PREFERENCE = "server";
-	public static final String KEY_ACTIVESYNCVERSION_PREFERENCE = "activesyncversion";
-	public static final String KEY_DEVICE_ID = "deviceid";
-	public static final String KEY_DEVICE_ID_STRING = "deviceidstring";
-	public static final String KEY_POLICY_KEY_PREFERENCE = "policykey";	
-	public static final String KEY_USE_SSL = "usessl";
-	public static final String KEY_ACCEPT_ALL_CERTS = "acceptallcerts";
-	public static final String KEY_SUCCESSFULLY_CONNECTED = "successfullyConnected";
+	public static final String KEY_USERNAME_PREFERENCE = "username"; //$NON-NLS-1$
+	public static final String KEY_PASSWORD_PREFERENCE = "password"; //$NON-NLS-1$
+	public static final String KEY_DOMAIN_PREFERENCE = "domain"; //$NON-NLS-1$
+	public static final String KEY_SERVER_PREFERENCE = "server"; //$NON-NLS-1$
+	public static final String KEY_ACTIVESYNCVERSION_PREFERENCE = "activesyncversion"; //$NON-NLS-1$
+	public static final String KEY_DEVICE_ID = "deviceid"; //$NON-NLS-1$
+	public static final String KEY_DEVICE_ID_STRING = "deviceidstring"; //$NON-NLS-1$
+	public static final String KEY_POLICY_KEY_PREFERENCE = "policykey";	 //$NON-NLS-1$
+	public static final String KEY_USE_SSL = "usessl"; //$NON-NLS-1$
+	public static final String KEY_ACCEPT_ALL_CERTS = "acceptallcerts"; //$NON-NLS-1$
+	public static final String KEY_SUCCESSFULLY_CONNECTED = "successfullyConnected"; //$NON-NLS-1$
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -78,15 +78,15 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 		// Get the preferences that were entered by the user and display those to the user 
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);			
 		
-		String domain = mPreferences.getString(KEY_DOMAIN_PREFERENCE , ""), user = mPreferences.getString(KEY_USERNAME_PREFERENCE, "");
-		user = domain + (domain.length() > 0 ? "\\" : "") + user;
+		String domain = mPreferences.getString(KEY_DOMAIN_PREFERENCE , ""), user = mPreferences.getString(KEY_USERNAME_PREFERENCE, ""); //$NON-NLS-1$ //$NON-NLS-2$
+		user = domain + (domain.length() > 0 ? "\\" : "") + user; //$NON-NLS-1$ //$NON-NLS-2$
 		if (user.length() > 0)
 			setTextForId(R.id.txtDomainUserName, user);
 		setTextForId(
 				R.id.txtPassword, 
-				mPreferences.getString(KEY_PASSWORD_PREFERENCE, ""));
+				mPreferences.getString(KEY_PASSWORD_PREFERENCE, "")); //$NON-NLS-1$
 		setTextForId(R.id.txtServerName, 
-				mPreferences.getString(KEY_SERVER_PREFERENCE, ""));
+				mPreferences.getString(KEY_SERVER_PREFERENCE, "")); //$NON-NLS-1$
 		setValueForCheckbox(
 				R.id.chkUseSSL,
 				mPreferences.getBoolean(KEY_USE_SSL, true));
@@ -152,7 +152,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 	private void showAlert(String s){
 		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
 		alt_bld.setMessage(s)
-				.setPositiveButton("Ok", null);
+				.setPositiveButton(android.R.string.ok, null);
 		AlertDialog alert = alt_bld.create();
 		alert.show();
 	}
@@ -164,15 +164,15 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 	private void connect(){
 		// Make sure that the user has entered the username
 		// password and the server name
-		if (getTextFromId(R.id.txtDomainUserName).equals("")) {
+		if (getTextFromId(R.id.txtDomainUserName).equals("")) { //$NON-NLS-1$
 			showAlert(getString(R.string.valid_domain_and_username_error));
 			return;
 		}
 		
-		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");		
+		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");		 //$NON-NLS-1$
 		
 		if(splits.length == 1) {
-			domain = "";
+			domain = ""; //$NON-NLS-1$
 			username = splits[0];
 		}
 		else if (splits.length == 2) {
@@ -184,17 +184,17 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			return;
 		}
 		
-		if (username.equalsIgnoreCase("")) {
+		if (username.equalsIgnoreCase("")) { //$NON-NLS-1$
 			showAlert(getString(R.string.invalid_username_error));
 			return;
 		}
 		
-		if (getTextFromId(R.id.txtPassword).equalsIgnoreCase("")){
+		if (getTextFromId(R.id.txtPassword).equalsIgnoreCase("")){ //$NON-NLS-1$
 			showAlert(getString(R.string.invalid_password_error));
 			return;			
 		}
 			
-		if (getTextFromId(R.id.txtServerName).equalsIgnoreCase("") ){
+		if (getTextFromId(R.id.txtServerName).equalsIgnoreCase("") ){ //$NON-NLS-1$
 			showAlert(getString(R.string.invalid_exchange_url_error));
 			return;
 		}		
@@ -210,8 +210,8 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 				getTextFromId(R.id.txtPassword),
 				getValueFromCheckbox(R.id.chkUseSSL),
 				getValueFromCheckbox(R.id.chkAcceptAllSSLCert),
-				"", 
-				"",
+				"",  //$NON-NLS-1$
+				"", //$NON-NLS-1$
 				null);
 
 		// If we get an error from Initialize
@@ -276,39 +276,39 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 					case 200: // Successful, but obviously something went wrong
 						switch(requestStatus){
 						case Parser.STATUS_TOO_MANY_DEVICES:
-							ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices");
+							ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices"); //$NON-NLS-1$
 							break;
 						default:
 							break;
 						}
 						break;
 					case 401: // UNAUTHORIZED
-						ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.authentication_failed_detail)).show(getSupportFragmentManager(), "tooManyDevices");
+						ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.authentication_failed_detail)).show(getSupportFragmentManager(), "unauthorized"); //$NON-NLS-1$
 						break;
 					case 403: // FORBIDDEN, typically means that the DeviceID is not accepted and needs to be set in Exchange
 						String title = getString(R.string.forbidden_by_server_title);
 						String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
 						ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
 							.setListener(this)
-							.show(getSupportFragmentManager(), "forbidden");
+							.show(getSupportFragmentManager(), "forbidden"); //$NON-NLS-1$
 						break;
 					case ConnectionChecker.SSL_PEER_UNVERIFIED:
 						ChoiceDialogFragment.newInstance(getString(R.string.unable_to_find_matching_certificate), getString(R.string.acceptAllSllText))
-							.show(getSupportFragmentManager(), "SslUnverified");
+							.show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
 						break;
 					case ConnectionChecker.UNKNOWN_HOST:
-						ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified");
+						ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "UnknownHost"); //$NON-NLS-1$
 						break;
 					case ConnectionChecker.TIMEOUT:
-						ChoiceDialogFragment.newInstance(getString(R.string.timeout_title), String.format(getString(R.string.timeout_detail), getString(R.string.useSecureSslText))).show(getSupportFragmentManager(), "Timeout");
+						ChoiceDialogFragment.newInstance(getString(R.string.timeout_title), String.format(getString(R.string.timeout_detail), getString(R.string.useSecureSslText))).show(getSupportFragmentManager(), "Timeout"); //$NON-NLS-1$
 						break;
 					default:
 						ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
-							.show(getSupportFragmentManager(), "connError");
+							.show(getSupportFragmentManager(), "connError"); //$NON-NLS-1$
 						break;				 
 					}					
 				} catch (java.lang.IllegalStateException e) {
-					Debug.Log("Server configuration window was dismissed before Connection check was finished:\n" + e.toString());
+					Debug.Log("Server configuration window was dismissed before Connection check was finished:\n" + e.toString()); //$NON-NLS-1$
 				}
 			}
 		}
@@ -357,7 +357,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 				}
 				else {
 					ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-					clip.setPrimaryClip(ClipData.newPlainText("Android Device ID", activeSyncManager.getDeviceId()));
+					clip.setPrimaryClip(ClipData.newPlainText("Android Device ID", activeSyncManager.getDeviceId())); //$NON-NLS-1$
 				}
 				break;
 		}

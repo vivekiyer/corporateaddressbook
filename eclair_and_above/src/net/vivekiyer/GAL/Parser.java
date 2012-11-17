@@ -51,7 +51,7 @@ public class Parser extends GalParser {
 				parseResponse();
 			} else if (tag == Tags.SEARCH_STATUS){
 				searchStatus = getValueInt();
-				Debug.Log("GAL search status: " + searchStatus);
+				Debug.Log("GAL search status: " + searchStatus); //$NON-NLS-1$
 			} else {
 				skipTag();
 			}

@@ -22,7 +22,7 @@ public class CommandResponse {
 		return wbxmlInputStream;
 	}
 
-	private String errorString = "";
+	private String errorString = ""; //$NON-NLS-1$
 	protected String getErrorString(){
 		return errorString;
 	}
@@ -41,10 +41,10 @@ public class CommandResponse {
 				
 				// GZipped entities
 				if (contentType
-						.compareToIgnoreCase("application/vnd.ms-sync.wbxml") == 0) {
+						.compareToIgnoreCase("application/vnd.ms-sync.wbxml") == 0) { //$NON-NLS-1$
 					
 					if(entity.getContentEncoding() != null 
-							&& entity.getContentEncoding().getValue().equalsIgnoreCase("gzip"))
+							&& entity.getContentEncoding().getValue().equalsIgnoreCase("gzip")) //$NON-NLS-1$
 					{
 						InputStream gzippedResponse = entity.getContent();
 					    InputStream ungzippedResponse = new GZIPInputStream(gzippedResponse);
@@ -65,17 +65,17 @@ public class CommandResponse {
 				}
 				// Text / HTML entities
 				// We will see this only in case of an error
-				else if (contentType.compareToIgnoreCase("text/html") == 0) {
+				else if (contentType.compareToIgnoreCase("text/html") == 0) { //$NON-NLS-1$
 					errorString = EntityUtils.toString(entity);
 				}
 			}
 			else
 			{
-				errorString = "No response received from server";
+				errorString = App.getInstance().getString(R.string.no_response_from_server);
 			}
 		}
 		else {
-			errorString = String.format("Server responded %d", statusCode);
+			errorString = App.getInstance().getString(R.string.server_responded_x, statusCode);
 		}
 	}
 }

@@ -48,7 +48,7 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	private int requestStatus = Parser.STATUS_NOT_SET;
 	
 	// variable that stores the error string
-	private String errorString = "";
+	private String errorString = ""; //$NON-NLS-1$
 	
 	/**
 	 * @param callback Callback to call once the task is complete

@@ -126,7 +126,7 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 		if (tv2 != null) {
 			String s;
 			if((s = mContact.getTitle()).length() != 0)
-				s = s + ", ";
+				s = s + ", "; //$NON-NLS-1$
 			{
 				tv2.setText(s + mContact.getCompany());
 			}
@@ -267,32 +267,32 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 
 		switch (item.getItemId()) {
 		case MENU_ID_CALL:
-			Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"
+			Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" //$NON-NLS-1$
 					+ kvp.getValue()));
 			startActivity(intent);
 			break;
 		case MENU_ID_SMS:
-			intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"
+			intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" //$NON-NLS-1$
 					+ kvp.getValue()));
 			startActivity(intent);
 			break;
 		case MENU_ID_COPY_TO_CLIPBOARD:
 			final ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 			clipboard.setText(kvp.getValue());
-			Toast.makeText(this.getActivity(), "Text copied to clipboard", Toast.LENGTH_SHORT)
+			Toast.makeText(this.getActivity(), getString(R.string.text_copied_to_clipboard), Toast.LENGTH_SHORT)
 					.show();
 			break;
 		case MENU_ID_EDIT_BEFORE_CALL:
-			intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"
+			intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" //$NON-NLS-1$
 					+ kvp.getValue()));
 			startActivity(intent);
 			break;
 		case MENU_ID_EMAIL:
 			intent = new Intent(android.content.Intent.ACTION_SEND);
-			intent.setType("text/plain");
+			intent.setType("text/plain"); //$NON-NLS-1$
 			intent.putExtra(android.content.Intent.EXTRA_EMAIL,
 					new String[] { kvp.getValue() });
-			startActivity(Intent.createChooser(intent, getActivity().getString(R.string.send_mail)));
+			startActivity(Intent.createChooser(intent, getString(R.string.send_mail)));
 			break;
 		default:
 			return super.onContextItemSelected(item);

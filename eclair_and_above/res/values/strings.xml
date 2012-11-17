@@ -74,4 +74,8 @@
     <string name="invalid_server_detail">Could not find the server, are you sure the name is right?</string>
     <string name="timeout_title">Connection timeout</string>
     <string name="timeout_detail">The connection timed out. This might be caused by an unreliable network or trying to access using the wrong method.\nPlease try again or check the option \'%1$s\' if it is currently unchecked.</string>
+    <string name="no_response_from_server">No response received from server</string>
+    <string name="server_responded_x">Server responded %1$d</string>
+    <string name="text_copied_to_clipboard">Text copied to clipboard</string>
+    <string name="select_account">Select account</string>
 </resources>

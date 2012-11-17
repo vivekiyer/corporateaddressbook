@@ -9,12 +9,12 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
 public class ChoiceDialogFragment extends DialogFragment implements OnClickListener {
-    private static final String ARG_TITLE = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_TITLE";
-    private static final String ARG_MESSAGE = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_MESSAGE";
-    private static final String ARG_POSITIVE_BUTTON_TEXT = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_POSITIVE_BUTTON_TEXT";
-    private static final String ARG_NEGATIVE_BUTTON_TEXT = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_NEGATIVE_BUTTON_TEXT";
-    private static final String ARG_POSITIVE_ACTION = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_POSITIVE_ACTION";
-    private static final String ARG_NEGATIVE_ACTION = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_NEGATIVE_ACTION";
+    private static final String ARG_TITLE = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_TITLE"; //$NON-NLS-1$
+    private static final String ARG_MESSAGE = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_MESSAGE"; //$NON-NLS-1$
+    private static final String ARG_POSITIVE_BUTTON_TEXT = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_POSITIVE_BUTTON_TEXT"; //$NON-NLS-1$
+    private static final String ARG_NEGATIVE_BUTTON_TEXT = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_NEGATIVE_BUTTON_TEXT"; //$NON-NLS-1$
+    private static final String ARG_POSITIVE_ACTION = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_POSITIVE_ACTION"; //$NON-NLS-1$
+    private static final String ARG_NEGATIVE_ACTION = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_NEGATIVE_ACTION"; //$NON-NLS-1$
  
     private OnChoiceDialogOptionClickListener clickListener;
     private int positiveAction;
