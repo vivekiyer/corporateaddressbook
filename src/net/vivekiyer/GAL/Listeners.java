@@ -22,7 +22,7 @@ public class Listeners {
 			public void onClick(View v) {
 				Intent  intent = new Intent(
 						Intent.ACTION_DIAL, 
-						Uri.parse("tel:"+telNo));
+						Uri.parse("tel:"+telNo)); //$NON-NLS-1$
 				v.getContext().startActivity(intent);
 				if(qa != null)
 					qa.dismiss();
@@ -43,7 +43,7 @@ public class Listeners {
 			public void onClick(View v) {
 				Intent  intent = new Intent(
 						Intent.ACTION_SENDTO, 
-						Uri.parse("smsto:"+telNo));
+						Uri.parse("smsto:"+telNo)); //$NON-NLS-1$
 				try {
 					v.getContext().startActivity(intent);
 					if(qa != null)
@@ -67,7 +67,7 @@ public class Listeners {
 			public void onClick(View v) {
 				Intent  intent = new Intent(
 						Intent.ACTION_SENDTO, 
-						Uri.parse("mailto:"+mailAddress));
+						Uri.parse("mailto:"+mailAddress)); //$NON-NLS-1$
 				v.getContext().startActivity(intent);
 				if(qa != null)
 					qa.dismiss();
@@ -89,7 +89,7 @@ public class Listeners {
 			public void onClick(View v) {
 				final android.text.ClipboardManager clipboard = (android.text.ClipboardManager) v.getContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE);
 				clipboard.setText(text);
-				Toast.makeText(v.getContext(), "Text copied to clipboard", Toast.LENGTH_SHORT)
+				Toast.makeText(v.getContext(), v.getContext().getString(R.string.text_copied_to_clipboard), Toast.LENGTH_SHORT)
 						.show();
 				if(qa != null)
 					qa.dismiss();

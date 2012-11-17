@@ -12,8 +12,8 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	private ActiveSyncManager activeSyncManager;
 
 	private int errorCode = 0;
-	private String errorMesg = "";
-	private String errorDetail = "";
+	private String errorMesg = ""; //$NON-NLS-1$
+	private String errorDetail = ""; //$NON-NLS-1$
 
 	protected volatile OnSearchCompletedListener onSearchCompletedListener;
 	
@@ -104,8 +104,8 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 			if (Debug.Enabled) {
 				Debug.Log(e.toString());
 			} else {
-				errorMesg = "Activesync version= "
-						+ activeSyncManager.getActiveSyncVersion() + "\n"
+				errorMesg = "Activesync version= " //$NON-NLS-1$
+						+ activeSyncManager.getActiveSyncVersion() + "\n" //$NON-NLS-1$
 						+ e.toString();
 				return false;
 			}

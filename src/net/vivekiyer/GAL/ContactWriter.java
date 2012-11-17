@@ -74,10 +74,10 @@ public abstract class ContactWriter {
 			int sdkVersion = Integer.parseInt(Build.VERSION.SDK); // Cupcake
 																	// style
 			if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
-				className = "net.vivekiyer.GAL.ContactWriterSdk3_4";
+				className = "net.vivekiyer.GAL.ContactWriterSdk3_4"; //$NON-NLS-1$
 				//Log.d(TAG,"Detected pre Eclair SDK. SDK Version=" + sdkVersion);
 			} else {
-				className = "net.vivekiyer.GAL.ContactWriterSdk5";
+				className = "net.vivekiyer.GAL.ContactWriterSdk5"; //$NON-NLS-1$
 				//Log.d(TAG,"Detected post Donut SDK. SDK Version=" + sdkVersion);
 			}
 

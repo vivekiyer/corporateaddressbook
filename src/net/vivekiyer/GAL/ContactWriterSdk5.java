@@ -52,7 +52,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 	private Contact mContact;
 
 	// TAG used for logging
-	private static String TAG = "ContactWriterSdk5";
+	private static String TAG = "ContactWriterSdk5"; //$NON-NLS-1$
 
 	public ContactWriterSdk5(Application appCtx, Contact contact) {
 		super();
@@ -95,7 +95,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 			}
 		}
 		// No match found
-		throw new RuntimeException("Unable to find matching authenticator");
+		throw new RuntimeException("Unable to find matching authenticator"); //$NON-NLS-1$
 	}
 
 	private void addContactFields(ArrayList<ContentProviderOperation> ops) {
@@ -103,7 +103,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 		mContact.generateFieldsFromXML();
 		
 		// Add work phone
-		if (!mContact.getWorkPhone().equalsIgnoreCase(""))
+		if (!mContact.getWorkPhone().equalsIgnoreCase("")) //$NON-NLS-1$
 			ops.add(ContentProviderOperation
 					.newInsert(ContactsContract.Data.CONTENT_URI)
 					.withValueBackReference(
@@ -118,7 +118,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 					.build());
 
 		// Add office location
-		if (!mContact.getOfficeLocation().equalsIgnoreCase(""))
+		if (!mContact.getOfficeLocation().equalsIgnoreCase("")) //$NON-NLS-1$
 			ops.add(ContentProviderOperation
 					.newInsert(ContactsContract.Data.CONTENT_URI)
 					.withValueBackReference(
@@ -135,7 +135,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 					.build());
 
 		// Add alias
-		if (!mContact.getAlias().equalsIgnoreCase(""))
+		if (!mContact.getAlias().equalsIgnoreCase("")) //$NON-NLS-1$
 			ops.add(ContentProviderOperation
 					.newInsert(ContactsContract.Data.CONTENT_URI)
 					.withValueBackReference(
@@ -149,10 +149,10 @@ public class ContactWriterSdk5 extends ContactWriter {
 							ContactsContract.CommonDataKinds.Nickname.TYPE,
 							ContactsContract.CommonDataKinds.Nickname.TYPE_CUSTOM)
 					.withValue(ContactsContract.CommonDataKinds.Nickname.LABEL,
-							"Work Alias").build());
+							"Work Alias").build()); //$NON-NLS-1$
 
 		// Add home phone
-		if (!mContact.getHomePhone().equalsIgnoreCase(""))
+		if (!mContact.getHomePhone().equalsIgnoreCase("")) //$NON-NLS-1$
 			ops.add(ContentProviderOperation
 					.newInsert(ContactsContract.Data.CONTENT_URI)
 					.withValueBackReference(
@@ -167,7 +167,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 					.build());
 
 		// Add mobile phone
-		if (!mContact.getMobilePhone().equalsIgnoreCase(""))
+		if (!mContact.getMobilePhone().equalsIgnoreCase("")) //$NON-NLS-1$
 			ops.add(ContentProviderOperation
 					.newInsert(ContactsContract.Data.CONTENT_URI)
 					.withValueBackReference(
@@ -182,7 +182,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 					.build());
 
 		// Add email address
-		if (!mContact.getEmail().equalsIgnoreCase(""))
+		if (!mContact.getEmail().equalsIgnoreCase("")) //$NON-NLS-1$
 			ops.add(ContentProviderOperation
 					.newInsert(ContactsContract.Data.CONTENT_URI)
 					.withValueBackReference(
@@ -227,7 +227,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 						mContact.getLastName())
 				.withValue(
 						ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME,
-						mContact.getFirstName() + " " + mContact.getLastName())
+						mContact.getFirstName() + " " + mContact.getLastName()) //$NON-NLS-1$
 				.build());
 
 	}
@@ -283,7 +283,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 	public void saveContact(Context ctx) {
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-		builder.setTitle("Select account");
+		builder.setTitle(ctx.getString(R.string.select_account));
 
 		builder.setSingleChoiceItems(mAccountAdapter, -1,
 				new OnClickListener() {
@@ -333,10 +333,10 @@ public class ContactWriterSdk5 extends ContactWriter {
 							null);
 					if (mTypeLabel == null) {
 						throw new IllegalArgumentException(
-								"LabelID provided, but label not found");
+								"LabelID provided, but label not found"); //$NON-NLS-1$
 					}
 				} else {
-					mTypeLabel = "";
+					mTypeLabel = ""; //$NON-NLS-1$
 				}
 
 				if (description.iconId != 0) {
@@ -344,7 +344,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 							null);
 					if (mIcon == null) {
 						throw new IllegalArgumentException(
-								"IconID provided, but drawable not " + "found");
+								"IconID provided, but drawable not " + "found"); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				} else {
 					mIcon = context.getResources().getDrawable(

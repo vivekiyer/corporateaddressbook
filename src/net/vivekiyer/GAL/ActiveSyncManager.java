@@ -26,6 +26,7 @@ import org.apache.http.HttpResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -39,17 +40,17 @@ import java.util.UUID;
  *
  */
 public class ActiveSyncManager {
-	private String mPolicyKey = "0";
+	private String mPolicyKey = "0"; //$NON-NLS-1$
 	private String mAuthString;
 	private String mUri;
 	private String mServerName;
 	private String mDomain;
 	private String mUsername;
 	private String mPassword;
-	private String mQuery = "";
+	private String mQuery = ""; //$NON-NLS-1$
 	private boolean mUseSSL;
 	private boolean mAcceptAllCerts;
-	private String mActiveSyncVersion = "";	
+	private String mActiveSyncVersion = "";	 //$NON-NLS-1$
 	private String mDeviceId;
 	private HashMultimap<String, Contact> mResults;
 	private int requestStatus = Parser.STATUS_NOT_SET;
@@ -131,12 +132,12 @@ public class ActiveSyncManager {
 	 */
 	private void generateAuthString(){
 		// For BPOS the DOMAIN is not required, so remove the backslash
-		if(mDomain.equalsIgnoreCase(""))
-			mAuthString = "Basic "
-					+ Utility.base64Encode(mUsername + ":" + mPassword);
+		if(mDomain.equalsIgnoreCase("")) //$NON-NLS-1$
+			mAuthString = "Basic " //$NON-NLS-1$
+					+ Utility.base64Encode(mUsername + ":" + mPassword); //$NON-NLS-1$
 		else
-			mAuthString = "Basic "
-					+ Utility.base64Encode(mDomain + "\\" + mUsername + ":"
+			mAuthString = "Basic " //$NON-NLS-1$
+					+ Utility.base64Encode(mDomain + "\\" + mUsername + ":" //$NON-NLS-1$ //$NON-NLS-2$
 							+ mPassword);
 	}
 
@@ -153,21 +154,21 @@ public class ActiveSyncManager {
 		
 		// If we don't have a server name, 
 		// there is no way we can proceed
-		if(mServerName.compareToIgnoreCase("") == 0)
+		if(mServerName.compareToIgnoreCase("") == 0) //$NON-NLS-1$
 			return false;
 
 		// this is where we will send it
 		try {
 			URI uri = new URI(
-					(mUseSSL) ? "https" : "http", 	// Scheme					
+					(mUseSSL) ? "https" : "http", 	// Scheme					 //$NON-NLS-1$ //$NON-NLS-2$
 							mServerName ,					// Authority
-							"/Microsoft-Server-ActiveSync", // path
-							"User="							// query
+							"/Microsoft-Server-ActiveSync", // path //$NON-NLS-1$
+							"User="							// query //$NON-NLS-1$
 							+ mUsername
-							+ "&DeviceId=" 
+							+ "&DeviceId="  //$NON-NLS-1$
 							+ mDeviceId
-							+ "&DeviceType=Android"
-							+ "&Cmd=",
+							+ "&DeviceType=Android" //$NON-NLS-1$
+							+ "&Cmd=", //$NON-NLS-1$
 							null							// fragment
 					);
 
@@ -230,7 +231,7 @@ public class ActiveSyncManager {
 		Header[] headers;
 		switch(statusCode) {
 		case 200:
-			headers = response.getHeaders("MS-ASProtocolVersions");
+			headers = response.getHeaders("MS-ASProtocolVersions"); //$NON-NLS-1$
 
 			if (headers.length != 0) {
 
@@ -242,7 +243,7 @@ public class ActiveSyncManager {
 				// Look for the last comma, and parse out the highest
 				// version
 				mActiveSyncVersion = versions.substring(versions
-						.lastIndexOf(",") + 1);
+						.lastIndexOf(",") + 1); //$NON-NLS-1$
 
 				// Provision the device if necessary
 				statusCode = provisionDevice();
@@ -252,7 +253,7 @@ public class ActiveSyncManager {
 		// (see http://technet.microsoft.com/en-us/library/dd439372(v=exchg.80).aspx)
 		// Not tested due to lack of access to CAS enabled servers 
 		case 451:
-			headers = response.getHeaders("X-MS-Location");
+			headers = response.getHeaders("X-MS-Location"); //$NON-NLS-1$
 			if(headers.length != 0) {
 				String url = headers[0].getValue();
 				if(!mUri.equals(url)) {
@@ -308,7 +309,7 @@ public class ActiveSyncManager {
 						provisionDevice();
 						return searchGAL(query);
 					default:
-						Debug.Log(String.format("Unknown request status returned: %d", gp.getStatus()));
+						Debug.Log(String.format(Locale.getDefault(), "Unknown request status returned: %d", gp.getStatus())); //$NON-NLS-1$
 				}
 			}
 			mResults = gp.getResults();
@@ -336,11 +337,11 @@ public class ActiveSyncManager {
 					mAcceptAllCerts, 
 					mPolicyKey);
 
-			Debug.Log("Sending provision request");
+			Debug.Log("Sending provision request"); //$NON-NLS-1$
 			// Get the WBXML input stream from the response
 			CommandResponse resp = new CommandResponse(provRequest.getResponse(true));
 			
-			Debug.Log("Received provision response");
+			Debug.Log("Received provision response"); //$NON-NLS-1$
 			
 			// Make sure there were no errors
 			if(resp.getStatusCode() != 200)
@@ -353,12 +354,12 @@ public class ActiveSyncManager {
 			if(!pp.parse())
 			{
 				requestStatus = pp.getStatus();
-				Debug.Log("Failed to parse policy key, status "+ requestStatus);
+				Debug.Log("Failed to parse policy key, status "+ requestStatus); //$NON-NLS-1$
 				return resp.getStatusCode();
 			}
 
-			Debug.Log("Key = "+ pp.getSecuritySyncKey());
-			Debug.Log("Policy status = " + pp.getPolicyStatus());
+			Debug.Log("Key = "+ pp.getSecuritySyncKey()); //$NON-NLS-1$
+			Debug.Log("Policy status = " + pp.getPolicyStatus()); //$NON-NLS-1$
 			
 			if(pp.getPolicyStatus() == Parser.STATUS_NO_POLICY_NEEDED) {
 				this.requestStatus = Parser.STATUS_OK;
@@ -378,17 +379,17 @@ public class ActiveSyncManager {
 					pp.isRemoteWipeRequested()
 					);
 			
-			Debug.Log("Sending provision ack");
+			Debug.Log("Sending provision ack"); //$NON-NLS-1$
 			
 			// Get the WBXML input stream from the response
 			resp = new CommandResponse(ackProvRequest.getResponse(false));
-			Debug.Log("Received ack response");
+			Debug.Log("Received ack response"); //$NON-NLS-1$
 			
 			// Make sure there were no errors
 			if(resp.getStatusCode() != 200)
 			{
 				requestStatus = pp.getStatus();
-				Debug.Log(resp.getErrorString() + ", status " + requestStatus);
+				Debug.Log(resp.getErrorString() + ", status " + requestStatus); //$NON-NLS-1$
 				return resp.getStatusCode();
 			}
 
@@ -396,19 +397,19 @@ public class ActiveSyncManager {
 			if(!pp.parse())
 			{
 				requestStatus = pp.getStatus();
-				Debug.Log("Error in acknowledging Provision request, status "+ requestStatus);
+				Debug.Log("Error in acknowledging Provision request, status "+ requestStatus); //$NON-NLS-1$
 				return resp.getStatusCode();
 			}
 			
 			mPolicyKey = pp.getSecuritySyncKey();
-			Debug.Log("Final policy Key = "+ mPolicyKey);
+			Debug.Log("Final policy Key = "+ mPolicyKey); //$NON-NLS-1$
 			requestStatus = pp.getStatus();
-			Debug.Log("Final request status = "+ requestStatus);
+			Debug.Log("Final request status = "+ requestStatus); //$NON-NLS-1$
 			return resp.getStatusCode();
 		}
 		catch(Exception ex)
 		{
-			Debug.Log("Provisioning failed. Error string:\n" + ex.toString());
+			Debug.Log("Provisioning failed. Error string:\n" + ex.toString()); //$NON-NLS-1$
 		}
 		return Parser.STATUS_NOT_SET;
 	}
@@ -420,12 +421,12 @@ public class ActiveSyncManager {
         // Use the Android ID unless it's broken, in which case fallback on a random number 
         try {
             UUID uuid;
-			if (!"9774d56d682e549c".equals(androidId)) {
-                uuid = UUID.nameUUIDFromBytes(androidId.getBytes("utf8"));
+			if (!"9774d56d682e549c".equals(androidId)) { //$NON-NLS-1$
+                uuid = UUID.nameUUIDFromBytes(androidId.getBytes("utf8")); //$NON-NLS-1$
             } else {
                 uuid = UUID.randomUUID();
             }
-			return uuid.toString().replace("-", "");
+			return uuid.toString().replace("-", ""); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

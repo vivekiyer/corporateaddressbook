@@ -31,9 +31,12 @@ class CommandParameter
 
 public class CommandRequest {
 
+	public static final String PROVISION_WBXML = "MS-EAS-Provisioning-WBXML"; //$NON-NLS-1$
+	public static final String PROVISION_XML = "MS-WAP-Provisioning-XML"; //$NON-NLS-1$
+
 	// Constants
 	private final float APP_PROTOCOL_VERSION = 14.1F;
-	private final String APP_PROTOCOL_VERSION_STRING = "14.1";
+	private final String APP_PROTOCOL_VERSION_STRING = "14.1"; //$NON-NLS-1$
 
 	// Constructor
 	protected CommandRequest(
@@ -112,7 +115,7 @@ public class CommandRequest {
 		this.command = command;
 	}
 
-	private String policyKey = "0";
+	private String policyKey = "0"; //$NON-NLS-1$
 	protected String getPolicyKey() {
 		return policyKey;
 	}
@@ -145,37 +148,37 @@ public class CommandRequest {
 	public HttpResponse getResponse(boolean includePolicyKey) throws Exception {
 
 		if(authString == null || protocolVersion == null || uri == null)
-			throw new Exception("Not initialized correctly");
+			throw new Exception("Not initialized correctly"); //$NON-NLS-1$
 		
 		// Generate the WBXML payload
 		generateWBXMLPayload();
 
 		// Set the common headers
 		HttpPost httpPost = new HttpPost(uri);
-		httpPost.setHeader("User-Agent", App.VERSION_STRING);
-		httpPost.setHeader("DeviceType", "Android");		
+		httpPost.setHeader("User-Agent", App.VERSION_STRING); //$NON-NLS-1$
+		httpPost.setHeader("DeviceType", "Android");		 //$NON-NLS-1$ //$NON-NLS-2$
 		
-		httpPost.setHeader("Accept", "*/*");
+		httpPost.setHeader("Accept", "*/*"); //$NON-NLS-1$ //$NON-NLS-2$
 //		httpPost.setHeader("Accept-Encoding", "gzip");
-		httpPost.setHeader("Content-Type", "application/vnd.ms-sync.wbxml");
+		httpPost.setHeader("Content-Type", "application/vnd.ms-sync.wbxml"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		// We will indicate that we are a 14.1 client
 		// unless the server does not support it
 		if(protocolVersionFloat >= APP_PROTOCOL_VERSION)
-			httpPost.setHeader("MS-ASProtocolVersion", APP_PROTOCOL_VERSION_STRING);
+			httpPost.setHeader("MS-ASProtocolVersion", APP_PROTOCOL_VERSION_STRING); //$NON-NLS-1$
 		else
-			httpPost.setHeader("MS-ASProtocolVersion", protocolVersion);
+			httpPost.setHeader("MS-ASProtocolVersion", protocolVersion); //$NON-NLS-1$
 		
-		httpPost.setHeader("Authorization", getAuthString());
+		httpPost.setHeader("Authorization", getAuthString()); //$NON-NLS-1$
 
 		// Include policy key if required
 		if (includePolicyKey)
-			httpPost.setHeader("X-MS-PolicyKey", policyKey);
+			httpPost.setHeader("X-MS-PolicyKey", policyKey); //$NON-NLS-1$
 
 		// Add the XML to the request
 		if (wbxmlBytes != null) {
 			ByteArrayEntity myEntity = new ByteArrayEntity(wbxmlBytes);
-			myEntity.setContentType("application/vnd.ms-sync.wbxml");
+			myEntity.setContentType("application/vnd.ms-sync.wbxml"); //$NON-NLS-1$
 			httpPost.setEntity(myEntity);
 		}
 		
@@ -194,8 +197,8 @@ public class CommandRequest {
 	 */
 	public HttpResponse getOptions() throws Exception {
 		HttpOptions httpOptions = new HttpOptions(getUri());
-		httpOptions.setHeader("User-Agent", App.VERSION_STRING);
-		httpOptions.setHeader("Authorization", getAuthString());
+		httpOptions.setHeader("User-Agent", App.VERSION_STRING); //$NON-NLS-1$
+		httpOptions.setHeader("Authorization", getAuthString()); //$NON-NLS-1$
 
 		// Send the OPTIONS message
 		HttpClient client = createHttpClient();
@@ -223,10 +226,10 @@ public class CommandRequest {
         
 		SchemeRegistry registry = new SchemeRegistry();
 	    registry.register(
-	    		new Scheme("http", new PlainSocketFactory(), 80));
+	    		new Scheme("http", new PlainSocketFactory(), 80)); //$NON-NLS-1$
 	    registry.register(
 	    		new Scheme(
-	    				"https",acceptAllCerts ? new FakeSocketFactory() : SSLSocketFactory.getSocketFactory() , 
+	    				"https", acceptAllCerts ? new FakeSocketFactory() : SSLSocketFactory.getSocketFactory() ,  //$NON-NLS-1$
 	    				443));
 	    HttpClient httpclient = new DefaultHttpClient(
 	    		new ThreadSafeClientConnManager(httpParams, registry), httpParams);		
@@ -235,7 +238,7 @@ public class CommandRequest {
 		httpclient.getParams().setParameter(
 				CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 		httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT,
-				"Android");
+				"Android"); //$NON-NLS-1$
 
 		// Make sure we are not validating any hostnames
 		SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();

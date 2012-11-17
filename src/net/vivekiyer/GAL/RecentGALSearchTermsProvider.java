@@ -8,7 +8,7 @@ import android.provider.SearchRecentSuggestions;
  * 
  */
 public class RecentGALSearchTermsProvider extends SearchRecentSuggestionsProvider {
-    public final static String AUTHORITY = "net.vivekiyer.GAL.RecentGALSearchTermsProvider";
+    public final static String AUTHORITY = "net.vivekiyer.GAL.RecentGALSearchTermsProvider"; //$NON-NLS-1$
     public final static int MODE = DATABASE_MODE_QUERIES;
 	
 	public RecentGALSearchTermsProvider() {
