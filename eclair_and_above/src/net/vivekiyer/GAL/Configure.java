@@ -293,7 +293,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 							.show(getSupportFragmentManager(), "forbidden"); //$NON-NLS-1$
 						break;
 					case ConnectionChecker.SSL_PEER_UNVERIFIED:
-						ChoiceDialogFragment.newInstance(getString(R.string.unable_to_find_matching_certificate), getString(R.string.acceptAllSllText))
+						ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.unable_to_find_matching_certificate, "\n", getString(R.string.acceptAllSllText))) //$NON-NLS-1$
 							.show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
 						break;
 					case ConnectionChecker.UNKNOWN_HOST:

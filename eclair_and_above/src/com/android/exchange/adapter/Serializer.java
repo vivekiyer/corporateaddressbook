@@ -81,7 +81,7 @@ public class Serializer {
 
     public void done() throws IOException {
         if (mDepth != 0) {
-            throw new IOException("Done received with unclosed tags");
+            throw new IOException("Done received with unclosed tags"); //$NON-NLS-1$
         }
         mOutput.flush();
     }
@@ -109,7 +109,7 @@ public class Serializer {
         if (mLogging) {
             String name = Tags.pages[page][tag - 5];
             mNameStack[mDepth] = name;
-            log("<" + name + '>');
+            log("<" + name + '>'); //$NON-NLS-1$
         }
         mPendingTag = NOT_PENDING;
     }
@@ -127,7 +127,7 @@ public class Serializer {
         } else {
             mOutput.write(Wbxml.END);
             if (mLogging) {
-                log("</" + mNameStack[mDepth] + '>');
+                log("</" + mNameStack[mDepth] + '>'); //$NON-NLS-1$
             }
         }
         mDepth--;
@@ -142,7 +142,7 @@ public class Serializer {
 
     public Serializer data(int tag, String value) throws IOException {
         if (value == null) {
-            Debug.Log("Writing null data for tag: " + tag);
+            Debug.Log("Writing null data for tag: " + tag); //$NON-NLS-1$
         }
         start(tag);
         text(value);
@@ -152,7 +152,7 @@ public class Serializer {
 
     public Serializer text(String text) throws IOException {
         if (text == null) {
-            Debug.Log("Writing null text for pending tag: " + mPendingTag);
+            Debug.Log("Writing null text for pending tag: " + mPendingTag); //$NON-NLS-1$
         }
         checkPendingTag(false);
         mOutput.write(Wbxml.STR_I);
@@ -168,7 +168,7 @@ public class Serializer {
         mOutput.write(Wbxml.OPAQUE);
         writeInteger(mOutput, length);
         if (mLogging) {
-            log("Opaque, length: " + length);
+            log("Opaque, length: " + length); //$NON-NLS-1$
         }
         // Now write out the opaque data in batches
         byte[] buffer = new byte[BUFFER_SIZE];
@@ -209,7 +209,7 @@ public class Serializer {
     }
 
     void writeLiteralString(OutputStream out, String s) throws IOException {
-        byte[] data = s.getBytes("UTF-8");
+        byte[] data = s.getBytes("UTF-8"); //$NON-NLS-1$
         out.write(data);
         out.write(0);
     }

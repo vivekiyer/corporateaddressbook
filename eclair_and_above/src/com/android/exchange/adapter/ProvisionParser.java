@@ -56,14 +56,14 @@ public class ProvisionParser extends Parser {
             switch (tag) {
                 case Tags.PROVISION_POLICY_TYPE:
                     policyType = getValue();
-                    Debug.Log("Policy type: "+ policyType);
+                    Debug.Log("Policy type: "+ policyType); //$NON-NLS-1$
                     break;
                 case Tags.PROVISION_POLICY_KEY:
                     mSecuritySyncKey = getValue();
                     break;
                 case Tags.PROVISION_STATUS:
                 	policyStatus = getValueInt();
-                	Debug.Log("Policy status: "+ policyStatus);
+                	Debug.Log("Policy status: "+ policyStatus); //$NON-NLS-1$
                     break;
                 default:
                     skipTag();
@@ -91,7 +91,7 @@ public class ProvisionParser extends Parser {
             switch (tag) {
                 case Tags.PROVISION_STATUS:
                     status = getValueInt();
-                    Debug.Log("Provision status: " + status);
+                    Debug.Log("Provision status: " + status); //$NON-NLS-1$
                     res = (status == STATUS_OK);
                     break;
                 case Tags.PROVISION_POLICIES:
