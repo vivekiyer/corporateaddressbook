@@ -608,12 +608,23 @@ public class CorporateAddressBook extends FragmentActivity
 		switch(result) {
 		// Errors that might be remedied by updating server settings
 		case 401:
-			positiveButtonText = getString(android.R.string.cancel);
-	        negativeButtonText = getString(R.string.show_settings);
-	        dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, android.R.id.closeButton, DISPLAY_CONFIGURATION_REQUEST);
+			positiveButtonText = getString(R.string.show_settings);
+	        negativeButtonText = getString(android.R.string.cancel);
+	        dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, DISPLAY_CONFIGURATION_REQUEST, android.R.id.closeButton);
 	        dialogFragment.setListener(this);
 	        try {
-				dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag"); //$NON-NLS-1$
+				dialogFragment.show(getSupportFragmentManager(), "checkSettings"); //$NON-NLS-1$
+			} catch (java.lang.IllegalStateException e) {
+				Debug.Log(e.getMessage());
+			}
+	        break;
+		case ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION:
+			positiveButtonText = getString(R.string.show_settings);
+	        negativeButtonText = getString(android.R.string.cancel);
+	        dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, DISPLAY_CONFIGURATION_REQUEST, android.R.id.closeButton);
+	        dialogFragment.setListener(this);
+	        try {
+				dialogFragment.show(getSupportFragmentManager(), "reprovision"); //$NON-NLS-1$
 			} catch (java.lang.IllegalStateException e) {
 				Debug.Log(e.getMessage());
 			}
@@ -625,7 +636,7 @@ public class CorporateAddressBook extends FragmentActivity
 			dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, android.R.id.closeButton, android.R.id.copy);
 			dialogFragment.setListener(this);
 			try {
-				dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag"); //$NON-NLS-1$
+				dialogFragment.show(getSupportFragmentManager(), "unauthorized"); //$NON-NLS-1$
 			} catch (java.lang.IllegalStateException e) {
 				Debug.Log(e.getMessage());
 			}

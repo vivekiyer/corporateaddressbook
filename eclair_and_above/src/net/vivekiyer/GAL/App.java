@@ -22,6 +22,10 @@ public class App extends Application {
 	
 	public static final Hashtable<Integer, GALSearch> taskManager = new Hashtable<Integer, GALSearch>();
 	
+	public App() {
+		super();
+	}
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();

@@ -1,5 +1,7 @@
 package net.vivekiyer.GAL;
 
+import java.net.SocketTimeoutException;
+
 import android.os.AsyncTask;
 import com.google.common.collect.HashMultimap;
 
@@ -66,6 +68,10 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 									errorMesg = App.getInstance().getString(R.string.too_many_device_partnerships_title);
 									errorDetail = App.getInstance().getString(R.string.too_many_device_partnerships_detail);
 									return false;
+								case ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION:
+									errorCode = ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION;
+									errorMesg = App.getInstance().getString(R.string.authentication_failed_title);
+									errorDetail = App.getInstance().getString(R.string.please_check_settings);
 								case Parser.STATUS_OK:
 									break;
 								default:
@@ -99,7 +105,10 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 							return false;
 					}
 				} while (statusCode != 200);
-
+		} catch (final SocketTimeoutException e) {
+			errorMesg = App.getInstance().getString(R.string.timeout_title);
+			errorDetail = App.getInstance().getString(R.string.timeout_detail);
+			return false;
 		} catch (final Exception e) {
 			if (Debug.Enabled) {
 				Debug.Log(e.toString());
