@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.vivekiyer.GAL"
     android:installLocation="auto"
-    android:versionCode="21"
-    android:versionName="2.0.4" >
+    android:versionCode="23"
+    android:versionName="2.0.7-dev" >
 
     <uses-sdk
         android:minSdkVersion="5"
@@ -69,6 +69,8 @@
 	        android:label="@string/settings"
 	        android:enabled="true" >
 	        <intent-filter>
+                <action android:name="net.vivekiyer.GAL.Preferences.PREFS_SERVER" />
+                <action android:name="net.vivekiyer.GAL.Preferences.PREFS_ABOUT" />
 	            <category android:name="android.intent.category.PREFERENCE" />
 	        </intent-filter>
 	    </activity>

@@ -58,8 +58,8 @@ public abstract class ContactWriter {
 			String className;
 
 			/*
-			 * Check the version of the SDK we are running on. Choose an
-			 * implementation class designed for that version of the SDK.
+			 * Check the displayText of the SDK we are running on. Choose an
+			 * implementation class designed for that displayText of the SDK.
 			 * 
 			 * Unfortunately we have to use strings to represent the class
 			 * names. If we used the conventional

@@ -26,7 +26,7 @@ public class App extends Application {
 	public void onCreate() {
 		super.onCreate();
 		instance = this;
-		// Get the version string
+		// Get the displayText string
 		App.VERSION_STRING = "CorporateAddressbook/"+getAppVersion();
 	}
 
@@ -35,7 +35,7 @@ public class App extends Application {
 	}	
 	
 	/**
-	 * Returns the version of the application
+	 * Returns the displayText of the application
 	 * @return Version number of the application
 	 */
 	public String getAppVersion(){

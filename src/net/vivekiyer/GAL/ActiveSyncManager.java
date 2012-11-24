@@ -208,7 +208,7 @@ public class ActiveSyncManager {
 	 * @throws Exception
 	 * @return Status code returned from the Exchange server
 	 * 
-	 * Connects to the Exchange server and obtains the version of ActiveSync supported 
+	 * Connects to the Exchange server and obtains the displayText of ActiveSync supported
 	 * by the server 
 	 */
 	public int getExchangeServerVersion() throws Exception {
@@ -236,11 +236,11 @@ public class ActiveSyncManager {
 
 				Header header = headers[0];
 
-				// Parse out the ActiveSync Protocol version
+				// Parse out the ActiveSync Protocol displayText
 				String versions = header.getValue();
 
 				// Look for the last comma, and parse out the highest
-				// version
+				// displayText
 				mActiveSyncVersion = versions.substring(versions
 						.lastIndexOf(",") + 1);
 
@@ -336,11 +336,11 @@ public class ActiveSyncManager {
 					mAcceptAllCerts, 
 					mPolicyKey);
 
-			System.out.println("Sending provision request");
+			Debug.Log("Sending provision request");
 			// Get the WBXML input stream from the response
 			CommandResponse resp = new CommandResponse(provRequest.getResponse(true));
 			
-			System.out.println("Received provision response");
+			Debug.Log("Received provision response");
 			
 			// Make sure there were no errors
 			if(resp.getStatusCode() != 200)
@@ -357,7 +357,13 @@ public class ActiveSyncManager {
 				return;
 			}
 
-			System.out.println("Key = "+ pp.getSecuritySyncKey());
+			Debug.Log("Key = " + pp.getSecuritySyncKey());
+			Debug.Log("Policy status = " + pp.getPolicyStatus());
+			
+			if(pp.getPolicyStatus() == Parser.STATUS_NO_POLICY_NEEDED) {
+				this.requestStatus = Parser.STATUS_OK;
+				return;
+			}
 
 			// Now that we have the temp policy key
 			// Tell the server we accept everything it says
@@ -372,11 +378,11 @@ public class ActiveSyncManager {
 					pp.isRemoteWipeRequested()
 					);
 			
-			System.out.println("Sending provision ack");
+			Debug.Log("Sending provision ack");
 			
 			// Get the WBXML input stream from the response
 			resp = new CommandResponse(ackProvRequest.getResponse(false));
-			System.out.println("Received ack response");
+			Debug.Log("Received ack response");
 			
 			// Make sure there were no errors
 			if(resp.getStatusCode() != 200)
@@ -393,10 +399,11 @@ public class ActiveSyncManager {
 				Debug.Log("Error in acknowledging Provision request, status "+ requestStatus);
 				return;
 			}
-			System.out.println("Final policy Key = "+ pp.getSecuritySyncKey());
-
+			
 			mPolicyKey = pp.getSecuritySyncKey();
+			Debug.Log("Final policy Key = "+ mPolicyKey);
 			requestStatus = pp.getStatus();
+			Debug.Log("Final request status = "+ mPolicyKey);
 
 		}
 		catch(Exception ex)
@@ -406,7 +413,7 @@ public class ActiveSyncManager {
 
 	}
 	
-	static String getUniqueId() {
+	public static String getUniqueId() {
 		
         final String androidId = Secure.getString(App.getInstance().getContentResolver(), Secure.ANDROID_ID);
 

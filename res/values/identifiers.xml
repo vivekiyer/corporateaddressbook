@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ACCOUNT_TYPE">net.vivekiyer.GAL.ACCOUNT</string>
-    <string name="PREFS_KEY_SERVER_NAME">PREFS_KEY_SERVER_NAME</string>
     <string name="PREFS_KEY_USERNAME_PREFERENCE">username</string>
     <string name="PREFS_KEY_PASSWORD_PREFERENCE">password</string>
     <string name="PREFS_KEY_DOMAIN_PREFERENCE">domain</string>
@@ -15,4 +14,6 @@
     <string name="PREFS_KEY_RESULTS_PREFERENCE">results</string>
     <string name="PREFS_KEY_SEARCH_TERM_PREFERENCE">searchTerm</string>
     <string name="PREFS_KEY_SUCCESSFULLY_CONNECTED">successfullyConnected</string>
+    <string name="ACTION_PREFS_SERVER">net.vivekiyer.GAL.Preferences.PREFS_SERVER</string>
+    <string name="ACTION_PREFS_ABOUT">net.vivekiyer.GAL.Preferences.PREFS_ABOUT</string>
 </resources>

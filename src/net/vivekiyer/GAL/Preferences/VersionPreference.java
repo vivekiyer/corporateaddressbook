@@ -9,15 +9,14 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class VersionPreference extends Preference {
+public class VersionPreference extends StaticDisplayPreference {
 	
 	public VersionPreference(Context ctx, AttributeSet attrs) {
 		super(ctx, attrs);
 		try {
-		    String version = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0).versionName;
-		    setSummary(version);
+		    displayText = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0).versionName;
 		} catch (NameNotFoundException e) {
-		    Log.e("PrefsActivity", e.getMessage());
+		    Log.e("VersionPreference", e.getMessage());
 		}
 	}
 }

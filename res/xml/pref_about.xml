@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/settings" android:icon="@drawable/icon">
-    <PreferenceCategory android:title="About" android:summary="x.y.z" >
+    <PreferenceCategory android:title="About">
         <net.vivekiyer.GAL.Preferences.VersionPreference android:summary="x.y.z" android:title="Version" android:enabled="false" />
-       
+        <net.vivekiyer.GAL.Preferences.DeviceIdPreference android:summary="0123456789abcdef0123456789abcdef" android:title="Device ID" android:enabled="true"
+            android:dialogMessage="Would you like to copy the Device ID to the clipboard?"
+            android:dialogTitle="Device ID"
+            android:positiveButtonText="@android:string/yes"
+            android:negativeButtonText="@android:string/no"
+        />
     </PreferenceCategory>
     <PreferenceCategory android:title="Links">
         <Preference android:summary="Downloads, issue tracker and wiki" android:title="Corporate Addressbook on Google Code" android:icon="@drawable/google_code">

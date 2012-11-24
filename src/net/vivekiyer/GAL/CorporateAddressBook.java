@@ -341,8 +341,8 @@ public class CorporateAddressBook extends FragmentActivity
 	}
 
 	/**
-	 * The older version of the application included http and https in the
-	 * server name. The newer version no longer has this. Hence clean up is
+	 * The older displayText of the application included http and https in the
+	 * server name. The newer displayText no longer has this. Hence clean up is
 	 * required
 	 */
 	private void cleanUpServerName() {
@@ -382,7 +382,7 @@ public class CorporateAddressBook extends FragmentActivity
 		activeSyncManager.setDomain(mPreferences.getString(
 				getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE), ""));
 
-		// Clean up server name from previous version of the app
+		// Clean up server name from previous displayText of the app
 		cleanUpServerName();
 
 		activeSyncManager.setActiveSyncVersion(mPreferences.getString(
@@ -496,7 +496,7 @@ public class CorporateAddressBook extends FragmentActivity
 	protected void onStop() {
 		super.onStop();
 
-		// Make sure that the activesync version and policy key get written
+		// Make sure that the activesync displayText and policy key get written
 		// to the preferences
 		final SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putString(getString(R.string.PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE),

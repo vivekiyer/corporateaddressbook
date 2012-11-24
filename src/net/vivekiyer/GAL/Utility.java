@@ -63,7 +63,7 @@ public class Utility {
 	
     /**
      * Indicates what OS (API level) the device is running
-     * @return true if the device is running a pre-2.2 (FroYo) OS, false if OS is 3.0 or later
+     * @return true if the device is running a pre-2.2 (FroYo) OS, false if OS is 2.2 or later
      * Encoder the string to base64
      */
 	public static Boolean isPreFroYo() {
@@ -80,7 +80,7 @@ public class Utility {
 	
     /**
      * Indicates what OS (API level) the device is running
-     * @return true if the device is running a pre-4.1 (Jelly Bean) OS, false if OS is 3.0 or later
+     * @return true if the device is running a pre-4.1 (Jelly Bean) OS, false if OS is 4.1 or later
      * Encoder the string to base64
      */
 	public static Boolean isPreJellyBean() {

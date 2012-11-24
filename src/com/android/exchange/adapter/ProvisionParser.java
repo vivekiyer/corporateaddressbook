@@ -29,8 +29,10 @@ import com.android.exchange.adapter.Tags;
  * Assuming a successful parse, we store the PolicySet and the policy key
  */
 public class ProvisionParser extends Parser {
+	
     String mSecuritySyncKey = null;
     boolean mRemoteWipe = false;
+    int policyStatus = Parser.STATUS_NOT_SET;
 
     public boolean isRemoteWipeRequested() {
 		return mRemoteWipe;
@@ -60,7 +62,8 @@ public class ProvisionParser extends Parser {
                     mSecuritySyncKey = getValue();
                     break;
                 case Tags.PROVISION_STATUS:
-                	Debug.Log("Policy status: "+ getValue());
+                	policyStatus = getValueInt();
+                	Debug.Log("Policy status: "+ policyStatus);
                     break;
                 default:
                     skipTag();
@@ -104,4 +107,8 @@ public class ProvisionParser extends Parser {
         }
         return res;
     }
+
+	public int getPolicyStatus() {
+		return policyStatus;
+	}
 }

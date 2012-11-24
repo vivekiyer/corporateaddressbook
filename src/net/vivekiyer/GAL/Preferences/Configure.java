@@ -218,7 +218,10 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 				username,
 				getTextFromId(R.id.txtPassword),
 				getValueFromCheckbox(R.id.chkUseSSL),
-				getValueFromCheckbox(R.id.chkAcceptAllSSLCert), "", "", null);
+				getValueFromCheckbox(R.id.chkAcceptAllSSLCert),
+				"",
+				"",
+				null);
 
 		// If we get an error from Initialize
 		// That means the URL is just bad
@@ -263,7 +266,12 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			int statusCode,
 			int requestStatus,
 			String errorString) {		
+		
+		if((progressdialog != null) && progressdialog.isShowing()) {
+			try {
 		progressdialog.dismiss();
+			} catch (java.lang.IllegalArgumentException e) { }
+		}
 
 		// Looks like there was an error in the settings
 		if (!taskStatus) {
@@ -271,6 +279,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 				// Send the error message via email
 				Debug.sendDebugEmail(this);
 			} else {
+				try {
 				// Handle all errors we're capable of,
 				// inform user of others
 				switch (statusCode) {
@@ -306,7 +315,10 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 						.show(getSupportFragmentManager(), "connError");
 					break;
 				}
+				} catch (java.lang.IllegalStateException e) {
+					Debug.Log("Server configuration window was dismissed before Connection check was finished:\n" + e.toString());
 			}
+		}
 		}
 		// All went well. Store the settings and return to the main page
 		else {

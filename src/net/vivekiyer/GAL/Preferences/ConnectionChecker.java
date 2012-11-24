@@ -15,6 +15,8 @@
 
 package net.vivekiyer.GAL.Preferences;
 
+import android.util.Log;
+import net.vivekiyer.GAL.Debug;
 import net.vivekiyer.GAL.ActiveSyncManager;
 import net.vivekiyer.GAL.Parser;
 import net.vivekiyer.GAL.TaskCompleteCallback;
@@ -27,7 +29,7 @@ import java.net.UnknownHostException;
  *
  * This class is a helper class that checks if the settings provided by the user are valid
  * and correspond to a valid Exchange server. It does this by querying the Exchange server for
- * OPTIONS (via the OPTIONS command) and gets the Active Sync protocol version supported by the server
+ * OPTIONS (via the OPTIONS command) and gets the Active Sync protocol displayText supported by the server
  * If the server is running 2007 or above, it also provisions the device on the server. 
  */
 class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
@@ -71,14 +73,16 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 			
 			return ((statusCode == 200) &&
 					((requestStatus == Parser.STATUS_NOT_SET) || (requestStatus == Parser.STATUS_OK)));
-				
 		} catch (javax.net.ssl.SSLPeerUnverifiedException spue) {
 			statusCode = SSL_PEER_UNVERIFIED;
+			Debug.Log(spue.toString());
 			errorString = spue.toString();
 		} catch (UnknownHostException e) {
 			statusCode = UNKNOWN_HOST;
+			Debug.Log(e.toString());
 			errorString = e.toString();
 		} catch (Exception e) {
+			Debug.Log(e.toString());
 			errorString = e.toString();
 		}
 		return false;

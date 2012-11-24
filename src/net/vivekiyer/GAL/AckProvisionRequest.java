@@ -35,7 +35,7 @@ public class AckProvisionRequest extends CommandRequest {
         s.start(Tags.PROVISION_PROVISION).start(Tags.PROVISION_POLICIES);
         s.start(Tags.PROVISION_POLICY);
 
-        // Use the proper policy type, depending on EAS version
+        // Use the proper policy type, depending on EAS displayText
         s.data(Tags.PROVISION_POLICY_TYPE, getPolicyType());
 
         s.data(Tags.PROVISION_POLICY_KEY, tempKey);

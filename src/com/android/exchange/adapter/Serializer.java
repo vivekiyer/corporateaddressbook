@@ -87,7 +87,7 @@ public class Serializer {
     }
 
     public void startDocument() throws IOException{
-        mOutput.write(0x03); // version 1.3
+        mOutput.write(0x03); // displayText 1.3
         mOutput.write(0x01); // unknown or missing public identifier
         mOutput.write(106);  // UTF-8
         mOutput.write(0);    // 0 length string array

@@ -54,6 +54,7 @@ public abstract class Parser {
 	// non-transient, they need config change on server to disappear.
 	public static final int STATUS_NOT_SET                                  = -1;
 	public static final int STATUS_OK                                       = 1;
+	public static final int STATUS_NO_POLICY_NEEDED							= 2;
 	public static final int STATUS_NOT_FULLY_PROVISIONABLE                  = 139;
 	public static final int STATUS_REMOTE_WIPE_REQUESTED                    = 140;
 	public static final int STATUS_LEGACY_DEVICE_ON_STRICT_POLICY           = 141;
@@ -414,7 +415,7 @@ public abstract class Parser {
         if ((in != null) && initialize) {
             // If we fail on the very first byte, report an empty stream
             try {
-                readByte(); // version
+                readByte(); // displayText
             } catch (EofException e) {
                 throw new EmptyStreamException();
             }
