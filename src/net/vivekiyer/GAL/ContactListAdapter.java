@@ -83,7 +83,7 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 			if (bt != null) {
 				String s = c.getTitle();
 				if(s != null && s.length() > 0)
-					s = s + ", ";
+					s = s + ", "; //$NON-NLS-1$
 				{
 					bt.setText(s + c.getCompany());
 				}

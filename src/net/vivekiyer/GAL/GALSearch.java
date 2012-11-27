@@ -1,7 +1,12 @@
 package net.vivekiyer.GAL;
 
+import java.net.SocketTimeoutException;
+
 import android.os.AsyncTask;
 import com.google.common.collect.HashMultimap;
+import net.vivekiyer.GAL.Preferences.ConnectionChecker;
+
+import static net.vivekiyer.GAL.Preferences.ConnectionChecker.*;
 
 public class GALSearch extends AsyncTask<String, Void, Boolean>
 {
@@ -12,8 +17,8 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	private ActiveSyncManager activeSyncManager;
 
 	private int errorCode = 0;
-	private String errorMesg = "";
-	private String errorDetail = "";
+	private String errorMesg = ""; //$NON-NLS-1$
+	private String errorDetail = ""; //$NON-NLS-1$
 
 	protected volatile OnSearchCompletedListener onSearchCompletedListener;
 	
@@ -66,6 +71,10 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 									errorMesg = App.getInstance().getString(R.string.too_many_device_partnerships_title);
 									errorDetail = App.getInstance().getString(R.string.too_many_device_partnerships_detail);
 									return false;
+								case ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION:
+									errorCode = ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION;
+									errorMesg = App.getInstance().getString(R.string.authentication_failed_title);
+									errorDetail = App.getInstance().getString(R.string.please_check_settings);
 								case Parser.STATUS_OK:
 									break;
 								default:
@@ -99,16 +108,18 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 							return false;
 					}
 				} while (statusCode != 200);
-
+		} catch (final SocketTimeoutException e) {
+			errorCode = TIMEOUT;
+			errorMesg = App.getInstance().getString(R.string.timeout_title);
+			errorDetail = App.getInstance().getString(R.string.timeout_detail, App.getInstance().getString(R.string.useSecureSslText));
+			return false;
 		} catch (final Exception e) {
-			if (Debug.Enabled) {
-				Debug.Log(e.toString());
-			} else {
-				errorMesg = "Activesync version= "
-						+ activeSyncManager.getActiveSyncVersion() + "\n"
-						+ e.toString();
-				return false;
-			}
+			Debug.Log("Exception in GALSearch:\n" + e.toString());
+			errorCode = ConnectionChecker.UNDEFINED;
+			errorDetail = App.getInstance().getString(R.string.unhandled_error_occured) +
+					"\n" + e.toString();
+			errorMesg = App.getInstance().getString(R.string.unhandled_error, errorCode);
+			return false;
 		}
 		return true;
 	}

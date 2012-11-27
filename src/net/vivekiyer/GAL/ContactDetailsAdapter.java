@@ -123,10 +123,10 @@ public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {
 				
 				// Try to find a reasonable label
 				final String key = kvp.getKey().toLowerCase();
-				if(key.contains("office")){
+				if(key.contains("office")){ //$NON-NLS-1$
 					bt.setText(Utility.getUCString(R.string.location));
 				}
-				else if(key.contains("alias")){
+				else if(key.contains("alias")){ //$NON-NLS-1$
 					bt.setText(Utility.getUCString(R.string.alias));
 				}
 				else{

@@ -39,23 +39,23 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 
 	private String DisplayName;
 
-	private String workPhone = "";
+	private String workPhone = ""; //$NON-NLS-1$
 
-	private String officeLocation = "";
+	private String officeLocation = ""; //$NON-NLS-1$
 
 	private String title;
 
 	private String company;
 
-	private String alias = "";
+	private String alias = ""; //$NON-NLS-1$
 
 	private String firstName;
 
 	private String lastName;
 
-	private String homePhone = "";
+	private String homePhone = ""; //$NON-NLS-1$
 
-	private String mobilePhone = "";
+	private String mobilePhone = ""; //$NON-NLS-1$
 
 	private String email;
 	
@@ -69,14 +69,14 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 		// Lets check for the first name and last name
 		if(DisplayName == null)
 		{			
-			DisplayName = "";
+			DisplayName = ""; //$NON-NLS-1$
 	
 			generateFieldsFromXML();
 
 			if(firstName != null)
 			{
 				DisplayName += firstName;
-				DisplayName += " ";
+				DisplayName += " "; //$NON-NLS-1$
 			}
 			
 			if(lastName != null)
@@ -84,7 +84,7 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 			
 			// If both the first name and last name are empty
 			// Use the email address
-			if(DisplayName.equalsIgnoreCase("") && email != null)
+			if(DisplayName.equalsIgnoreCase("") && email != null) //$NON-NLS-1$
 				DisplayName = email;			
 			else if(firstNonEmptyField!=null)
 				DisplayName = firstNonEmptyField;
@@ -104,12 +104,12 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 		if(title == null)
 			for(KeyValuePair kvp : Details)
 			{
-				if(kvp.getKey().equalsIgnoreCase("title"))
+				if(kvp.getKey().equalsIgnoreCase("title")) //$NON-NLS-1$
 				{
 					title = kvp.getValue();
 					break;
 				}
-				title = "";
+				title = ""; //$NON-NLS-1$
 			}
 		return title;
 	}
@@ -118,12 +118,12 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 		if(company == null)
 			for(KeyValuePair kvp : Details)
 			{
-				if(kvp.getKey().equalsIgnoreCase("Company"))
+				if(kvp.getKey().equalsIgnoreCase("Company")) //$NON-NLS-1$
 				{
 					company = kvp.getValue();
 					break;
 				}
-				company = "";
+				company = ""; //$NON-NLS-1$
 			}
 		return company;
 	}
@@ -152,12 +152,12 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 		if(email == null)
 			for(KeyValuePair kvp : Details)
 			{
-				if(kvp.getKey().equalsIgnoreCase("email"))
+				if(kvp.getKey().equalsIgnoreCase("email")) //$NON-NLS-1$
 				{
 					email = kvp.getValue();
 					break;
 				}
-				email = "";
+				email = ""; //$NON-NLS-1$
 			}
 		return email;
 	}
@@ -249,25 +249,25 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 			if(firstNonEmptyField == null)
 				firstNonEmptyField = value;			
 
-			if (key.equalsIgnoreCase("Phone")) {
+			if (key.equalsIgnoreCase("Phone")) { //$NON-NLS-1$
 				workPhone = value;
-			} else if (key.equalsIgnoreCase("Office")) {
+			} else if (key.equalsIgnoreCase("Office")) { //$NON-NLS-1$
 				officeLocation = value;
-			} else if (key.equalsIgnoreCase("Title")) {
+			} else if (key.equalsIgnoreCase("Title")) { //$NON-NLS-1$
 				title = value;
-			} else if (key.equalsIgnoreCase("Company")) {
+			} else if (key.equalsIgnoreCase("Company")) { //$NON-NLS-1$
 				company = value;
-			} else if (key.equalsIgnoreCase("Alias")) {
+			} else if (key.equalsIgnoreCase("Alias")) { //$NON-NLS-1$
 				alias = value;
-			} else if (key.equalsIgnoreCase("FirstName")) {
+			} else if (key.equalsIgnoreCase("FirstName")) { //$NON-NLS-1$
 				firstName = value;
-			} else if (key.equalsIgnoreCase("LastName")) {
+			} else if (key.equalsIgnoreCase("LastName")) { //$NON-NLS-1$
 				lastName = value;
-			} else if (key.equalsIgnoreCase("HomePhone")) {
+			} else if (key.equalsIgnoreCase("HomePhone")) { //$NON-NLS-1$
 				homePhone = value;
-			} else if (key.equalsIgnoreCase("MobilePhone")) {
+			} else if (key.equalsIgnoreCase("MobilePhone")) { //$NON-NLS-1$
 				mobilePhone = value;
-			} else if (key.equalsIgnoreCase("EmailAddress")) {
+			} else if (key.equalsIgnoreCase("EmailAddress")) { //$NON-NLS-1$
 				email = value;
 			}
 		}

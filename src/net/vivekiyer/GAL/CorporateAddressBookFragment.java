@@ -137,7 +137,7 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
         try {
             this.contactListListener = (ContactListListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnContactSelectedListener");
+            throw new ClassCastException(activity.toString() + " must implement OnContactSelectedListener"); //$NON-NLS-1$
         }
     }
 	

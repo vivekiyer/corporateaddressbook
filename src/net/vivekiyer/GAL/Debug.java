@@ -20,8 +20,8 @@ public class Debug {
 	
 	public static void Log(String s){
 		logger.append(s);
-		logger.append("\n");
-		android.util.Log.v("CorporateAddressbook", s);
+		logger.append("\n"); //$NON-NLS-1$
+		android.util.Log.v("CorporateAddressbook", s); //$NON-NLS-1$
 	}
 	
 	public static void sendDebugEmail(Context context){
@@ -31,15 +31,15 @@ public class Debug {
 			
 		// Generate an email with the appropriate data
 		Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-		intent.setType("text/plain");
-		String[] recipients = new String[]{"vivekiyer@gmail.com", "",};
+		intent.setType("text/plain"); //$NON-NLS-1$
+		String[] recipients = new String[]{"corporateaddressbook@googlegroups.com", "",}; //$NON-NLS-1$ //$NON-NLS-2$
 		intent.putExtra(android.content.Intent.EXTRA_EMAIL, recipients);
-		intent.putExtra(android.content.Intent.EXTRA_SUBJECT,"GAL log");
+		intent.putExtra(android.content.Intent.EXTRA_SUBJECT,"GAL log"); //$NON-NLS-1$
 		intent.putExtra(
 				android.content.Intent.EXTRA_TEXT,
 				logger.toString()
 		);
 
-		context.startActivity(Intent.createChooser(intent, "Send mail..."));	
+		context.startActivity(Intent.createChooser(intent, context.getString(R.string.sendEmail)));	
 	}
 }

@@ -54,7 +54,7 @@ public class GalParser extends Parser {
 				parseResponse();
 			} else if (tag == Tags.SEARCH_STATUS){
 				status = getValueInt();
-				Debug.Log("GAL search status: " + status);
+				Debug.Log("GAL search status: " + status); //$NON-NLS-1$
 			} else {
 				skipTag();
 			}
@@ -74,37 +74,37 @@ public class GalParser extends Parser {
 				contact.setDisplayName(getValue());
 				break;
 			case Tags.GAL_EMAIL_ADDRESS:
-				contact.add("EmailAddress",getValue());
+				contact.add("EmailAddress",getValue()); //$NON-NLS-1$
 				break;
 			case Tags.GAL_PHONE:
-				contact.add("Phone",getValue());
+				contact.add("Phone",getValue()); //$NON-NLS-1$
 				break;
 			case Tags.GAL_OFFICE:
-				contact.add("Office",getValue());
+				contact.add("Office",getValue()); //$NON-NLS-1$
 				break;
 			case Tags.GAL_TITLE:
-				contact.add("Title",getValue());
+				contact.add("Title",getValue()); //$NON-NLS-1$
 				break;
 			case Tags.GAL_COMPANY:
-				contact.add("Company",getValue());
+				contact.add("Company",getValue()); //$NON-NLS-1$
 				break;
 			case Tags.GAL_ALIAS:
-				contact.add("Alias",getValue());
+				contact.add("Alias",getValue()); //$NON-NLS-1$
 				break;
 			case Tags.GAL_FIRST_NAME:
-				contact.add("FirstName",getValue());
+				contact.add("FirstName",getValue()); //$NON-NLS-1$
 				break;
 			case Tags.GAL_LAST_NAME:
-				contact.add("LastName",getValue());
+				contact.add("LastName",getValue()); //$NON-NLS-1$
 				break;
 			case Tags.GAL_HOME_PHONE:
-				contact.add("HomePhone",getValue());
+				contact.add("HomePhone",getValue()); //$NON-NLS-1$
 				break;
 			case Tags.GAL_MOBILE_PHONE:
-				contact.add("MobilePhone",getValue());
+				contact.add("MobilePhone",getValue()); //$NON-NLS-1$
 				break;
 			default:
-				Debug.Log(String.format("Skipping tag '%1$s', value '%2$s'",
+				Debug.Log(String.format("Skipping tag '%1$s', value '%2$s'", //$NON-NLS-1$
 						Tags.pages[Tags.GAL][tag - Tags.GAL_PAGE -4], getValue()));
 				Debug.Log(getValue());
 				skipTag();
@@ -129,7 +129,7 @@ public class GalParser extends Parser {
 				parseStore();
 			} else if (tag == Tags.SEARCH_STATUS){
 				String range = getValue();
-				Debug.Log("GAL result range: " + range);
+				Debug.Log("GAL result range: " + range); //$NON-NLS-1$
 			}
 			else {
 				skipTag();
@@ -142,14 +142,14 @@ public class GalParser extends Parser {
 			if (tag == Tags.SEARCH_RESULT) {
 				parseResult();
 			} else if (tag == Tags.SEARCH_STATUS){
-				Debug.Log("Store status = "+getValue());
+				Debug.Log("Store status = "+getValue()); //$NON-NLS-1$
 			}else if (tag == Tags.SEARCH_RANGE) {
 				// Retrieve value, even if we're not using it for debug logging
 				String range = getValue();
-				Debug.Log("GAL result range: " + range);
+				Debug.Log("GAL result range: " + range); //$NON-NLS-1$
 			} else if (tag == Tags.SEARCH_TOTAL) {
 				numResults = getValueInt();
-				Debug.Log("total = " + getValueInt());
+				Debug.Log("total = " + getValueInt()); //$NON-NLS-1$
 			} else {
 				skipTag();
 			}

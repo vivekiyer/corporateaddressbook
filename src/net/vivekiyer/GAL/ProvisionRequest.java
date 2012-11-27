@@ -8,19 +8,19 @@ import java.io.IOException;
 import java.util.Locale;
 
 public class ProvisionRequest extends CommandRequest {
-
+	
 	public String getPolicyType(){
 		if (getProtocolVersionFloat() >= 12.0)
-			return "MS-EAS-Provisioning-WBXML";		
+			return PROVISION_WBXML;		
 		else
-			return  "MS-WAP-Provisioning-XML";
+			return PROVISION_XML;
 	}
 	public ProvisionRequest(String _uri, String _authString, boolean _useSSL,
 			String _protocolVersion, boolean _acceptAllCerts, String _policyKey) {
 		super(_uri, _authString, _useSSL, _protocolVersion, _acceptAllCerts, _policyKey);
 
 		// Create the request
-		setUri(getUri() + "Provision");
+		setUri(getUri() + "Provision"); //$NON-NLS-1$
 
 	}
 
@@ -32,9 +32,9 @@ public class ProvisionRequest extends CommandRequest {
 		if (getProtocolVersionFloat() >= 14.0) {
 			// Send settings information in 14.1 and greater
 			s.start(Tags.SETTINGS_DEVICE_INFORMATION).start(Tags.SETTINGS_SET);
-			s.data(Tags.SETTINGS_FRIENDLY_NAME, "Corporate Addressbook");
+			s.data(Tags.SETTINGS_FRIENDLY_NAME, App.getInstance().getString(R.string.app_name));
 			s.data(Tags.SETTINGS_MODEL, Build.MODEL);
-			s.data(Tags.SETTINGS_OS, "Android " + Build.VERSION.RELEASE);
+			s.data(Tags.SETTINGS_OS, "Android " + Build.VERSION.RELEASE); //$NON-NLS-1$
 			s.data(Tags.SETTINGS_USER_AGENT, App.VERSION_STRING);
 			s.data(Tags.SETTINGS_OS_LANGUAGE, Locale.getDefault().getLanguage());
 			s.end().end();  // SETTINGS_SET, SETTINGS_DEVICE_INFORMATION

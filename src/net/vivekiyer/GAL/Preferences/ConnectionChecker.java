@@ -21,7 +21,9 @@ import net.vivekiyer.GAL.ActiveSyncManager;
 import net.vivekiyer.GAL.Parser;
 import net.vivekiyer.GAL.TaskCompleteCallback;
 import android.os.AsyncTask;
+import org.apache.http.conn.ConnectTimeoutException;
 
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 /**
@@ -29,26 +31,28 @@ import java.net.UnknownHostException;
  *
  * This class is a helper class that checks if the settings provided by the user are valid
  * and correspond to a valid Exchange server. It does this by querying the Exchange server for
- * OPTIONS (via the OPTIONS command) and gets the Active Sync protocol displayText supported by the server
+ * OPTIONS (via the OPTIONS command) and gets the Active Sync protocol version supported by the server
  * If the server is running 2007 or above, it also provisions the device on the server. 
  */
-class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
+public class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 	
-	public static final int SSL_PEER_UNVERIFIED = -1;
-	public static final int UNKNOWN_HOST = -2;
+	public static final int UNDEFINED = -100;
+	public static final int SSL_PEER_UNVERIFIED = -101;
+	public static final int UNKNOWN_HOST = -102;
+	public static final int TIMEOUT = -103;
 
 	// Callback to call once the check is complete
 	private TaskCompleteCallback callback;	
 	
 	// variable that stores the status of the HTTP connection
-	private int statusCode = 0;
+	private int statusCode = UNDEFINED;
 	
 	// variable that stores the status of the parsed message
 	// (if available; if not it is equal to Parser.STATUS_NOT_SET)
 	private int requestStatus = Parser.STATUS_NOT_SET;
 	
 	// variable that stores the error string
-	private String errorString = "";
+	private String errorString = ""; //$NON-NLS-1$
 	
 	/**
 	 * @param callback Callback to call once the task is complete
@@ -79,8 +83,16 @@ class ConnectionChecker extends AsyncTask<ActiveSyncManager, Void, Boolean> {
 			errorString = spue.toString();
 		} catch (UnknownHostException e) {
 			statusCode = UNKNOWN_HOST;
-			Debug.Log(e.toString());
 			errorString = e.toString();
+			Debug.Log(errorString);
+		} catch (ConnectTimeoutException e) {
+			statusCode = TIMEOUT;
+			errorString = e.toString();
+			Debug.Log(errorString);
+		} catch (SocketTimeoutException e) {
+			statusCode = TIMEOUT;
+			errorString = e.toString();
+			Debug.Log(errorString);
 		} catch (Exception e) {
 			Debug.Log(e.toString());
 			errorString = e.toString();

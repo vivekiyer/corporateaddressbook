@@ -22,7 +22,7 @@ public class FakeSocketFactory implements SocketFactory, LayeredSocketFactory {
 
     private static SSLContext createEasySSLContext() throws IOException {
             try {
-                    SSLContext context = SSLContext.getInstance("TLS");
+                    SSLContext context = SSLContext.getInstance("TLS"); //$NON-NLS-1$
                     context.init(null, new TrustManager[] { new FakeTrustManager() }, null);
                     return context;
             } catch (Exception e) {

@@ -91,9 +91,9 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			setTextForId(R.id.txtDomainUserName, user);
 		setTextForId(
 				R.id.txtPassword, 
-				mPreferences.getString(getString(R.string.PREFS_KEY_PASSWORD_PREFERENCE), ""));
+				mPreferences.getString(getString(R.string.PREFS_KEY_PASSWORD_PREFERENCE), "")); //$NON-NLS-1$
 		setTextForId(R.id.txtServerName,
-				mPreferences.getString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE), ""));
+				mPreferences.getString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE), "")); //$NON-NLS-1$
 		setValueForCheckbox(R.id.chkUseSSL,
 				mPreferences.getBoolean(getString(R.string.PREFS_KEY_USE_SSL), true));
 		setValueForCheckbox(R.id.chkAcceptAllSSLCert,
@@ -174,7 +174,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 	private void connect() {
 		// Make sure that the user has entered the username
 		// password and the server name
-		if (getTextFromId(R.id.txtDomainUserName).equals("")) {
+		if (getTextFromId(R.id.txtDomainUserName).equals("")) { //$NON-NLS-1$
 			showAlert(getString(R.string.valid_domain_and_username_error));
 			return;
 		}
@@ -182,7 +182,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");		
 		
 		if(splits.length == 1) {
-			domain = "";
+			domain = ""; //$NON-NLS-1$
 			username = splits[0];
 		}
 		else if (splits.length == 2) {
@@ -194,17 +194,17 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			return;
 		}
 
-		if (username.equalsIgnoreCase("")) {
+		if (username.equalsIgnoreCase("")) { //$NON-NLS-1$
 			showAlert(getString(R.string.invalid_username_error));
 			return;
 		}
 
-		if (getTextFromId(R.id.txtPassword).equalsIgnoreCase("")) {
+		if (getTextFromId(R.id.txtPassword).equalsIgnoreCase("")) { //$NON-NLS-1$
 			showAlert(getString(R.string.invalid_password_error));
 			return;
 		}
 
-		if (getTextFromId(R.id.txtServerName).equalsIgnoreCase("")) {
+		if (getTextFromId(R.id.txtServerName).equalsIgnoreCase("")) { //$NON-NLS-1$
 			showAlert(getString(R.string.invalid_exchange_url_error));
 			return;
 		}
@@ -219,8 +219,8 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 				getTextFromId(R.id.txtPassword),
 				getValueFromCheckbox(R.id.chkUseSSL),
 				getValueFromCheckbox(R.id.chkAcceptAllSSLCert),
-				"",
-				"",
+				"", //$NON-NLS-1$
+				"", //$NON-NLS-1$
 				null);
 
 		// If we get an error from Initialize
@@ -286,7 +286,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 				case 200: // Successful, but obviously something went wrong
 					switch(requestStatus){
 					case Parser.STATUS_TOO_MANY_DEVICES:
-						ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices");
+						ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices"); //$NON-NLS-1$
 						break;
 					default:
 						ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices");
@@ -301,14 +301,17 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 					String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
 					ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
 						.setListener(this)
-						.show(getSupportFragmentManager(), "forbidden");
+						.show(getSupportFragmentManager(), "forbidden"); //$NON-NLS-1$
 					break;
 				case ConnectionChecker.SSL_PEER_UNVERIFIED:
-					ChoiceDialogFragment.newInstance(getString(R.string.unable_to_find_matching_certificate), getString(R.string.acceptAllSllText))
-						.show(getSupportFragmentManager(), "SslUnverified");
+						ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.unable_to_find_matching_certificate, "\n", getString(R.string.acceptAllSllText))) //$NON-NLS-1$
+							.show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
 					break;
 				case ConnectionChecker.UNKNOWN_HOST:
-					ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified");
+					ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
+					break;
+				case ConnectionChecker.TIMEOUT:
+					ChoiceDialogFragment.newInstance(getString(R.string.timeout_title), String.format(getString(R.string.timeout_detail), getString(R.string.useSecureSslText))).show(getSupportFragmentManager(), "Timeout"); //$NON-NLS-1$
 					break;
 				default:
 					ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))

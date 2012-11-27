@@ -626,95 +626,95 @@ public class Tags {
 
     static public String[][] pages = {
         {    // 0x00 AirSync
-            "Sync", "Responses", "Add", "Change", "Delete", "Fetch", "SyncKey", "ClientId",
-            "ServerId", "Status", "Collection", "Class", "Version", "CollectionId", "GetChanges",
-            "MoreAvailable", "WindowSize", "Commands", "Options", "FilterType", "Truncation",
-            "RTFTruncation", "Conflict", "Collections", "ApplicationData", "DeletesAsMoves",
-            "NotifyGUID", "Supported", "SoftDelete", "MIMESupport", "MIMETruncation", "Wait",
-            "Limit", "Partial"
+            "Sync", "Responses", "Add", "Change", "Delete", "Fetch", "SyncKey", "ClientId", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+            "ServerId", "Status", "Collection", "Class", "Version", "CollectionId", "GetChanges", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "MoreAvailable", "WindowSize", "Commands", "Options", "FilterType", "Truncation", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "RTFTruncation", "Conflict", "Collections", "ApplicationData", "DeletesAsMoves", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "NotifyGUID", "Supported", "SoftDelete", "MIMESupport", "MIMETruncation", "Wait", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "Limit", "Partial" //$NON-NLS-1$ //$NON-NLS-2$
         },
         {
             // 0x01 Contacts
-            "Anniversary", "AssistantName", "AssistantTelephoneNumber", "Birthday", "ContactsBody",
-            "ContactsBodySize", "ContactsBodyTruncated", "Business2TelephoneNumber",
-            "BusinessAddressCity",
-            "BusinessAddressCountry", "BusinessAddressPostalCode", "BusinessAddressState",
-            "BusinessAddressStreet", "BusinessFaxNumber", "BusinessTelephoneNumber",
-            "CarTelephoneNumber", "ContactsCategories", "ContactsCategory", "Children", "Child",
-            "CompanyName", "Department", "Email1Address", "Email2Address", "Email3Address",
-            "FileAs", "FirstName", "Home2TelephoneNumber", "HomeAddressCity", "HomeAddressCountry",
-            "HomeAddressPostalCode", "HomeAddressState", "HomeAddressStreet", "HomeFaxNumber",
-            "HomeTelephoneNumber", "JobTitle", "LastName", "MiddleName", "MobileTelephoneNumber",
-            "OfficeLocation", "OtherAddressCity", "OtherAddressCountry",
-            "OtherAddressPostalCode", "OtherAddressState", "OtherAddressStreet", "PagerNumber",
-            "RadioTelephoneNumber", "Spouse", "Suffix", "Title", "Webpage", "YomiCompanyName",
-            "YomiFirstName", "YomiLastName", "CompressedRTF", "Picture"
+            "Anniversary", "AssistantName", "AssistantTelephoneNumber", "Birthday", "ContactsBody", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "ContactsBodySize", "ContactsBodyTruncated", "Business2TelephoneNumber", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "BusinessAddressCity", //$NON-NLS-1$
+            "BusinessAddressCountry", "BusinessAddressPostalCode", "BusinessAddressState", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "BusinessAddressStreet", "BusinessFaxNumber", "BusinessTelephoneNumber", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "CarTelephoneNumber", "ContactsCategories", "ContactsCategory", "Children", "Child", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "CompanyName", "Department", "Email1Address", "Email2Address", "Email3Address", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "FileAs", "FirstName", "Home2TelephoneNumber", "HomeAddressCity", "HomeAddressCountry", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "HomeAddressPostalCode", "HomeAddressState", "HomeAddressStreet", "HomeFaxNumber", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "HomeTelephoneNumber", "JobTitle", "LastName", "MiddleName", "MobileTelephoneNumber", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "OfficeLocation", "OtherAddressCity", "OtherAddressCountry", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "OtherAddressPostalCode", "OtherAddressState", "OtherAddressStreet", "PagerNumber", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "RadioTelephoneNumber", "Spouse", "Suffix", "Title", "Webpage", "YomiCompanyName", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "YomiFirstName", "YomiLastName", "CompressedRTF", "Picture" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         },
         {
             // 0x02 Email
-            "Attachment", "Attachments", "AttName", "AttSize", "Add0Id", "AttMethod", "AttRemoved",
-            "Body", "BodySize", "BodyTruncated", "DateReceived", "DisplayName", "DisplayTo",
-            "Importance", "MessageClass", "Subject", "Read", "To", "CC", "From", "ReplyTo",
-            "AllDayEvent", "Categories", "Category", "DTStamp", "EndTime", "InstanceType",
-            "IntDBusyStatus", "Location", "MeetingRequest", "Organizer", "RecurrenceId", "Reminder",
-            "ResponseRequested", "Recurrences", "Recurence", "Recurrence_Type", "Recurrence_Until",
-            "Recurrence_Occurrences", "Recurrence_Interval", "Recurrence_DayOfWeek",
-            "Recurrence_DayOfMonth", "Recurrence_WeekOfMonth", "Recurrence_MonthOfYear",
-            "StartTime", "Sensitivity", "TimeZone", "GlobalObjId", "ThreadTopic", "MIMEData",
-            "MIMETruncated", "MIMESize", "InternetCPID", "Flag", "FlagStatus", "EmailContentClass",
-            "FlagType", "CompleteTime", "DisallowNewTimeProposal"
+            "Attachment", "Attachments", "AttName", "AttSize", "Add0Id", "AttMethod", "AttRemoved", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "Body", "BodySize", "BodyTruncated", "DateReceived", "DisplayName", "DisplayTo", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "Importance", "MessageClass", "Subject", "Read", "To", "CC", "From", "ReplyTo", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+            "AllDayEvent", "Categories", "Category", "DTStamp", "EndTime", "InstanceType", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "IntDBusyStatus", "Location", "MeetingRequest", "Organizer", "RecurrenceId", "Reminder", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "ResponseRequested", "Recurrences", "Recurence", "Recurrence_Type", "Recurrence_Until", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "Recurrence_Occurrences", "Recurrence_Interval", "Recurrence_DayOfWeek", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "Recurrence_DayOfMonth", "Recurrence_WeekOfMonth", "Recurrence_MonthOfYear", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "StartTime", "Sensitivity", "TimeZone", "GlobalObjId", "ThreadTopic", "MIMEData", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "MIMETruncated", "MIMESize", "InternetCPID", "Flag", "FlagStatus", "EmailContentClass", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "FlagType", "CompleteTime", "DisallowNewTimeProposal" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         },
         {
             // 0x03 AirNotify
         },
         {
             // 0x04 Calendar
-            "CalTimeZone", "CalAllDayEvent", "CalAttendees", "CalAttendee", "CalAttendee_Email",
-            "CalAttendee_Name", "CalBody", "CalBodyTruncated", "CalBusyStatus", "CalCategories",
-            "CalCategory", "CalCompressed_RTF", "CalDTStamp", "CalEndTime", "CalExeption",
-            "CalExceptions", "CalException_IsDeleted", "CalException_StartTime", "CalLocation",
-            "CalMeetingStatus", "CalOrganizer_Email", "CalOrganizer_Name", "CalRecurrence",
-            "CalRecurrence_Type", "CalRecurrence_Until", "CalRecurrence_Occurrences",
-            "CalRecurrence_Interval", "CalRecurrence_DayOfWeek", "CalRecurrence_DayOfMonth",
-            "CalRecurrence_WeekOfMonth", "CalRecurrence_MonthOfYear", "CalReminder_MinsBefore",
-            "CalSensitivity", "CalSubject", "CalStartTime", "CalUID", "CalAttendee_Status",
-            "CalAttendee_Type", "CalAttachment", "CalAttachments", "CalAttName", "CalAttSize",
-            "CalAttOid", "CalAttMethod", "CalAttRemoved", "CalDisplayName",
-            "CalDisallowNewTimeProposal", "CalResponseRequested", "CalAppointmentReplyTime",
-            "CalResponseType", "CalCalendarType", "CalIsLeapMonth", "CalFirstDayOfWeek",
-            "CalOnlineMeetingConfLink", "CalOnlineMeetingExternalLink"
+            "CalTimeZone", "CalAllDayEvent", "CalAttendees", "CalAttendee", "CalAttendee_Email", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "CalAttendee_Name", "CalBody", "CalBodyTruncated", "CalBusyStatus", "CalCategories", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "CalCategory", "CalCompressed_RTF", "CalDTStamp", "CalEndTime", "CalExeption", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "CalExceptions", "CalException_IsDeleted", "CalException_StartTime", "CalLocation", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "CalMeetingStatus", "CalOrganizer_Email", "CalOrganizer_Name", "CalRecurrence", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "CalRecurrence_Type", "CalRecurrence_Until", "CalRecurrence_Occurrences", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "CalRecurrence_Interval", "CalRecurrence_DayOfWeek", "CalRecurrence_DayOfMonth", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "CalRecurrence_WeekOfMonth", "CalRecurrence_MonthOfYear", "CalReminder_MinsBefore", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "CalSensitivity", "CalSubject", "CalStartTime", "CalUID", "CalAttendee_Status", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "CalAttendee_Type", "CalAttachment", "CalAttachments", "CalAttName", "CalAttSize", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "CalAttOid", "CalAttMethod", "CalAttRemoved", "CalDisplayName", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "CalDisallowNewTimeProposal", "CalResponseRequested", "CalAppointmentReplyTime", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "CalResponseType", "CalCalendarType", "CalIsLeapMonth", "CalFirstDayOfWeek", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "CalOnlineMeetingConfLink", "CalOnlineMeetingExternalLink" //$NON-NLS-1$ //$NON-NLS-2$
         },
         {
             // 0x05 Move
-            "MoveItems", "Move", "SrcMsgId", "SrcFldId", "DstFldId", "MoveResponse", "MoveStatus",
-            "DstMsgId"
+            "MoveItems", "Move", "SrcMsgId", "SrcFldId", "DstFldId", "MoveResponse", "MoveStatus", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "DstMsgId" //$NON-NLS-1$
         },
         {
             // 0x06 ItemEstimate
-            "GetItemEstimate", "Version", "IECollections", "IECollection", "IEClass",
-            "IECollectionId", "DateTime", "Estimate", "IEResponse", "ItemEstimateStatus"
+            "GetItemEstimate", "Version", "IECollections", "IECollection", "IEClass", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "IECollectionId", "DateTime", "Estimate", "IEResponse", "ItemEstimateStatus" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         },
         {
             // 0x07 FolderHierarchy
-            "Folders", "Folder", "FolderDisplayName", "FolderServerId", "FolderParentId", "Type",
-            "FolderResponse", "FolderStatus", "FolderContentClass", "Changes", "FolderAdd",
-            "FolderDelete", "FolderUpdate", "FolderSyncKey", "FolderFolderCreate",
-            "FolderFolderDelete", "FolderFolderUpdate", "FolderSync", "Count", "FolderVersion"
+            "Folders", "Folder", "FolderDisplayName", "FolderServerId", "FolderParentId", "Type", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "FolderResponse", "FolderStatus", "FolderContentClass", "Changes", "FolderAdd", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "FolderDelete", "FolderUpdate", "FolderSyncKey", "FolderFolderCreate", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "FolderFolderDelete", "FolderFolderUpdate", "FolderSync", "Count", "FolderVersion" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         },
         {
             // 0x08 MeetingResponse
-            "CalId", "CollectionId", "MeetingResponse", "ReqId", "Request",
-            "MeetingResponseResult", "MeetingResponseStatus", "UserResponse", "Version"
+            "CalId", "CollectionId", "MeetingResponse", "ReqId", "Request", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "MeetingResponseResult", "MeetingResponseStatus", "UserResponse", "Version" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         },
         {
             // 0x09 Tasks
-            "TasksBody", "TasksBodySize", "TasksBodyTruncated", "TasksCategories", "TasksCategory",
-            "Complete", "DateCompleted", "DueDate", "UTCDueDate", "TasksImportance", "Recurrence",
-            "RecurrenceType", "RecurrenceStart", "RecurrenceUntil", "RecurrenceOccurrences",
-            "RecurrenceInterval", "RecurrenceDOM", "RecurrenceDOW", "RecurrenceWOM",
-            "RecurrenceMOY", "RecurrenceRegenerate", "RecurrenceDeadOccur", "ReminderSet",
-            "ReminderTime", "TasksSensitivity", "StartDate", "UTCStartDate", "TasksSubject",
-            "TasksCompressedRTF", "OrdinalDate", "SubordinalDate"
+            "TasksBody", "TasksBodySize", "TasksBodyTruncated", "TasksCategories", "TasksCategory", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "Complete", "DateCompleted", "DueDate", "UTCDueDate", "TasksImportance", "Recurrence", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "RecurrenceType", "RecurrenceStart", "RecurrenceUntil", "RecurrenceOccurrences", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "RecurrenceInterval", "RecurrenceDOM", "RecurrenceDOW", "RecurrenceWOM", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "RecurrenceMOY", "RecurrenceRegenerate", "RecurrenceDeadOccur", "ReminderSet", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "ReminderTime", "TasksSensitivity", "StartDate", "UTCStartDate", "TasksSubject", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "TasksCompressedRTF", "OrdinalDate", "SubordinalDate" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         },
         {
             // 0x0A ResolveRecipients
@@ -724,103 +724,103 @@ public class Tags {
         },
         {
             // 0x0C Contacts2
-            "CustomerId", "GovernmentId", "IMAddress", "IMAddress2", "IMAddress3", "ManagerName",
-            "CompanyMainPhone", "AccountName", "NickName", "MMS"
+            "CustomerId", "GovernmentId", "IMAddress", "IMAddress2", "IMAddress3", "ManagerName", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "CompanyMainPhone", "AccountName", "NickName", "MMS" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         },
         {
             // 0x0D Ping
-            "Ping", "AutdState", "PingStatus", "HeartbeatInterval", "PingFolders", "PingFolder",
-            "PingId", "PingClass", "MaxFolders"
+            "Ping", "AutdState", "PingStatus", "HeartbeatInterval", "PingFolders", "PingFolder", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "PingId", "PingClass", "MaxFolders" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         },
         {
             // 0x0E Provision
-            "Provision", "Policies", "Policy", "PolicyType", "PolicyKey", "Data", "ProvisionStatus",
-            "RemoteWipe", "EASProvidionDoc", "DevicePasswordEnabled",
-            "AlphanumericDevicePasswordRequired",
-            "DeviceEncryptionEnabled", "PasswordRecoveryEnabled", "-unused-", "AttachmentsEnabled",
-            "MinDevicePasswordLength",
-            "MaxInactivityTimeDeviceLock", "MaxDevicePasswordFailedAttempts", "MaxAttachmentSize",
-            "AllowSimpleDevicePassword", "DevicePasswordExpiration", "DevicePasswordHistory",
-            "AllowStorageCard", "AllowCamera", "RequireDeviceEncryption",
-            "AllowUnsignedApplications", "AllowUnsignedInstallationPackages",
-            "MinDevicePasswordComplexCharacters", "AllowWiFi", "AllowTextMessaging",
-            "AllowPOPIMAPEmail", "AllowBluetooth", "AllowIrDA", "RequireManualSyncWhenRoaming",
-            "AllowDesktopSync",
-            "MaxCalendarAgeFilder", "AllowHTMLEmail", "MaxEmailAgeFilter",
-            "MaxEmailBodyTruncationSize", "MaxEmailHTMLBodyTruncationSize",
-            "RequireSignedSMIMEMessages", "RequireEncryptedSMIMEMessages",
-            "RequireSignedSMIMEAlgorithm", "RequireEncryptionSMIMEAlgorithm",
-            "AllowSMIMEEncryptionAlgorithmNegotiation", "AllowSMIMESoftCerts", "AllowBrowser",
-            "AllowConsumerEmail", "AllowRemoteDesktop", "AllowInternetSharing",
-            "UnapprovedInROMApplicationList", "ApplicationName", "ApprovedApplicationList", "Hash"
+            "Provision", "Policies", "Policy", "PolicyType", "PolicyKey", "Data", "ProvisionStatus", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "RemoteWipe", "EASProvidionDoc", "DevicePasswordEnabled", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "AlphanumericDevicePasswordRequired", //$NON-NLS-1$
+            "DeviceEncryptionEnabled", "PasswordRecoveryEnabled", "-unused-", "AttachmentsEnabled", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "MinDevicePasswordLength", //$NON-NLS-1$
+            "MaxInactivityTimeDeviceLock", "MaxDevicePasswordFailedAttempts", "MaxAttachmentSize", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "AllowSimpleDevicePassword", "DevicePasswordExpiration", "DevicePasswordHistory", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "AllowStorageCard", "AllowCamera", "RequireDeviceEncryption", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "AllowUnsignedApplications", "AllowUnsignedInstallationPackages", //$NON-NLS-1$ //$NON-NLS-2$
+            "MinDevicePasswordComplexCharacters", "AllowWiFi", "AllowTextMessaging", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "AllowPOPIMAPEmail", "AllowBluetooth", "AllowIrDA", "RequireManualSyncWhenRoaming", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "AllowDesktopSync", //$NON-NLS-1$
+            "MaxCalendarAgeFilder", "AllowHTMLEmail", "MaxEmailAgeFilter", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "MaxEmailBodyTruncationSize", "MaxEmailHTMLBodyTruncationSize", //$NON-NLS-1$ //$NON-NLS-2$
+            "RequireSignedSMIMEMessages", "RequireEncryptedSMIMEMessages", //$NON-NLS-1$ //$NON-NLS-2$
+            "RequireSignedSMIMEAlgorithm", "RequireEncryptionSMIMEAlgorithm", //$NON-NLS-1$ //$NON-NLS-2$
+            "AllowSMIMEEncryptionAlgorithmNegotiation", "AllowSMIMESoftCerts", "AllowBrowser", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "AllowConsumerEmail", "AllowRemoteDesktop", "AllowInternetSharing", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "UnapprovedInROMApplicationList", "ApplicationName", "ApprovedApplicationList", "Hash" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         },
         {
             // 0x0F Search
-            "Search", "Stores", "Store", "Name", "Query",
-            "SearchOptions", "Range", "SearchStatus", "Response", "Result",
-            "Properties", "Total", "EqualTo", "Value", "And",
-            "Or", "FreeText", "SubstringOp", "DeepTraversal", "LongId",
-            "RebuildResults", "LessThan", "GreateerThan", "Schema", "SearchSupported",
-		    "UserName", "Password", "ConversationId", "Picture", "MaxSize", "MaxPictures"
+            "Search", "Stores", "Store", "Name", "Query", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "SearchOptions", "Range", "SearchStatus", "Response", "Result", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "Properties", "Total", "EqualTo", "Value", "And", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "Or", "FreeText", "SubstringOp", "DeepTraversal", "LongId", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "RebuildResults", "LessThan", "GreateerThan", "Schema", "SearchSupported", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		    "UserName", "Password", "ConversationId", "Picture", "MaxSize", "MaxPictures" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         },
         {
             // 0x10 Gal
-            "GalDisplayName", "GalPhone", "GalOffice", "GalTitle", "GalCompany", "GalAlias",
-            "GalFirstName", "GalLastName", "GalHomePhone", "GalMobilePhone", "GalEmailAddress",
-		    "Picture", "Status", "Data"
+            "GalDisplayName", "GalPhone", "GalOffice", "GalTitle", "GalCompany", "GalAlias", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "GalFirstName", "GalLastName", "GalHomePhone", "GalMobilePhone", "GalEmailAddress", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		    "Picture", "Status", "Data" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         },
         {
             // 0x11 AirSyncBase
-            "BodyPreference", "BodyPreferenceType", "BodyPreferenceTruncationSize", "AllOrNone",
-            "--unused1--", "BaseBody", "BaseData", "BaseEstimatedDataSize", "BaseTruncated",
-            "BaseAttachments", "BaseAttachment", "BaseDisplayName", "FileReference", "BaseMethod",
-            "BaseContentId", "BaseContentLocation", "BaseIsInline", "BaseNativeBodyType",
-            "BaseContentType"
+            "BodyPreference", "BodyPreferenceType", "BodyPreferenceTruncationSize", "AllOrNone", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "--unused1--", "BaseBody", "BaseData", "BaseEstimatedDataSize", "BaseTruncated", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "BaseAttachments", "BaseAttachment", "BaseDisplayName", "FileReference", "BaseMethod", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "BaseContentId", "BaseContentLocation", "BaseIsInline", "BaseNativeBodyType", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "BaseContentType" //$NON-NLS-1$
         },
         {
             // 0x12 Settings
-            "Settings", "SettingsStatus", "Get", "Set", "Oof", "OofState", "SettingsStartTime",
-            "SettingsEndTime", "OofMessage", "AppliesToInternal", "AppliesToExternalKnown",
-            "AppliesToExternalUnknown", "Enabled", "ReplyMessage", "BodyType", "DevicePassword",
-            "Password", "DeviceInformation", "Model", "IMEI", "FriendlyName", "OS", "OSLanguage",
-            "PhoneNumber", "UserInformation", "EmailAddress", "StmpAddress", "UserAgent",
-            "EnableOutboundSMS", "MobileOperator"
+            "Settings", "SettingsStatus", "Get", "Set", "Oof", "OofState", "SettingsStartTime", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "SettingsEndTime", "OofMessage", "AppliesToInternal", "AppliesToExternalKnown", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "AppliesToExternalUnknown", "Enabled", "ReplyMessage", "BodyType", "DevicePassword", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "Password", "DeviceInformation", "Model", "IMEI", "FriendlyName", "OS", "OSLanguage", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "PhoneNumber", "UserInformation", "EmailAddress", "StmpAddress", "UserAgent", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "EnableOutboundSMS", "MobileOperator" //$NON-NLS-1$ //$NON-NLS-2$
         },
         {
             // 0x13 DocumentLibrary
         },
         {
             // 0x14 ItemOperations
-            "Items", "ItemsFetch", "ItemsStore", "ItemsOptions", "ItemsRange",
-            "ItemsTotal", "ItemsProperties", "ItemsData", "ItemsStatus", "ItemsResponse",
-            "ItemsVersion", "ItemsSchema", "ItemsPart", "ItemsEmptyFolder", "ItemsDeleteSubFolders",
-            "ItemsUserName", "ItemsPassword", "ItemsMove", "ItemsDstFldId", "ItemsConversationId",
-            "ItemsMoveAlways"
+            "Items", "ItemsFetch", "ItemsStore", "ItemsOptions", "ItemsRange", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "ItemsTotal", "ItemsProperties", "ItemsData", "ItemsStatus", "ItemsResponse", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "ItemsVersion", "ItemsSchema", "ItemsPart", "ItemsEmptyFolder", "ItemsDeleteSubFolders", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "ItemsUserName", "ItemsPassword", "ItemsMove", "ItemsDstFldId", "ItemsConversationId", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "ItemsMoveAlways" //$NON-NLS-1$
         },
         {
             // 0x15 ComposeMail
-            "SendMail", "SmartForward", "SmartReply", "SaveInSentItems", "ReplaceMime",
-            "--unused2--", "ComposeSource", "ComposeFolderId", "ComposeItemId", "ComposeLongId",
-            "ComposeInstanceId", "ComposeMime", "ComposeClientId", "ComposeStatus",
-            "ComposeAccountId"
+            "SendMail", "SmartForward", "SmartReply", "SaveInSentItems", "ReplaceMime", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "--unused2--", "ComposeSource", "ComposeFolderId", "ComposeItemId", "ComposeLongId", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "ComposeInstanceId", "ComposeMime", "ComposeClientId", "ComposeStatus", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "ComposeAccountId" //$NON-NLS-1$
         },
         {
             // 0x16 Email2
-            "UmCallerId", "UmUserNotes", "UmAttDuration", "UmAttOrder", "ConversationId",
-            "ConversationIndex", "LastVerbExecuted", "LastVerbExecutionTime", "ReceivedAsBcc",
-            "Sender", "CalendarType", "IsLeapMonth", "AccountId", "FirstDayOfWeek",
-            "MeetingMessageType"
+            "UmCallerId", "UmUserNotes", "UmAttDuration", "UmAttOrder", "ConversationId", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "ConversationIndex", "LastVerbExecuted", "LastVerbExecutionTime", "ReceivedAsBcc", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "Sender", "CalendarType", "IsLeapMonth", "AccountId", "FirstDayOfWeek", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            "MeetingMessageType" //$NON-NLS-1$
         },
         {
             // 0x17 Notes
         },
         {
             // 0x18 Rights Management
-            "RMSupport", "RMTemplates", "RMTemplate", "RMLicense", "EditAllowed", "ReplyAllowed",
-            "ReplyAllAllowed", "ForwardAllowed", "ModifyRecipientsAllowed", "ExtractAllowed",
-            "PrintAllowed", "ExportAllowed", "ProgrammaticAccessAllowed", "RMOwner",
-            "ContentExpiryDate", "TemplateID", "TemplateName", "TemplateDescription",
-            "ContentOwner", "RemoveRMDistribution"
+            "RMSupport", "RMTemplates", "RMTemplate", "RMLicense", "EditAllowed", "ReplyAllowed", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            "ReplyAllAllowed", "ForwardAllowed", "ModifyRecipientsAllowed", "ExtractAllowed", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "PrintAllowed", "ExportAllowed", "ProgrammaticAccessAllowed", "RMOwner", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "ContentExpiryDate", "TemplateID", "TemplateName", "TemplateDescription", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "ContentOwner", "RemoveRMDistribution" //$NON-NLS-1$ //$NON-NLS-2$
         }
     };
 }

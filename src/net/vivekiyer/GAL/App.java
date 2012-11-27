@@ -22,12 +22,16 @@ public class App extends Application {
 	
 	public static final Hashtable<Integer, GALSearch> taskManager = new Hashtable<Integer, GALSearch>();
 	
+	public App() {
+		super();
+	}
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		instance = this;
 		// Get the displayText string
-		App.VERSION_STRING = "CorporateAddressbook/"+getAppVersion();
+		App.VERSION_STRING = "CorporateAddressbook/"+getAppVersion(); //$NON-NLS-1$
 	}
 
 	public static App getInstance() {
@@ -45,7 +49,7 @@ public class App extends Application {
 			info = manager.getPackageInfo(
 					getApplicationContext().getPackageName(), 0);
 		} catch (NameNotFoundException e) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		return info.versionName;
 	}

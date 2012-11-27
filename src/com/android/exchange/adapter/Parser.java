@@ -155,7 +155,7 @@ public abstract class Parser {
         private static final long serialVersionUID = 1L;
 
         EasParserException() {
-            super("WBXML format error");
+            super("WBXML format error"); //$NON-NLS-1$
         }
 
         EasParserException(String reason) {
@@ -172,10 +172,10 @@ public abstract class Parser {
 
         public int status = STATUS_NOT_SET;
         public int httpStatus = STATUS_NOT_SET;
-        public String description = "";
+        public String description = ""; //$NON-NLS-1$
         
         EasNotSuccessfulException() {
-        	this("Response status indicated non-successful query");
+        	this("Response status indicated non-successful query"); //$NON-NLS-1$
         }
 
         EasNotSuccessfulException(String reason) {
@@ -299,9 +299,9 @@ public abstract class Parser {
         // This means there was no value given, just <Foo/>; we'll return empty string for now
         if (type == END) {
             if (logging) {
-                log("No value for tag: " + tagTable[startTag - TAG_BASE]);
+                log("No value for tag: " + tagTable[startTag - TAG_BASE]); //$NON-NLS-1$
             }
-            return "";
+            return ""; //$NON-NLS-1$
         }
         // Save the value
         String val = text;
@@ -309,7 +309,7 @@ public abstract class Parser {
         getNext(false);
         // If not, throw an exception
         if (type != END) {
-            throw new IOException("No END found!");
+            throw new IOException("No END found!"); //$NON-NLS-1$
         }
         return val;
     }
@@ -333,7 +333,7 @@ public abstract class Parser {
         getNext(false);
         // If not, throw an exception
         if (type != END) {
-            throw new IOException("No END found!");
+            throw new IOException("No END found!"); //$NON-NLS-1$
         }
         return val;
     }
@@ -452,7 +452,7 @@ public abstract class Parser {
     private void pop() {
         if (logging) {
             name = nameArray[depth];
-            log("</" + name + '>');
+            log("</" + name + '>'); //$NON-NLS-1$
         }
         // Retrieve the now-current startTag from our stack
         startTag = endTag = startTagArray[depth];
@@ -468,7 +468,7 @@ public abstract class Parser {
         if (logging) {
             name = tagTable[startTag - TAG_BASE];
             nameArray[depth] = name;
-            log("<" + name + (noContent ? '/' : "") + '>');
+            log("<" + name + (noContent ? '/' : "") + '>'); //$NON-NLS-1$ //$NON-NLS-2$
         }
         // Save the startTag to our stack
         startTagArray[depth] = startTag;
@@ -502,7 +502,7 @@ public abstract class Parser {
             // Save the shifted page to add into the startTag in nextTag
             page = pg << Tags.PAGE_SHIFT;
             if (LOG_VERBOSE) {
-                log("Page: " + page);
+                log("Page: " + page); //$NON-NLS-1$
             }
             // Retrieve the current tag table
             tagTable = tagTables[pg];
@@ -531,7 +531,7 @@ public abstract class Parser {
                 }
                 if (logging) {
                     name = tagTable[startTag - TAG_BASE];
-                    log(name + ": " + (asInt ? Integer.toString(num) : text));
+                    log(name + ": " + (asInt ? Integer.toString(num) : text)); //$NON-NLS-1$
                 }
                 break;
 
@@ -544,7 +544,7 @@ public abstract class Parser {
                 }
                 if (logging) {
                     name = tagTable[startTag - TAG_BASE];
-                    log(name + ": (opaque:" + length + ") ");
+                    log(name + ": (opaque:" + length + ") "); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 break;
 
@@ -571,7 +571,7 @@ public abstract class Parser {
             captureArray.add(i);
         }
         if (LOG_VERBOSE) {
-            log("Byte: " + i);
+            log("Byte: " + i); //$NON-NLS-1$
         }
         return i;
     }
@@ -611,7 +611,7 @@ public abstract class Parser {
             if (i >= '0' && i <= '9') {
                 result = (result * 10) + (i - '0');
             } else {
-                throw new IOException("Non integer");
+                throw new IOException("Non integer"); //$NON-NLS-1$
             }
         }
     }
@@ -646,7 +646,7 @@ public abstract class Parser {
             outputStream.write(i);
         }
         outputStream.flush();
-        String res = outputStream.toString("UTF-8");
+        String res = outputStream.toString("UTF-8"); //$NON-NLS-1$
         outputStream.close();
         return res;
     }
