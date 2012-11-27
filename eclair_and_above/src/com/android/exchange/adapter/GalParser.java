@@ -17,7 +17,6 @@ package com.android.exchange.adapter;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import com.google.common.collect.HashMultimap;
 import net.vivekiyer.GAL.Contact;
 import net.vivekiyer.GAL.Debug;
@@ -103,6 +102,9 @@ public class GalParser extends Parser {
 			case Tags.GAL_MOBILE_PHONE:
 				contact.add("MobilePhone",getValue()); //$NON-NLS-1$
 				break;
+			case Tags.GAL_PICTURE:
+				parsePicture(contact);
+				break;
 			default:
 				Debug.Log(String.format("Skipping tag '%1$s', value '%2$s'", //$NON-NLS-1$
 						Tags.pages[Tags.GAL][tag - Tags.GAL_PAGE -4], getValue()));
@@ -111,6 +113,19 @@ public class GalParser extends Parser {
 			}
 		}
 		contacts.put(contact.getDisplayName(), contact);
+	}
+
+	public void parsePicture(Contact contact) throws IOException {
+		while (nextTag(Tags.GAL_PICTURE) != END) {
+			if(tag == Tags.GAL_STATUS) {
+				Debug.Log("Picture status: " + getValue()); //$NON-NLS-1$
+			} else if (tag == Tags.GAL_DATA) {
+				byte[] picData = getValueBytes();
+				contact.addPicture(picData);
+			} else {
+				skipTag();
+			}
+		}
 	}
 
 	public void parseResult() throws IOException {
