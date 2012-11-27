@@ -59,6 +59,8 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 
 	private String email;
 	
+	private byte[] picture = null;
+	
 	// Field that stores the first non empty field
 	private String firstNonEmptyField;
 	
@@ -94,6 +96,10 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 
 	public String getWorkPhone() {
 		return workPhone;
+	}
+	
+	public byte[] getPicture() {
+		return picture;
 	}
 
 	public String getOfficeLocation() {
@@ -212,6 +218,10 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 
 	public void add(String key, String value) {
 		Details.add(new KeyValuePair(key, value));
+	}
+
+	public void addPicture(byte[] picData) {
+		picture = picData;
 	}
 
 	@Override

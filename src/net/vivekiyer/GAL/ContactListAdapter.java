@@ -16,6 +16,8 @@
 package net.vivekiyer.GAL;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,6 +94,11 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 			QuickContactBadge qcb = (QuickContactBadge) v.findViewById(R.id.contactPicture);
 			qcb.assignContactFromEmail(c.getEmail(), true); 
 			qcb.setMode(ContactsContract.QuickContact.MODE_LARGE);
+			byte[] pic;
+			if((pic = c.getPicture()) != null) {
+				Bitmap bm = BitmapFactory.decodeByteArray(pic, 0, pic.length);
+				qcb.setImageBitmap(bm);
+			}
 			v.setTag(c);			
 			qcb.bringToFront();
 			// If the toptext contains a phone

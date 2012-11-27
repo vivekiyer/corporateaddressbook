@@ -32,6 +32,21 @@ public class App extends Application {
 		instance = this;
 		// Get the displayText string
 		App.VERSION_STRING = "CorporateAddressbook/"+getAppVersion(); //$NON-NLS-1$
+		if(Debug.Enabled) {
+//			java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST); //$NON-NLS-1$
+//			java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST); //$NON-NLS-1$
+//
+//			System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog"); //$NON-NLS-1$ //$NON-NLS-2$
+//			System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+//			System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "debug"); //$NON-NLS-1$ //$NON-NLS-2$
+//			System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "debug"); //$NON-NLS-1$ //$NON-NLS-2$
+//			System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "debug"); //$NON-NLS-1$ //$NON-NLS-2$
+//
+//			System.setProperty("log.tag.org.apache.http.wire", "debug"); //$NON-NLS-1$ //$NON-NLS-2$
+//			System.setProperty("log.tag.org.apache.http.headers", "debug"); //$NON-NLS-1$ //$NON-NLS-2$
+//			
+//			java.util.logging.Logger.getLogger("httpclient.wire.content").log(java.util.logging.Level.CONFIG, "hola"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 	}
 
 	public static App getInstance() {

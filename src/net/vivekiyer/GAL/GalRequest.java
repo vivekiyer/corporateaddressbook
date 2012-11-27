@@ -25,14 +25,14 @@ public class GalRequest extends CommandRequest {
 		s.start(Tags.SEARCH_OPTIONS);
 		s.data(Tags.SEARCH_RANGE, "0-" + Integer.toString(limit - 1)); //$NON-NLS-1$
 
-//      Pictures disabled for now since we have no way of testing
-//		if(getProtocolVersionFloat() >= 14.1) {
-//			s.start(Tags.SEARCH_PICTURE);
-//			s.data(Tags.SEARCH_MAX_PICTURES, String.valueOf(limit));
-//			s.end(); // SEARCH
-//		}
+		//Pictures disabled for now since we have no way of testing
+		if(getProtocolVersionFloat() >= 14.1) {
+			s.start(Tags.SEARCH_PICTURE);
+			s.data(Tags.SEARCH_MAX_PICTURES, String.valueOf(limit));
+			s.end(); // PICTURE
+		}
 
-		s.end().end().end().done(); // STORE / OPTIONS / PICTURE
+		s.end().end().end().done(); // OPTIONS / STORE / SEARCH
 
 		setWbxmlBytes(s.toByteArray());
 	}

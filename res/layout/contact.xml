@@ -20,7 +20,8 @@
             android:id="@+id/contactPicture"
             style="?android:attr/quickContactBadgeStyleWindowLarge"
             android:layout_marginRight="6dp"
-            android:contentDescription="@string/contactPicture" />
+            android:contentDescription="@string/contactPicture"
+            tools:ignore="NewApi" />
 
         <LinearLayout
             android:id="@+id/textContainer"

@@ -20,9 +20,12 @@ import com.devoteam.quickaction.QuickActionWindow;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.ClipboardManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -35,6 +38,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -130,6 +134,15 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 			{
 				tv2.setText(s + mContact.getCompany());
 			}
+		}
+
+		QuickContactBadge qcb = (QuickContactBadge) view.findViewById(R.id.contactPicture);
+		qcb.assignContactFromEmail(mContact.getEmail(), true); 
+		qcb.setMode(ContactsContract.QuickContact.MODE_LARGE);
+		byte[] pic;
+		if((pic = mContact.getPicture()) != null) {
+			Bitmap bm = BitmapFactory.decodeByteArray(pic, 0, pic.length);
+			qcb.setImageBitmap(bm);
 		}
 
 		// getListView().setOnItemLongClickListener(mListViewLongClickListener);
