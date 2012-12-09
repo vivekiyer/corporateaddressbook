@@ -22,7 +22,7 @@ import net.vivekiyer.GAL.Contact;
 import net.vivekiyer.GAL.Debug;
 
 /**
- * Parse the result of a GAL command.
+ * Parse the accountName of a GAL command.
  */
 public class GalParser extends Parser {
 
@@ -144,7 +144,7 @@ public class GalParser extends Parser {
 				parseStore();
 			} else if (tag == Tags.SEARCH_STATUS){
 				String range = getValue();
-				Debug.Log("GAL result range: " + range); //$NON-NLS-1$
+				Debug.Log("GAL accountName range: " + range); //$NON-NLS-1$
 			}
 			else {
 				skipTag();
@@ -161,7 +161,7 @@ public class GalParser extends Parser {
 			}else if (tag == Tags.SEARCH_RANGE) {
 				// Retrieve value, even if we're not using it for debug logging
 				String range = getValue();
-				Debug.Log("GAL result range: " + range); //$NON-NLS-1$
+				Debug.Log("GAL accountName range: " + range); //$NON-NLS-1$
 			} else if (tag == Tags.SEARCH_TOTAL) {
 				numResults = getValueInt();
 				Debug.Log("total = " + getValueInt()); //$NON-NLS-1$

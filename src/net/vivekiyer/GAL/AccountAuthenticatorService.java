@@ -10,8 +10,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceActivity;
 import android.util.Log;
 import net.vivekiyer.GAL.Preferences.Configure;
+import net.vivekiyer.GAL.Preferences.PrefsActivity;
+import net.vivekiyer.GAL.Preferences.ServerPrefsFragment;
 
 public class AccountAuthenticatorService extends Service {
 	private static final String TAG = "AccountAuthenticatorService";
@@ -56,10 +59,14 @@ public class AccountAuthenticatorService extends Service {
 				String accountType, String authTokenType,
 				String[] requiredFeatures, Bundle options)
 				throws NetworkErrorException {
+
 			Bundle result = new Bundle();
 			Intent i = new Intent(mContext, Configure.class);
 			i.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
 					response);
+//			i.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+//					AddAccountActivity.class.getName());
+			i.setAction(App.getInstance().getString(R.string.ACTION_PREFS_ACCOUNT_ADD));
 			result.putParcelable(AccountManager.KEY_INTENT, i);
 			return result;
 		}

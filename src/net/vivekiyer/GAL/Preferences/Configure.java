@@ -15,30 +15,31 @@
 
 package net.vivekiyer.GAL.Preferences;
 
+import android.*;
+import android.accounts.*;
+import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.text.AndroidCharacter;
+import android.widget.*;
 import net.vivekiyer.GAL.*;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.ActionBar;
-import android.accounts.Account;
-import android.accounts.AccountAuthenticatorResponse;
-import android.accounts.AccountManager;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.TextView;
+import net.vivekiyer.GAL.R;
+
+import java.io.IOException;
 
 /**
  * @author Vivek Iyer
@@ -47,25 +48,28 @@ import android.widget.TextView;
  */
 public class Configure extends FragmentActivity implements OnClickListener, TaskCompleteCallback, ChoiceDialogFragment.OnChoiceDialogOptionClickListener {
 	
-	private SharedPreferences mPreferences;
-	private ProgressDialog progressdialog;
-	ActiveSyncManager activeSyncManager;
-	private String domain;
-	private String username;
-/*
-	public static final String PREFS_KEY_USERNAME_PREFERENCE = "username";
-	public static final String PREFS_KEY_PASSWORD_PREFERENCE = "password";
-	public static final String PREFS_KEY_DOMAIN_PREFERENCE = "domain";
-	public static final String PREFS_KEY_SERVER_PREFERENCE = "server";
-	public static final String PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE = "activesyncversion";
-	public static final String PREFS_KEY_DEVICE_ID = "deviceid";
-	public static final String PREFS_KEY_POLICY_PREFS_KEY_PREFERENCE = "policykey";
-	public static final String PREFS_KEY_USE_SSL = "usessl";
-	public static final String PREFS_KEY_ACCEPT_ALL_CERTS = "acceptallcerts";
-	public static final String PREFS_KEY_RESULTS_PREFERENCE = "results";
-	public static final String PREFS_KEY_SEARCH_TERM_PREFERENCE = "searchTerm";
-	public static final String PREFS_KEY_SUCCESSFULLY_CONNECTED = "successfullyConnected";
-*/	
+	protected SharedPreferences mPreferences;
+	protected ProgressDialog progressdialog;
+	protected ActiveSyncManager activeSyncManager;
+	protected String domain;
+	protected String username;
+	protected String accountKey;
+	protected Boolean accountRemoved;
+
+	/*
+		public static final String PREFS_KEY_USERNAME_PREFERENCE = "username";
+		public static final String PREFS_KEY_PASSWORD_PREFERENCE = "password";
+		public static final String PREFS_KEY_DOMAIN_PREFERENCE = "domain";
+		public static final String PREFS_KEY_SERVER_PREFERENCE = "server";
+		public static final String PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE = "activesyncversion";
+		public static final String PREFS_KEY_DEVICE_ID = "deviceid";
+		public static final String PREFS_KEY_POLICY_PREFS_KEY_PREFERENCE = "policykey";
+		public static final String PREFS_KEY_USE_SSL = "usessl";
+		public static final String PREFS_KEY_ACCEPT_ALL_CERTS = "acceptallcerts";
+		public static final String PREFS_KEY_RESULTS_PREFERENCE = "results";
+		public static final String PREFS_KEY_SEARCH_TERM_PREFERENCE = "searchTerm";
+		public static final String PREFS_KEY_SUCCESSFULLY_CONNECTED = "successfullyConnected";
+	*/
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 * 
@@ -81,24 +85,64 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 		Button button = (Button) findViewById(R.id.buttonSignIn);
 		button.setOnClickListener(this);
 
-		// Get the preferences that were entered by the user and display those to the user 
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);			
-		
-		String domain = mPreferences.getString(getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE) , ""), 
-				user = mPreferences.getString(getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), "");
-		user = domain + (domain.length() > 0 ? "\\" : "") + user;
-		if (user.length() > 0)
-			setTextForId(R.id.txtDomainUserName, user);
-		setTextForId(
-				R.id.txtPassword, 
-				mPreferences.getString(getString(R.string.PREFS_KEY_PASSWORD_PREFERENCE), "")); //$NON-NLS-1$
-		setTextForId(R.id.txtServerName,
-				mPreferences.getString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE), "")); //$NON-NLS-1$
-		setValueForCheckbox(R.id.chkUseSSL,
-				mPreferences.getBoolean(getString(R.string.PREFS_KEY_USE_SSL), true));
-		setValueForCheckbox(R.id.chkAcceptAllSSLCert,
-				mPreferences.getBoolean(getString(R.string.PREFS_KEY_ACCEPT_ALL_CERTS), true));
+		// Edit account
+		if(getIntent().getAction().equals(getString(R.string.ACTION_PREFS_ACCOUNT_EDIT))) {
+			this.setTitle("Edit account");
+			String accountKey = getIntent().getStringExtra(getString(R.string.KEY_ACCOUNT_KEY));
+			if(accountKey == null)
+				throw new RuntimeException("No account key was supplied for editing");
 
+			// Get the preferences that were entered by the user and display those to the user
+			mPreferences = getSharedPreferences(accountKey, MODE_PRIVATE);
+
+			String domain = mPreferences.getString(getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE) , ""),
+					user = mPreferences.getString(getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), "");
+			user = domain + (domain.length() > 0 ? "\\" : "") + user;
+			if (user.length() > 0)
+				setTextForId(R.id.txtDomainUserName, user);
+			setTextForId(
+					R.id.txtPassword,
+					mPreferences.getString(getString(R.string.PREFS_KEY_PASSWORD_PREFERENCE), "")); //$NON-NLS-1$
+			setTextForId(R.id.txtServerName,
+					mPreferences.getString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE), "")); //$NON-NLS-1$
+			setValueForCheckbox(R.id.chkUseSSL,
+					mPreferences.getBoolean(getString(R.string.PREFS_KEY_USE_SSL), true));
+			setValueForCheckbox(R.id.chkAcceptAllSSLCert,
+					mPreferences.getBoolean(getString(R.string.PREFS_KEY_ACCEPT_ALL_CERTS), true));
+		}
+		// Add account
+		else if(getIntent().getAction().equals(getString(R.string.ACTION_PREFS_ACCOUNT_ADD))) {
+			AccountManager am = AccountManager.get(App.getInstance());
+			Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
+
+			if(accounts.length > 0) {
+				Bundle extras = getIntent().getExtras();
+				AccountAuthenticatorResponse response = extras
+						.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+				showAlert("Sorry, Corporate Addressbook currently only supports one server");
+				Toast.makeText(this, "Sorry, Corporate Addressbook currently only supports one server", Toast.LENGTH_SHORT).show();
+				response.onError(0, "Sorry, Corporate Addressbook currently only supports one server");
+				finish();
+				return;
+			}
+		}
+		// Delete account
+		else if(getIntent().getAction().equals(getString(R.string.ACTION_PREFS_ACCOUNT_DELETE))) {
+			accountKey = getIntent().getStringExtra(getString(R.string.KEY_ACCOUNT_KEY));
+			if (accountKey == null)
+					throw new RuntimeException("No account supplied for deletion");
+			DialogFragment cd = ChoiceDialogFragment.newInstance(getString(R.string.delete_account),
+					"Are you sure you want to delete the account \'" + accountKey + "\'?",
+					getString(android.R.string.ok),
+					getString(android.R.string.cancel),
+					R.id.account_delete,
+					android.R.id.empty)
+					.setListener(this);
+//					.setParent(this)
+//					.create();
+			cd.show(getSupportFragmentManager(), "deleteConfirmation");
+			return;
+		}
 		EditText text = (EditText) findViewById(R.id.txtServerName);
 		text.setOnEditorActionListener(new EditText.OnEditorActionListener() {
 			@Override
@@ -115,7 +159,8 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 		if(!Utility.isPreHoneycomb())
 		{
 			ActionBar actionBar = getActionBar();
-			actionBar.setDisplayHomeAsUpEnabled(true);
+			if(actionBar != null)
+				actionBar.setDisplayHomeAsUpEnabled(true);
 //			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
 		}
 	}	
@@ -154,18 +199,6 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 	private void setValueForCheckbox(int id, boolean value) {
 		final CheckBox checkBox = (CheckBox) findViewById(id);
 		checkBox.setChecked(value);
-	}
-
-	/**
-	 * @param s
-	 *            The alert message Displays an alert dialog with the messaged
-	 *            provided
-	 */
-	private void showAlert(String s) {
-		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
-		alt_bld.setMessage(s).setPositiveButton(getResources().getString(android.R.string.ok), null);
-		AlertDialog alert = alt_bld.create();
-		alert.show();
 	}
 
 	/**
@@ -252,6 +285,18 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 		connect();
 	}
 
+	/**
+	 * @param s
+	 *            The alert message Displays an alert dialog with the messaged
+	 *            provided
+	 */
+	private void showAlert(String s) {
+		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
+		alt_bld.setMessage(s).setPositiveButton(getResources().getString(android.R.string.ok), null);
+		AlertDialog alert = alt_bld.create();
+		alert.show();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -275,7 +320,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 
 		// Looks like there was an error in the settings
 		if (!taskStatus) {
-			if (Debug.Enabled) {
+			if (!Debug.Enabled) {
 				// Send the error message via email
 				Debug.sendDebugEmail(this);
 			} else {
@@ -301,7 +346,8 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 					String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
 					ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
 						.setListener(this)
-						.show(getSupportFragmentManager(), "forbidden"); //$NON-NLS-1$
+						//.create()
+						.show(getSupportFragmentManager(), "forbidden");
 					break;
 				case ConnectionChecker.SSL_PEER_UNVERIFIED:
 						ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.unable_to_find_matching_certificate, "\n", getString(R.string.acceptAllSllText))) //$NON-NLS-1$
@@ -325,6 +371,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 		}
 		// All went well. Store the settings and return to the main page
 		else {
+			mPreferences = getSharedPreferences(username, MODE_PRIVATE);
 			SharedPreferences.Editor editor = mPreferences.edit();
 			editor.putString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE),
 					getTextFromId(R.id.txtServerName).trim());
@@ -385,6 +432,32 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 					ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 					clip.setPrimaryClip(ClipData.newPlainText("Android Device ID", activeSyncManager.getDeviceId()));
 				}
+				break;
+			case R.id.account_delete:
+				getSharedPreferences(accountKey, MODE_PRIVATE).edit().clear().commit(); //remove all prefs
+				AccountManager am = AccountManager.get(this);
+				for (Account acc : am.getAccountsByType(getString(R.string.ACCOUNT_TYPE)))
+				{
+					if (acc.name.equals(accountKey))
+						am.removeAccount(acc, new AccountManagerCallback<Boolean>() {
+							@Override
+							public void run(AccountManagerFuture<Boolean> future) {
+								try {
+									setResult(future.getResult() ? 1 : 0);
+								} catch (OperationCanceledException e) {
+								} catch (IOException e) {
+								} catch (AuthenticatorException e) {
+								}
+								finish();
+							}
+						}, null);
+					break;
+				}
+				break;
+			case android.R.id.empty:
+				setResult(0);
+				finish();
+			default:
 				break;
 		}
 	}

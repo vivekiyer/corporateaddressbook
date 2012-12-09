@@ -7,7 +7,7 @@
         <intent
             android:targetPackage="net.vivekiyer.GAL"
             android:targetClass="net.vivekiyer.GAL.Preferences.PrefsActivity"
-            android:action="@string/ACTION_PREFS_SERVER"
+            android:action="@string/ACTION_PREFS_ACCOUNTS"
             />
     </Preference>
     <Preference android:fragment="net.vivekiyer.GAL.Preferences.PrefsFragment"

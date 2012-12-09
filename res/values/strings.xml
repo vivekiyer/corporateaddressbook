@@ -13,6 +13,7 @@
     <string name="useSecureSslText">Use secure connection (SSL)</string>
     <string name="serverHint">mail.example.com</string>
     <string name="serverText">Server</string>
+    <string name="serversText">Servers</string>
     <string name="serverName">Server name</string>
     <string name="enterServerName">Enter server name</string>
     <string name="searchDirectory">Search Corporate Addressbook</string>
@@ -81,5 +82,8 @@
     <string name="no_response_from_server">No response received from server</string>
     <string name="server_responded_x">Server responded %1$d</string>
     <string name="text_copied_to_clipboard">Text copied to clipboard</string>
-    <string name="select_account">Select account</string>
+	<string name="select_account">Select account</string>
+	<string name="account">Account</string>
+	<string name="accounts">Accounts</string>
+	<string name="delete_account">Delete account</string>
 </resources>

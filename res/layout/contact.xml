@@ -5,7 +5,6 @@
     android:layout_height="fill_parent"
     android:background="@color/details_list_background"
     android:orientation="vertical"
-    android:padding="5dp"
     tools:context=".CorporateContactRecordFragment" >
 
     <LinearLayout
@@ -14,7 +13,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@color/holo_blue_dark"
-        android:padding="6dip" >
+            >
 
         <QuickContactBadge
             android:id="@+id/contactPicture"

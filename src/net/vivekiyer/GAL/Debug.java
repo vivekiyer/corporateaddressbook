@@ -14,7 +14,8 @@ public class Debug {
 	
 	// Set this to true to enable DEBUG messages
 	public static boolean Enabled = true;
-	
+	public static boolean Verbose = true;
+
 	// StringBuffer that stores logs
 	private static final StringBuffer logger = new StringBuffer();
 	

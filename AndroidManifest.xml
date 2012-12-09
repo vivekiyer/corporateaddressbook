@@ -3,7 +3,7 @@
     package="net.vivekiyer.GAL"
     android:installLocation="auto"
     android:versionCode="24"
-    android:versionName="2.0.7" >
+    android:versionName="2.0.8-dev" >
 
     <uses-sdk
         android:minSdkVersion="5"
@@ -61,16 +61,39 @@
                 android:value=".CorporateAddressBook" />
         </activity>
         <activity
-			android:name=".Preferences.PrefsActivity"
-	        android:label="@string/settings"
-	        android:enabled="true" >
-	        <intent-filter>
+                android:name=".Preferences.PrefsActivity"
+                android:label="@string/settings"
+                android:enabled="true" >
+            <intent-filter>
                 <action android:name="net.vivekiyer.GAL.Preferences.PREFS_SERVER" />
                 <action android:name="net.vivekiyer.GAL.Preferences.PREFS_ABOUT" />
-	            <category android:name="android.intent.category.PREFERENCE" />
-	        </intent-filter>
-	    </activity>
-    
+                <category android:name="android.intent.category.PREFERENCE" />
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".Preferences.Configure"
+                android:label="Add server"
+                android:enabled="true"
+                android:theme="@style/LargeDialog">
+            <intent-filter>
+                <action android:name="net.vivekiyer.GAL.Preferences.PREFS_ABOUT" />
+	            <action android:name="@string/ACTION_PREFS_ACCOUNT_ADD" />
+	            <action android:name="@string/ACTION_PREFS_ACCOUNT_EDIT" />
+	            <action android:name="@string/ACTION_PREFS_ACCOUNT_DELETE" />
+                <category android:name="android.intent.category.PREFERENCE" />
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".Preferences.AddAccountActivity"
+                android:label="Add server"
+                android:enabled="true"
+                android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="net.vivekiyer.GAL.Preferences.ADD_SERVER" />
+                <category android:name="android.intent.category.PREFERENCE" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name=".RecentGALSearchTermsProvider"
             android:authorities="net.vivekiyer.GAL.RecentGALSearchTermsProvider" />

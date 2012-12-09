@@ -15,10 +15,8 @@
 
 package net.vivekiyer.GAL;
 
-import net.vivekiyer.GAL.Preferences.ConnectionChecker;
-import net.vivekiyer.GAL.Preferences.PrefsActivity;
+import android.accounts.*;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -26,9 +24,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask.Status;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -40,21 +37,34 @@ import android.widget.SearchView;
 import com.google.common.collect.HashMultimap;
 import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
 import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
+import net.vivekiyer.GAL.Preferences.ConnectionChecker;
+import net.vivekiyer.GAL.Preferences.PrefsActivity;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Set;
 
 /**
  * @author Vivek Iyer
- * 
+ *         <p/>
  *         This class is the main entry point to the application
  */
 public class CorporateAddressBook extends FragmentActivity
-	implements ContactListListener, GALSearch.OnSearchCompletedListener, OnChoiceDialogOptionClickListener
-{
+		implements ContactListListener, GALSearch.OnSearchCompletedListener, OnChoiceDialogOptionClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
+	private String accountName;
+
+	class AccountResult {
+
+		public static final int OpCanceled = 1;
+		public static final int AuthEx = 2;
+		public static final int IOEx = 3;
+		public int error = 0;
+
+		public String accountName;
+		public String errorDescription;
+	}
 	// TAG used for logging
-	// private static String TAG = "CorporateAddressBook";
 
 	// Object that performs all the ActiveSync magic
 	private ActiveSyncManager activeSyncManager;
@@ -66,16 +76,16 @@ public class CorporateAddressBook extends FragmentActivity
 	static final int DISPLAY_PREFERENCES_REQUEST = 0;
 
 	// Used to launch the initial configuration pane
-	static final int DISPLAY_CONFIGURATION_REQUEST = 2;
-	
+	public static final int DISPLAY_CONFIGURATION_REQUEST = 2;
+
 	// Tags for finding and retrieving fragments
 	static final String mainTag = "R.id.main_fragment"; //$NON-NLS-1$
+
 	static final String contactTag = "R.id.contact_fragment"; //$NON-NLS-1$
 	static final String CONTACTS = "mContacts"; //$NON-NLS-1$
 	static final String SEARCH_TERM = "latestSearchTerm"; //$NON-NLS-1$
 	static final String SELECTED_CONTACT = "selectedContact"; //$NON-NLS-1$
 	static final String ONGOING_SEARCH = "search";  //$NON-NLS-1$
-
 	// Progress bar
 	private ProgressDialog progressdialog;
 
@@ -85,8 +95,7 @@ public class CorporateAddressBook extends FragmentActivity
 	private SearchView searchView;
 
 	// TAG used for logging
-	// private static String TAG = "CorporateAddressBook";
-	
+
 	// Stores the list of contacts returned
 	private HashMultimap<String, Contact> mContacts;
 
@@ -107,10 +116,6 @@ public class CorporateAddressBook extends FragmentActivity
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_fragment);
-		
-		// Initialize preferences and the activesyncmanager
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		activeSyncManager = new ActiveSyncManager();
 
 		// Create the progress bar
 		progressdialog = new ProgressDialog(this);
@@ -120,53 +125,47 @@ public class CorporateAddressBook extends FragmentActivity
 		// Turn keystrokes into search
 		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
-		// Check if we have successfully connected to an Exchange
-		// server before.
-		// If not launch the config pane and query the user for
-		// Exchange server settings
-		if (!loadPreferences()) {
-			CorporateAddressBook.showConfiguration(this);
-		}
+		loadPreferences();
 
 		// Get the intent, verify the action and get the query
 		// but not if the activity is being recreated (would cause a new search)
-		if(savedInstanceState == null || !savedInstanceState.containsKey("mContacts")) { //$NON-NLS-1$
+		if (savedInstanceState == null || !savedInstanceState.containsKey("mContacts")) { //$NON-NLS-1$
 			final Intent intent = getIntent();
 			onNewIntent(intent);
 		}
 	}
-	
+
 	@Override
 	protected void onNewIntent(Intent intent) {
-		if(Intent.ACTION_SEARCH.equals(intent.getAction()))
+		if (Intent.ACTION_SEARCH.equals(intent.getAction()))
 			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		super.onNewIntent(intent);
 		setIntent(intent);
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			final String query = intent.getStringExtra(SearchManager.QUERY);
 			performSearch(query);
-		}		
+		}
 	}
-	
+
 	// Assist user by showing search box whenever returning
 	@Override
 	protected void onStart() {
 		super.onStart();
-		
+
 		FragmentManager fm = getSupportFragmentManager();
-	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) fm
-		    	.findFragmentById(R.id.contact_fragment);
-			 
-	    if (details != null && details.isInLayout()) {
+		CorporateContactRecordFragment details = (CorporateContactRecordFragment) fm
+				.findFragmentById(R.id.contact_fragment);
+
+		if (details != null && details.isInLayout()) {
 			CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) fm
-				.findFragmentById(R.id.main_fragment);
+					.findFragmentById(R.id.main_fragment);
 			contacts.setIsSelectable(true);
 			contacts.setViewBackground(false);
-			FragmentTransaction ft = fm.beginTransaction();  
-			ft.hide(details);  
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.hide(details);
 			ft.commit();
 		}
-	    
+
 		final Intent intent = getIntent();
 		if (intent != null) {
 			final Set<String> categories = intent.getCategories();
@@ -176,35 +175,33 @@ public class CorporateAddressBook extends FragmentActivity
 			}
 		}
 	}
-	
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		
-		if(savedInstanceState != null && savedInstanceState.containsKey(CONTACTS)) {
-			@SuppressWarnings("unchecked")
-			HashMultimap<String, Contact> contactsMap = (HashMultimap<String, Contact>) savedInstanceState.get(CONTACTS);
-			mContacts = contactsMap;
+
+		if (savedInstanceState != null && savedInstanceState.containsKey(CONTACTS)) {
+			mContacts = (HashMultimap<String, Contact>) savedInstanceState.get(CONTACTS);
 			String latestSearchTerm = savedInstanceState.getString(SEARCH_TERM);
 			selectedContact = (Contact) savedInstanceState.get(SELECTED_CONTACT);
 			displaySearchResult(mContacts, latestSearchTerm);
-			if(selectedContact != null) {
+			if (selectedContact != null) {
 				selectContact(selectedContact);
 			}
 			Integer searchHash = savedInstanceState.getInt(ONGOING_SEARCH);
-			if(searchHash != 0) {
+			if (searchHash != 0) {
 				search = App.taskManager.get(searchHash);
-				if(search != null){
+				if (search != null) {
 					search.setOnSearchCompletedListener(this);
 					App.taskManager.remove(searchHash);
-					if(progressdialog != null) {
+					if (progressdialog != null) {
 						progressdialog.setMessage(getString(R.string.retrievingResults));
 						progressdialog.show();
 					}
 				}
 			}
 		}
-	};
+	}
 
 	@Override
 	protected void onPause() {
@@ -222,7 +219,7 @@ public class CorporateAddressBook extends FragmentActivity
 		CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.main_fragment);
 		contacts.setSelectedContact(selectedContact);
-		onContactSelected(selectedContact);		
+		onContactSelected(selectedContact);
 	}
 
 	@Override
@@ -230,15 +227,16 @@ public class CorporateAddressBook extends FragmentActivity
 		outState.putSerializable(CONTACTS, this.mContacts);
 		outState.putString(SEARCH_TERM, this.latestSearchTerm);
 		outState.putSerializable(SELECTED_CONTACT, this.selectedContact);
-		if(search != null && search.getStatus().equals(Status.RUNNING)) {
+		if (search != null && search.getStatus().equals(AsyncTask.Status.RUNNING)) {
 			outState.putInt(ONGOING_SEARCH, search.hashCode());
 			App.taskManager.put(search.hashCode(), search);
 		}
-	};
-	
+	}
+
+
 	private void performSearch(String name) {
-		
-		if(progressdialog != null) {
+
+		if (progressdialog != null) {
 			progressdialog.setMessage(getString(R.string.retrievingResults));
 			progressdialog.show();
 		}
@@ -256,9 +254,9 @@ public class CorporateAddressBook extends FragmentActivity
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-	 * 
+	 *
 	 * Displays the menu when the user clicks the options button. In our case
 	 * our menu only contains one button - Settings
 	 */
@@ -275,10 +273,11 @@ public class CorporateAddressBook extends FragmentActivity
 			final ComponentName component = getComponentName();
 			final SearchableInfo searchableInfo = searchManager
 					.getSearchableInfo(component);
-			searchView = (SearchView) menu.findItem(
-					R.id.menu_search).getActionView();
+			MenuItem item = menu.findItem(
+					R.id.menu_search);
+			searchView = (SearchView) item.getActionView();
 			searchView.setSearchableInfo(searchableInfo);
-			
+
 			//this.onSearchRequested();
 		}
 
@@ -287,48 +286,48 @@ public class CorporateAddressBook extends FragmentActivity
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-	 * 
+	 *
 	 * Launches the preferences pane when the user clicks the settings option
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.menu_search:
-			return this.onSearchRequested();
-		case R.id.settings:
-			CorporateAddressBook.showConfiguration(this);
-			return true;
-		case R.id.clearSearchHistory:
-			final SearchRecentSuggestions suggestions = new SearchRecentSuggestions(
-					this, RecentGALSearchTermsProvider.AUTHORITY,
-					RecentGALSearchTermsProvider.MODE);
-			suggestions.clearHistory();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+			case R.id.menu_search:
+				return this.onSearchRequested();
+			case R.id.settings:
+				CorporateAddressBook.showConfiguration(this);
+				return true;
+			case R.id.clearSearchHistory:
+				final SearchRecentSuggestions suggestions = new SearchRecentSuggestions(
+						this, RecentGALSearchTermsProvider.AUTHORITY,
+						RecentGALSearchTermsProvider.MODE);
+				suggestions.clearHistory();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
 
 	/**
 	 * Launches the preferences activity
 	 */
-	public static void showConfiguration(Activity parentActivity) {
+	public static void showConfiguration(FragmentActivity parentActivity) {
 //		final Intent myIntent = new Intent();
 //		myIntent.setClassName("net.vivekiyer.GAL",
 //				"net.vivekiyer.GAL.Configure");
 //		parentActivity.startActivityForResult(myIntent, DISPLAY_CONFIGURATION_REQUEST);
-		parentActivity.startActivity(new Intent(parentActivity, PrefsActivity.class));
+		parentActivity.startActivityForResult(new Intent(parentActivity, PrefsActivity.class), DISPLAY_CONFIGURATION_REQUEST);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.app.Activity#onActivityResult(int, int,
 	 * android.content.Intent)
-	 * 
+	 *
 	 * This method gets called after the launched activity is closed This
 	 * application needs to handle the closing of two activity launches - The
 	 * preference pane - The config pane
@@ -336,12 +335,10 @@ public class CorporateAddressBook extends FragmentActivity
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
-		case DISPLAY_CONFIGURATION_REQUEST:
-			// Initialize the activesync object with the validated settings
-			if (!loadPreferences()) {
-				CorporateAddressBook.showConfiguration(this);
-			}
-			break;
+			case DISPLAY_CONFIGURATION_REQUEST:
+				// Initialize the activesync object with the validated settings
+				loadPreferences();
+				break;
 		}
 	}
 
@@ -372,14 +369,129 @@ public class CorporateAddressBook extends FragmentActivity
 		activeSyncManager.setServerName(serverName);
 	}
 
+	protected boolean migrateServerSettings() {
+		// TODO: Make sure old settings are migrated to new account structure
+		return false;
+	}
+
+	// private static String TAG = "CorporateAddressBook";
+	// private static String TAG = "CorporateAddressBook";
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		//To change body of implemented methods use File | Settings | File Templates.
+		if(!isPaused){
+			if(accountName == null || sharedPreferences.getAll().size() < 6)
+				loadPreferences();
+			else
+				loadPreferences(accountName);
+		}
+	}
 	/**
 	 * Reads the stored preferences and initializes the
-	 * 
+	 *
 	 * @return True if a valid Exchange server settings was saved during the
 	 *         previous launch. False otherwise *
-	 * 
 	 */
-	public boolean loadPreferences() {
+	public void loadPreferences() {
+
+		// Initialize preferences and the activesyncmanager
+		AccountManager am = AccountManager.get(this);
+		Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
+		if (accounts == null || accounts.length == 0) {
+			//progressdialog.setMessage("Reading account");
+			//progressdialog.show();
+			addAccount(progressdialog, am);
+			//getAccountTask.execute(future);
+		} else {
+			accountName = accounts[0].name;
+
+			if (accountName == null || accountName.isEmpty()) {
+				throw new RuntimeException("No account available");
+			}
+			if (!loadPreferences(accountName)) {
+				showConfiguration(this);
+			}
+		}
+	}
+
+	private void addAccount(final ProgressDialog prog, AccountManager acc) {
+//		final AccountManager am = acc == null ? AccountManager.get(this) : acc;
+//		final ProgressDialog dialog = prog == null ? new ProgressDialog(this) : prog;
+
+		AccountManagerCallback<Bundle> callback = new AccountManagerCallback<Bundle>() {
+			@Override
+			public void run(AccountManagerFuture<Bundle> future) {
+				String accountName;
+				try {
+					accountName = future.getResult().getString(AccountManager.KEY_ACCOUNT_NAME);
+					loadPreferences(accountName);
+				} catch (OperationCanceledException e) {
+				} catch (IOException e) {
+				} catch (AuthenticatorException e) {
+				}
+			}
+		};
+
+		AccountManagerFuture<Bundle> future = acc.addAccount(getString(R.string.ACCOUNT_TYPE), null, null, null, this, callback, null);
+
+//		AsyncTask getAccountTask = new AsyncTask</*AccountManagerFuture<Bundle>*/ Object, Object, AccountResult>() {
+//
+//			@Override
+//			protected AccountResult doInBackground(/*AccountManagerFuture<Bundle>*/Object... params) {
+//				AccountResult result = new AccountResult();
+//				try {
+//					result.accountName = ((AccountManagerFuture<Bundle>) params[0]).getResult().getString(AccountManager.KEY_ACCOUNT_NAME);
+//				} catch (OperationCanceledException e) {
+//					result.error = AccountResult.OpCanceled;
+//					result.errorDescription = "No account was created and Corporate Addressbook cannot continue without one";
+//				} catch (IOException e) {
+//					result.error = AccountResult.IOEx;
+//					result.errorDescription = "Corporate Addressbook encountered a network problem and cannot continue";
+//				} catch (AuthenticatorException e) {
+//					result.error = AccountResult.AuthEx;
+//					result.errorDescription = "Eh?";
+//				}
+//				return result;
+//			}
+//
+//			@Override
+//			protected void onPostExecute(AccountResult accountResult) {
+//				super.onPostExecute(accountResult);    //To change body of overridden methods use File | Settings | File Templates.
+//				if (accountResult.error == 0) {
+//					if ((dialog != null) && dialog.isShowing()) {
+//						try {
+//							dialog.dismiss();
+//						} catch (IllegalArgumentException e) {
+//						}
+//					}
+//					loadPreferences(accountResult.accountName);
+//				}
+//				else {
+//					throw new RuntimeException(accountResult.errorDescription);
+//				}
+//			}
+//		};
+	}
+
+	/**
+	 * Reads the stored preferences and initializes the
+	 *
+	 * @param accountName
+	 * @return True if a valid Exchange server settings was saved during the
+	 *         previous launch. False otherwise *
+	 */
+	public boolean loadPreferences(String accountName) {
+		this.accountName = accountName;
+		SharedPreferences thesePrefs = getSharedPreferences(accountName, MODE_PRIVATE);
+
+		mPreferences = thesePrefs;
+		if(thesePrefs.getAll().size() < 6)
+			throw new RuntimeException("Server settings incomplete");
+
+		thesePrefs.registerOnSharedPreferenceChangeListener(this);
+
+		activeSyncManager = new ActiveSyncManager();
+
 		activeSyncManager.setUsername(mPreferences.getString(
 				getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), "")); //$NON-NLS-1$
 		activeSyncManager.setPassword(mPreferences.getString(
@@ -398,38 +510,35 @@ public class CorporateAddressBook extends FragmentActivity
 				getString(R.string.PREFS_KEY_ACCEPT_ALL_CERTS), true));
 		activeSyncManager.setUseSSL(mPreferences.getBoolean(
 				getString(R.string.PREFS_KEY_USE_SSL), true));
-		
+
 		// Fix for null device_id
 		String device_id_string = mPreferences.getString(getString(R.string.PREFS_KEY_DEVICE_ID_STRING), null);
-		if(device_id_string == null)
-		{
+		if (device_id_string == null) {
 			int device_id = mPreferences.getInt(
 					getString(R.string.PREFS_KEY_DEVICE_ID), 0);
-			if(device_id > 0)
+			if (device_id > 0)
 				device_id_string = String.valueOf(device_id);
 			else
 				device_id_string = ActiveSyncManager.getUniqueId();
 		}
-		
+
 		activeSyncManager.setDeviceId(device_id_string);
-		
+
 		if (!activeSyncManager.Initialize())
 			return false;
-		
+
 //		// Fix for null device_id
 //		if(device_id == 0)
 //			return false;
-		
+
 		// Check to see if we have successfully connected to an Exchange server
 		// Do we have a previous successful connect with these settings?
-		if(!mPreferences.getBoolean(getString(R.string.PREFS_KEY_SUCCESSFULLY_CONNECTED), false))
-		{
+		if (!mPreferences.getBoolean(getString(R.string.PREFS_KEY_SUCCESSFULLY_CONNECTED), false)) {
 			// If not, let's try
 			if (activeSyncManager.getActiveSyncVersion().equalsIgnoreCase("")) { //$NON-NLS-1$
 				// If we fail, let's return
 				return false;
-			}
-			else {
+			} else {
 				// In case of success, let's make a record of this so that
 				// we don't have to check the settings every time we launch.
 				// This record will be reset when any change is made to the
@@ -445,56 +554,56 @@ public class CorporateAddressBook extends FragmentActivity
 
 	@TargetApi(11)
 	private void displaySearchResult(HashMultimap<String, Contact> contacts, String searchTerm) {
-		
+
 		this.mContacts = contacts;
 		this.latestSearchTerm = searchTerm;
-		
+
 		final FragmentManager fragmentManager = getSupportFragmentManager();
-		
+
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
-		    .findFragmentById(R.id.main_fragment);
-		if(list ==  null) {
+				.findFragmentById(R.id.main_fragment);
+		if (list == null) {
 			Debug.Log("List fragment missing from main activity, discarding search result"); //$NON-NLS-1$
 			return;
 		}
-	    list.displayResult(mContacts, latestSearchTerm);
-	    
-	    resetAndHideDetails(fragmentManager);    
-	    if(!Utility.isPreHoneycomb() && (searchView != null))
-	    	searchView.setQuery("", false); //$NON-NLS-1$
-	    list.getView().requestFocus();
+		list.displayResult(mContacts, latestSearchTerm);
+
+		resetAndHideDetails(fragmentManager);
+		if (!Utility.isPreHoneycomb() && (searchView != null))
+			searchView.setQuery("", false); //$NON-NLS-1$
+		list.getView().requestFocus();
 	}
-	
+
 	private void resetAndHideDetails(final FragmentManager fragmentManager) {
 
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
-		    .findFragmentById(R.id.main_fragment);
-		
+				.findFragmentById(R.id.main_fragment);
+
 		CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
-		    	.findFragmentById(R.id.contact_fragment);
-			 
-	    if (details != null && details.isInLayout() && !this.isPaused) {
-			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
+				.findFragmentById(R.id.contact_fragment);
+
+		if (details != null && details.isInLayout() && !this.isPaused) {
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
 
 			// Below does not work since it clears the detail fragment before anim starts,
 			// making it look rather weird. Better off w/o anims, unfortunately.
 			//ft.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
-			ft.hide(details);  
+			ft.hide(details);
 			ft.commit();
 			fragmentManager.executePendingTransactions();
-	    	details.clear();
+			details.clear();
 		}
 
-	    list.setViewBackground(false);
-	    selectedContact = null;
+		list.setViewBackground(false);
+		selectedContact = null;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see android.app.Activity#onStop()
-	 * 
+	 *
 	 * Called when the application is closed
 	 */
 	@Override
@@ -503,42 +612,47 @@ public class CorporateAddressBook extends FragmentActivity
 
 		// Make sure that the activesync displayText and policy key get written
 		// to the preferences
-		final SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putString(getString(R.string.PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE),
-				activeSyncManager.getActiveSyncVersion());
-		editor.putString(getString(R.string.PREFS_KEY_DEVICE_ID_STRING), activeSyncManager.getDeviceId());
-		editor.putString(getString(R.string.PREFS_KEY_POLICY_KEY_PREFERENCE),
-				activeSyncManager.getPolicyKey());
+		if(mPreferences != null) {
+			final SharedPreferences.Editor editor = mPreferences.edit();
+			editor.putString(getString(R.string.PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE),
+					activeSyncManager.getActiveSyncVersion());
+			editor.putString(getString(R.string.PREFS_KEY_DEVICE_ID_STRING), activeSyncManager.getDeviceId());
+			editor.putString(getString(R.string.PREFS_KEY_POLICY_KEY_PREFERENCE),
+					activeSyncManager.getPolicyKey());
 
-		// Commit the edits!
-		editor.commit();
+			// Commit the edits!
+			editor.commit();
+		}
 	}
 
 	@Override
 	protected void onDestroy() {
-		if((progressdialog != null) && progressdialog.isShowing()) {
+		if ((progressdialog != null) && progressdialog.isShowing()) {
 			try {
 				progressdialog.dismiss();
-			} catch (java.lang.IllegalArgumentException e) { }
+			} catch (java.lang.IllegalArgumentException e) {
+			}
 		}
-		if(search != null)
+		if (search != null)
 			search.setOnSearchCompletedListener(null);
 		super.onDestroy();
-	};
+	}
+
+	;
 
 	@Override
 	public void onContactSelected(Contact contact) {
 		// Create a parcel with the associated contact object
 		// This parcel is used to send data to the activity
-		
+
 		this.selectedContact = contact;
-		
+
 		final FragmentManager fragmentManager = getSupportFragmentManager();
-		
-	    CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
-		            .findFragmentById(R.id.contact_fragment);
-		 
-	    if (details == null || !details.isInLayout()) {
+
+		CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
+				.findFragmentById(R.id.contact_fragment);
+
+		if (details == null || !details.isInLayout()) {
 			final Bundle b = new Bundle();
 			b.putParcelable("net.vivekiyer.GAL", selectedContact); //$NON-NLS-1$
 
@@ -549,23 +663,23 @@ public class CorporateAddressBook extends FragmentActivity
 
 			myIntent.putExtras(b);
 			startActivity(myIntent);
-	    } else {
+		} else {
 			CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
-				.findFragmentById(R.id.main_fragment);
+					.findFragmentById(R.id.main_fragment);
 			list.setViewBackground(true);
-				
-	        details.setContact(selectedContact);
-	        
-			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
+
+			details.setContact(selectedContact);
+
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-			// Below does not work since it resizes the result fragment before anim starts,
+			// Below does not work since it resizes the accountName fragment before anim starts,
 			// making it look rather weird. Better off w/o anims, unfortunately.
 			//ft.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
 			ft.show(details);
 			ft.commit();
-	    }		
+		}
 	}
-	
+
 	@Override
 	public void onSearchCleared() {
 		resetAndHideDetails(getSupportFragmentManager());
@@ -574,14 +688,13 @@ public class CorporateAddressBook extends FragmentActivity
 	@TargetApi(11)
 	@Override
 	public boolean onSearchRequested() {
-		if(!Utility.isPreHoneycomb()) {
-			if(searchView != null) {
+		if (!Utility.isPreHoneycomb()) {
+			if (searchView != null) {
 				searchView.setFocusable(true);
-			    searchView.setIconified(false);
-			    searchView.requestFocusFromTouch();
-			    return true;
-			}
-			else {
+				searchView.setIconified(false);
+				searchView.requestFocusFromTouch();
+				return true;
+			} else {
 				Debug.Log("Running HC+ without SearchView"); //$NON-NLS-1$
 				return false;
 			}
@@ -591,60 +704,62 @@ public class CorporateAddressBook extends FragmentActivity
 
 	@Override
 	public void OnSearchCompleted(int result,
-			GALSearch search) {
-		if((progressdialog != null) && progressdialog.isShowing()) {
+	                              GALSearch search) {
+		if ((progressdialog != null) && progressdialog.isShowing()) {
 			try {
 				progressdialog.dismiss();
-			} catch (java.lang.IllegalArgumentException e) { }
+			} catch (java.lang.IllegalArgumentException e) {
+			}
 		}
-		if(result==0) {
+		if (result == 0) {
 			displaySearchResult(search.getContacts(), search.getSearchTerm());
 			return;
 		}
 		ChoiceDialogFragment dialogFragment;
 		String title = search.getErrorMesg();
-        String message = search.getErrorDetail();
+		String message = search.getErrorDetail();
 		String positiveButtonText;
 		String negativeButtonText;
-		switch(result) {
-		// Errors that might be remedied by updating server settings
-		case 401:
-		case ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION:
-		case ConnectionChecker.TIMEOUT:
-			positiveButtonText = getString(R.string.show_settings);
-	        negativeButtonText = getString(android.R.string.cancel);
-	        dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, DISPLAY_CONFIGURATION_REQUEST, android.R.id.closeButton);
-	        dialogFragment.setListener(this);
-	        try {
-				dialogFragment.show(getSupportFragmentManager(), "reprovision"); //$NON-NLS-1$
-			} catch (java.lang.IllegalStateException e) {
-				Debug.Log(e.getMessage());
-			}
-	        break;
-		// Errors that depend on external (non app-related) circumstances
-		case 403:
-			positiveButtonText = getString(android.R.string.ok);
-			negativeButtonText = getString(android.R.string.copy);
-			dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, android.R.id.closeButton, android.R.id.copy);
-			dialogFragment.setListener(this);
-			try {
-				dialogFragment.show(getSupportFragmentManager(), "unauthorized"); //$NON-NLS-1$
-			} catch (java.lang.IllegalStateException e) {
-				Debug.Log(e.getMessage());
-			}
-			break;
-		default:
-	        dialogFragment = ChoiceDialogFragment.newInstance(title, message);
-	        try {
-				dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag"); //$NON-NLS-1$
-			} catch (java.lang.IllegalStateException e) {
-				Debug.Log(e.getMessage());
-			}
-			break;
+		switch (result) {
+			// Errors that might be remedied by updating server settings
+			case 401:
+			case ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION:
+			case ConnectionChecker.TIMEOUT:
+				positiveButtonText = getString(R.string.show_settings);
+				negativeButtonText = getString(android.R.string.cancel);
+				dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, DISPLAY_CONFIGURATION_REQUEST, android.R.id.closeButton);
+				dialogFragment.setListener(this);
+				try {
+					dialogFragment.show(getSupportFragmentManager(), "reprovision"); //$NON-NLS-1$
+				} catch (java.lang.IllegalStateException e) {
+					Debug.Log(e.getMessage());
+				}
+				break;
+			// Errors that depend on external (non app-related) circumstances
+			case 403:
+				positiveButtonText = getString(android.R.string.ok);
+				negativeButtonText = getString(android.R.string.copy);
+				dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, android.R.id.closeButton, android.R.id.copy);
+				dialogFragment.setListener(this);
+				try {
+					dialogFragment.show(getSupportFragmentManager(), "unauthorized"); //$NON-NLS-1$
+				} catch (java.lang.IllegalStateException e) {
+					Debug.Log(e.getMessage());
+				}
+				break;
+			default:
+				dialogFragment = ChoiceDialogFragment.newInstance(title, message);
+				try {
+					dialogFragment.show(getSupportFragmentManager(), "ContinueFragTag"); //$NON-NLS-1$
+				} catch (java.lang.IllegalStateException e) {
+					Debug.Log(e.getMessage());
+				}
+				break;
 		}
 	}
+
 	public void onChoiceDialogOptionPressed(int action) {
-		if(action == DISPLAY_CONFIGURATION_REQUEST)
+		if (action == DISPLAY_CONFIGURATION_REQUEST)
 			showConfiguration(this);
 	}
 }

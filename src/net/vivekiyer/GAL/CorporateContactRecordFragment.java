@@ -143,6 +143,8 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 		if((pic = mContact.getPicture()) != null) {
 			Bitmap bm = BitmapFactory.decodeByteArray(pic, 0, pic.length);
 			qcb.setImageBitmap(bm);
+		} else {
+			qcb.setImageToDefault();
 		}
 
 		// getListView().setOnItemLongClickListener(mListViewLongClickListener);

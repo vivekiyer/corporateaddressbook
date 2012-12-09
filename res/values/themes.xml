@@ -2,4 +2,5 @@
     <resources>
         <style name="AppTheme" parent="@android:style/Theme.Light"></style>
         <!-- style name="AppTheme" parent="@android:style/Theme.Light.NoTitleBar"></style-->
+        <style name="LargeDialog" parent="@android:style/Theme.Light"></style>
     </resources>

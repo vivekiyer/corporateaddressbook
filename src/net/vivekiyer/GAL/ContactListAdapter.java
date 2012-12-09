@@ -98,6 +98,8 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 			if((pic = c.getPicture()) != null) {
 				Bitmap bm = BitmapFactory.decodeByteArray(pic, 0, pic.length);
 				qcb.setImageBitmap(bm);
+			} else {
+				qcb.setImageToDefault();
 			}
 			v.setTag(c);			
 			qcb.bringToFront();

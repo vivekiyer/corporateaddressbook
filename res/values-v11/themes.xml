@@ -7,5 +7,6 @@
 	<style name="MyActionBar" parent="android:style/Widget.Holo.Light.ActionBar">
 <!--     	<item name="android:background">@color/ActionBarBackgroundColor</item> -->
 	</style>
+    <style name="LargeDialog" parent="@android:style/Theme.Holo.DialogWhenLarge"></style>
 	
 </resources>

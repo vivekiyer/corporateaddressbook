@@ -9,11 +9,20 @@ import android.preference.PreferenceFragment;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class PrefsFragment extends PreferenceFragment {
 	@Override
-    public void onCreate(Bundle aSavedState) {
-        super.onCreate(aSavedState);
-        Context anAct = getActivity().getApplicationContext();
-        int thePrefRes = anAct.getResources().getIdentifier(getArguments().getString("pref-resource"),
-                "xml",anAct.getPackageName());
-        addPreferencesFromResource(thePrefRes);
-    }
+	public void onCreate(Bundle aSavedState) {
+		Context anAct = getActivity().getApplicationContext();
+		String fragment = getArguments().getString("pref-resource");
+		onCreate(aSavedState, fragment);
+	}
+
+	public void onCreate(Bundle aSavedState, String prefResource) {
+		super.onCreate(aSavedState);
+		onBeforeAddPrefs();
+		Context anAct = getActivity().getApplicationContext();
+		int thePrefRes = anAct.getResources().getIdentifier(prefResource,
+				"xml",anAct.getPackageName());
+		addPreferencesFromResource(thePrefRes);
+	}
+
+	protected void onBeforeAddPrefs() {}
 }

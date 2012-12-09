@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+<header android:id="@+id/server_heading" android:title="@string/accounts"/>
+<!--
 <header android:fragment="net.vivekiyer.GAL.Preferences.ServerPrefsFragment"
     android:icon="@drawable/server_icon"
     android:title="@string/server_settings"
     >
     <extra android:name="pref-resource" android:value="pref_server" />
 </header>
+-->
+    <header android:id="@+id/account_add"
+        android:icon="@drawable/ic_content_new"
+        android:title="Add server" >
+    <intent android:targetClass="net.vivekiyer.GAL.Preferences.AddServerActivity"
+            android:targetPackage="net.vivekiyer.GAL"
+            android:action="net.vivekiyer.GAL.Preferences.ADD_SERVER">
+    </intent>
+</header>
+<header android:id="@+id/settings_heading" android:title="@string/settings"/>
 <header android:fragment="net.vivekiyer.GAL.Preferences.PrefsFragment"
-    android:icon="@drawable/info_icon"
+    android:icon="@drawable/ic_action_about"
     android:title="@string/about_app"
     >
     <extra android:name="pref-resource" android:value="pref_about" />

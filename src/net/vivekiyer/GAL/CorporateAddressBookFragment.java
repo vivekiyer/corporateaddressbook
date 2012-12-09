@@ -246,7 +246,7 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 		else
 			tv.setText(String.format(getString(R.string.found_x_results_for_y), mContacts.size(), latestSearchTerm));
 		
-		// Get the result and sort the alphabetically
+		// Get the accountName and sort the alphabetically
 		contactList = new Contact[mContacts.size()];
 		
 		int i = 0;
@@ -256,7 +256,7 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 
 		Arrays.sort(contactList);
 
-		// Create a new array adapter and add the result to this
+		// Create a new array adapter and add the accountName to this
 		final ContactListAdapter listadapter = new ContactListAdapter(
 				this.getActivity(), R.layout.contact_row,
 				contactList);
@@ -273,7 +273,7 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 		contactListListener.onSearchCleared();
 		contactList = new Contact[0];
 
-		// Create a new array adapter and add the result to this
+		// Create a new array adapter and add the accountName to this
 		final ContactListAdapter listadapter = new ContactListAdapter(
 				this.getActivity(), R.layout.contact_row,
 				contactList);

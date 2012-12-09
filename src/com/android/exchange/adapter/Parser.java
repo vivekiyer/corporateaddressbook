@@ -32,7 +32,7 @@ import net.vivekiyer.GAL.Debug;
  *
  */
 public abstract class Parser {
-    private static final boolean LOG_VERBOSE = false;
+    private static final boolean LOG_VERBOSE = Debug.Verbose;
 
     // The following constants are Wbxml standard
     public static final int START_DOCUMENT = 0;
@@ -164,7 +164,7 @@ public abstract class Parser {
     }
     
     /*
-     * Exception class to indicate an unexpected parse result, ie one other than STATUS_OK. This includes
+     * Exception class to indicate an unexpected parse accountName, ie one other than STATUS_OK. This includes
      * HTTP errors and EAS/WBXML status tags.
      */
     public class EasNotSuccessfulException extends Exception {
@@ -275,7 +275,7 @@ public abstract class Parser {
     }
 
     /**
-     * Return the value of the current tag, as a byte array.  Note that the result of this call
+     * Return the value of the current tag, as a byte array.  Note that the accountName of this call
      * is indeterminate, and possibly null, if the value of the tag is not a byte array
      *
      * @return the byte array value of the current tag
@@ -287,7 +287,7 @@ public abstract class Parser {
     }
 
     /**
-     * Return the value of the current tag, as a String.  Note that the result of this call is
+     * Return the value of the current tag, as a String.  Note that the accountName of this call is
      * indeterminate, and possibly null, if the value of the tag is not an immediate string
      *
      * @return the String value of the current tag

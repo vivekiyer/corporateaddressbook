@@ -214,6 +214,12 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 		for (int i = 0; i < size; i++) {
 			add(in.readString(), in.readString());
 		}
+
+		int picLength = in.readInt();
+		if(picLength > 0) {
+			picture = new byte[picLength];
+			in.readByteArray(picture);
+		}
 	}
 
 	public void add(String key, String value) {
@@ -242,6 +248,14 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 		for (KeyValuePair kvp : Details) {
 			dest.writeString(kvp.getKey());
 			dest.writeString(kvp.getValue());
+		}
+
+		if(picture == null) {
+			dest.writeInt(0);
+		}
+		else {
+			dest.writeInt(picture.length);
+			dest.writeByteArray(picture);
 		}
 	}
 

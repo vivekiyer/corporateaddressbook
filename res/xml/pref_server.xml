@@ -2,37 +2,33 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:icon="@drawable/icon"
     android:title="@string/settings" >
-    <PreferenceCategory android:title="Server" >
-        <net.vivekiyer.GAL.Preferences.SummarizedEditTextPreference
-            android:dialogTitle="@string/enterServerName"
-            android:dialogMessage="Name or IP address of the server"
-            android:key="@string/PREFS_KEY_SERVER_PREFERENCE"
-            android:summary="[Not set]"
-            android:title="@string/serverName" />
-        <CheckBoxPreference
-            android:key="@string/PREFS_KEY_USE_SSL"
-            android:summaryOff="Uses non-secure communication to server"
-            android:summaryOn="Communication to server secured by SSL"
-            android:title="@string/useSecureSslText"
-            android:defaultValue="true" />
-        <CheckBoxPreference
-            android:key="@string/PREFS_KEY_ACCEPT_ALL_CERTS"
-            android:summaryOff="Denies connection to servers whose SSL certificate is not trusted"
-            android:summaryOn="Connects to server even if its SSL certificate is not trusted"
-            android:title="@string/acceptAllSllText"
-            android:defaultValue="true" />
+    <PreferenceCategory android:title="Account" >
+        <Preference android:id="@+id/account_edit"
+		        android:key="@string/ACCOUNT_TYPE">
+            <intent android:targetClass="net.vivekiyer.GAL.Preferences.Configure"
+                    android:targetPackage="net.vivekiyer.GAL"
+                    android:action="@string/ACTION_PREFS_ACCOUNT_EDIT">
+            </intent>
+        </Preference>
     </PreferenceCategory>
-    <PreferenceCategory android:title="User credentials" >
+    <PreferenceCategory android:title="@string/settings">
         <net.vivekiyer.GAL.Preferences.SummarizedEditTextPreference
-            android:dialogMessage="DOMAIN\\user or user@domain.com"
-            android:dialogTitle="Please enter username"
-            android:key="@string/PREFS_KEY_USERNAME_PREFERENCE"
-            android:summary="@string/domainUnameHint"
-            android:title="@string/unameLabel" />
-        <net.vivekiyer.GAL.Preferences.SummarizedEditTextPreference
-                android:inputType="textPassword"
-                android:key="@string/PREFS_KEY_PASSWORD_PREFERENCE"
-                android:summary="@string/passwordHint"
-                android:title="@string/passwordLabel" android:dialogTitle="Please enter your password"/>
+            android:dialogTitle="Maximum number of results"
+            android:key="@string/PREFS_KEY_MAX_HITS"
+            android:title="Maximum number of results"
+		    android:defaultValue="@integer/PREFS_KEY_MAX_RESULT"/>
+        <CheckBoxPreference
+            android:title="Contact pictures"
+            android:key="@string/PREFS_KEY_CONTACT_PICS"
+            android:defaultValue="true"
+            android:summary="Showing contact pictures might slow down search" />
+	    <Preference android:id="@+id/account_delete"
+	            android:key="@string/ACTION_PREFS_ACCOUNT_DELETE"
+			    android:title="@string/delete_account">
+		    <intent android:targetClass="net.vivekiyer.GAL.Preferences.Configure"
+		            android:targetPackage="net.vivekiyer.GAL"
+		            android:action="@string/ACTION_PREFS_ACCOUNT_DELETE">
+		    </intent>
+	    </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

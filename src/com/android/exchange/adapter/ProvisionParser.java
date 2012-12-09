@@ -24,7 +24,7 @@ import com.android.exchange.adapter.Parser;
 import com.android.exchange.adapter.Tags;
 
 /**
- * Parse the result of the Provision command
+ * Parse the accountName of the Provision command
  *
  * Assuming a successful parse, we store the PolicySet and the policy key
  */
