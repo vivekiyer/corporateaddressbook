@@ -237,7 +237,7 @@ public class CorporateAddressBookFragment extends android.support.v4.app.Fragmen
 	public void displayResult(HashMultimap<String, Contact> mContacts, String latestSearchTerm) {
 		if(mContacts == null)
 		{
-			Toast.makeText(getActivity(), R.string.undefined_result_please_try_again, Toast.LENGTH_LONG).show();
+			//Toast.makeText(getActivity(), R.string.undefined_result_please_try_again, Toast.LENGTH_LONG).show();
 			return;
 		}
 		TextView tv = (TextView) this.getView().findViewById(R.id.resultheader);
