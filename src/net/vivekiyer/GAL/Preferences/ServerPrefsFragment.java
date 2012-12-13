@@ -1,17 +1,12 @@
 package net.vivekiyer.GAL.Preferences;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.widget.ListView;
 import net.vivekiyer.GAL.R;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,7 +28,7 @@ public class ServerPrefsFragment extends PrefsFragment {
 	@Override
 	public void onCreate(Bundle aSavedState) {
 		accountKey = getArguments().getString(getString(R.string.KEY_ACCOUNT_KEY));
-		if(accountKey == null)
+		if (accountKey == null)
 			throw new RuntimeException("Unable to get accountKey for account");
 		accountServer = getArguments().getString(getString(R.string.KEY_ACCOUNT_SERVER));
 		super.onCreate(aSavedState, "pref_server");    //To change body of overridden methods use File | Settings | File Templates.
@@ -46,8 +41,15 @@ public class ServerPrefsFragment extends PrefsFragment {
 	}
 
 	void addServerPreference(PreferenceScreen screen) {
+		SharedPreferences accountPrefs = getActivity().getSharedPreferences(accountKey, Context.MODE_PRIVATE);
+		String domain = accountPrefs.getString(getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE), "");
+		String user = accountPrefs.getString(getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), "");
 		Preference preference = screen.findPreference(getString(R.string.ACCOUNT_TYPE));
-		preference.setTitle(accountKey);
+		if (domain.isEmpty()) {
+			preference.setTitle(user);
+		} else {
+			preference.setTitle(domain + "\\" + user);
+		}
 		preference.setSummary(accountServer);
 		Intent intent = preference.getIntent();
 		intent.putExtra(getString(R.string.KEY_ACCOUNT_KEY), accountKey);

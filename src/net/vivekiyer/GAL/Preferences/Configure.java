@@ -15,39 +15,37 @@
 
 package net.vivekiyer.GAL.Preferences;
 
-import android.*;
 import android.accounts.*;
+import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.text.AndroidCharacter;
-import android.widget.*;
-import net.vivekiyer.GAL.*;
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import net.vivekiyer.GAL.R;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.TextView;
+import net.vivekiyer.GAL.*;
 
 import java.io.IOException;
 
 /**
  * @author Vivek Iyer
- * 
+ *         <p/>
  *         This class handles the configuration pane for the application.
  */
 public class Configure extends FragmentActivity implements OnClickListener, TaskCompleteCallback, ChoiceDialogFragment.OnChoiceDialogOptionClickListener {
-	
+
 	protected SharedPreferences mPreferences;
 	protected ProgressDialog progressdialog;
 	protected ActiveSyncManager activeSyncManager;
@@ -85,17 +83,18 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 		Button button = (Button) findViewById(R.id.buttonSignIn);
 		button.setOnClickListener(this);
 
+		String action = getIntent().getAction();
 		// Edit account
-		if(getIntent().getAction().equals(getString(R.string.ACTION_PREFS_ACCOUNT_EDIT))) {
+		if (action.equals(getString(R.string.ACTION_PREFS_ACCOUNT_EDIT))) {
 			this.setTitle("Edit account");
 			String accountKey = getIntent().getStringExtra(getString(R.string.KEY_ACCOUNT_KEY));
-			if(accountKey == null)
+			if (accountKey == null)
 				throw new RuntimeException("No account key was supplied for editing");
 
 			// Get the preferences that were entered by the user and display those to the user
 			mPreferences = getSharedPreferences(accountKey, MODE_PRIVATE);
 
-			String domain = mPreferences.getString(getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE) , ""),
+			String domain = mPreferences.getString(getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE), ""),
 					user = mPreferences.getString(getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), "");
 			user = domain + (domain.length() > 0 ? "\\" : "") + user;
 			if (user.length() > 0)
@@ -109,45 +108,39 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 					mPreferences.getBoolean(getString(R.string.PREFS_KEY_USE_SSL), true));
 			setValueForCheckbox(R.id.chkAcceptAllSSLCert,
 					mPreferences.getBoolean(getString(R.string.PREFS_KEY_ACCEPT_ALL_CERTS), true));
+
+			// Disable editing of username and server; this would mess up our settings
+			findViewById(R.id.txtDomainUserName).setEnabled(false);
+			findViewById(R.id.lblDomainUserName).setEnabled(false);
+			findViewById(R.id.txtServerName).setEnabled(false);
+			findViewById(R.id.lblServerName).setEnabled(false);
+			findViewById(R.id.editingWarning).setVisibility(View.VISIBLE);
 		}
 		// Add account
-		else if(getIntent().getAction().equals(getString(R.string.ACTION_PREFS_ACCOUNT_ADD))) {
+		else if (action.equals(getString(R.string.ACTION_PREFS_ACCOUNT_ADD))) {
 			AccountManager am = AccountManager.get(App.getInstance());
 			Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
 
-			if(accounts.length > 0) {
+			if (accounts.length > 0) {
 				Bundle extras = getIntent().getExtras();
 				AccountAuthenticatorResponse response = extras
 						.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
-				showAlert("Sorry, Corporate Addressbook currently only supports one server");
-				Toast.makeText(this, "Sorry, Corporate Addressbook currently only supports one server", Toast.LENGTH_SHORT).show();
 				response.onError(0, "Sorry, Corporate Addressbook currently only supports one server");
 				finish();
 				return;
 			}
 		}
 		// Delete account
-		else if(getIntent().getAction().equals(getString(R.string.ACTION_PREFS_ACCOUNT_DELETE))) {
+		else if (action.equals(getString(R.string.ACTION_PREFS_ACCOUNT_DELETE))) {
 			accountKey = getIntent().getStringExtra(getString(R.string.KEY_ACCOUNT_KEY));
-			if (accountKey == null)
-					throw new RuntimeException("No account supplied for deletion");
-			DialogFragment cd = ChoiceDialogFragment.newInstance(getString(R.string.delete_account),
-					"Are you sure you want to delete the account \'" + accountKey + "\'?",
-					getString(android.R.string.ok),
-					getString(android.R.string.cancel),
-					R.id.account_delete,
-					android.R.id.empty)
-					.setListener(this);
-//					.setParent(this)
-//					.create();
-			cd.show(getSupportFragmentManager(), "deleteConfirmation");
+			onChoiceDialogOptionPressed(R.id.account_delete);
 			return;
 		}
 		EditText text = (EditText) findViewById(R.id.txtServerName);
 		text.setOnEditorActionListener(new EditText.OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView arg0, int actionId,
-					KeyEvent arg2) {
+			                              KeyEvent arg2) {
 				if (actionId == EditorInfo.IME_ACTION_GO) {
 					connect();
 					return true;
@@ -155,24 +148,21 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 				return false;
 			}
 		});
-		
-		if(!Utility.isPreHoneycomb())
-		{
+
+		if (!Utility.isPreHoneycomb()) {
 			ActionBar actionBar = getActionBar();
-			if(actionBar != null)
+			if (actionBar != null)
 				actionBar.setDisplayHomeAsUpEnabled(true);
 //			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
 		}
-	}	
-	
+	}
+
 	/**
-	 * @param id
-	 *            The id for the UI element
-	 * @param s
-	 *            The value to set the text to
-	 * 
-	 *            Sets the text for the EditText UI element to the provided
-	 *            value
+	 * @param id The id for the UI element
+	 * @param s  The value to set the text to
+	 *           <p/>
+	 *           Sets the text for the EditText UI element to the provided
+	 *           value
 	 */
 	private void setTextForId(int id, String s) {
 		EditText text = (EditText) findViewById(id);
@@ -180,10 +170,9 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 	}
 
 	/**
-	 * @param id
-	 *            The id for the UI element
+	 * @param id The id for the UI element
 	 * @return The value the text is set to
-	 * 
+	 *         <p/>
 	 *         Gets the text that the EditText UI element is set to
 	 */
 	private String getTextFromId(int id) {
@@ -211,18 +200,16 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			showAlert(getString(R.string.valid_domain_and_username_error));
 			return;
 		}
-		
-		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");		
-		
-		if(splits.length == 1) {
+
+		String[] splits = getTextFromId(R.id.txtDomainUserName).split("\\\\");
+
+		if (splits.length == 1) {
 			domain = ""; //$NON-NLS-1$
 			username = splits[0];
-		}
-		else if (splits.length == 2) {
+		} else if (splits.length == 2) {
 			domain = splits[0];
 			username = splits[1];
-		}
-		else {
+		} else {
 			showAlert(getString(R.string.domain_and_username_format_error));
 			return;
 		}
@@ -286,9 +273,8 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 	}
 
 	/**
-	 * @param s
-	 *            The alert message Displays an alert dialog with the messaged
-	 *            provided
+	 * @param s The alert message Displays an alert dialog with the messaged
+	 *          provided
 	 */
 	private void showAlert(String s) {
 		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
@@ -307,15 +293,16 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 	 */
 	@Override
 	public void taskComplete(
-			boolean taskStatus, 
+			boolean taskStatus,
 			int statusCode,
 			int requestStatus,
-			String errorString) {		
-		
-		if((progressdialog != null) && progressdialog.isShowing()) {
+			String errorString) {
+
+		if ((progressdialog != null) && progressdialog.isShowing()) {
 			try {
-		progressdialog.dismiss();
-			} catch (java.lang.IllegalArgumentException e) { }
+				progressdialog.dismiss();
+			} catch (java.lang.IllegalArgumentException e) {
+			}
 		}
 
 		// Looks like there was an error in the settings
@@ -325,53 +312,65 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 				Debug.sendDebugEmail(this);
 			} else {
 				try {
-				// Handle all errors we're capable of,
-				// inform user of others
-				switch (statusCode) {
-				case 200: // Successful, but obviously something went wrong
-					switch(requestStatus){
-					case Parser.STATUS_TOO_MANY_DEVICES:
-						ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices"); //$NON-NLS-1$
-						break;
-					default:
-						ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices");
-						break;
+					// Handle all errors we're capable of,
+					// inform user of others
+					switch (statusCode) {
+						case 200: // Successful, but obviously something went wrong
+							switch (requestStatus) {
+								case Parser.STATUS_TOO_MANY_DEVICES:
+									ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices"); //$NON-NLS-1$
+									break;
+								default:
+									ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices");
+									break;
+							}
+							break;
+						case 401: // UNAUTHORIZED
+							showAlert(getString(R.string.authentication_failed_detail));
+							break;
+						case 403: // FORBIDDEN, typically means that the DeviceID is not accepted and needs to be set in Exchange
+							String title = getString(R.string.forbidden_by_server_title);
+							String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
+							ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
+									.setListener(this)
+											//.create()
+									.show(getSupportFragmentManager(), "forbidden");
+							break;
+						case ConnectionChecker.SSL_PEER_UNVERIFIED:
+							ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.unable_to_find_matching_certificate, "\n", getString(R.string.acceptAllSllText))) //$NON-NLS-1$
+									.show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
+							break;
+						case ConnectionChecker.UNKNOWN_HOST:
+							ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
+							break;
+						case ConnectionChecker.TIMEOUT:
+							ChoiceDialogFragment.newInstance(getString(R.string.timeout_title), String.format(getString(R.string.timeout_detail), getString(R.string.useSecureSslText))).show(getSupportFragmentManager(), "Timeout"); //$NON-NLS-1$
+							break;
+						default:
+							ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
+									.show(getSupportFragmentManager(), "connError");
+							break;
 					}
-					break;
-				case 401: // UNAUTHORIZED
-					showAlert(getString(R.string.authentication_failed_detail));
-					break;
-				case 403: // FORBIDDEN, typically means that the DeviceID is not accepted and needs to be set in Exchange
-					String title = getString(R.string.forbidden_by_server_title);
-					String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
-					ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
-						.setListener(this)
-						//.create()
-						.show(getSupportFragmentManager(), "forbidden");
-					break;
-				case ConnectionChecker.SSL_PEER_UNVERIFIED:
-						ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.unable_to_find_matching_certificate, "\n", getString(R.string.acceptAllSllText))) //$NON-NLS-1$
-							.show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
-					break;
-				case ConnectionChecker.UNKNOWN_HOST:
-					ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
-					break;
-				case ConnectionChecker.TIMEOUT:
-					ChoiceDialogFragment.newInstance(getString(R.string.timeout_title), String.format(getString(R.string.timeout_detail), getString(R.string.useSecureSslText))).show(getSupportFragmentManager(), "Timeout"); //$NON-NLS-1$
-					break;
-				default:
-					ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
-						.show(getSupportFragmentManager(), "connError");
-					break;
-				}
 				} catch (java.lang.IllegalStateException e) {
 					Debug.Log("Server configuration window was dismissed before Connection check was finished:\n" + e.toString());
+				}
 			}
-		}
 		}
 		// All went well. Store the settings and return to the main page
 		else {
-			mPreferences = getSharedPreferences(username, MODE_PRIVATE);
+			AccountManager am = AccountManager.get(this);
+//			Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
+			String accountKey = username.contains("@") ?
+					username :
+					String.format("%1$s@%2$s", username, getTextFromId(R.id.txtServerName).trim());
+//			for(Account acc : accounts) {
+//				if(accountKey.equals(acc.name));
+//			}
+//			if(null == accountKey) {
+//				accountKey = UUID.randomUUID().toString();
+//			}
+
+			mPreferences = getSharedPreferences(accountKey, MODE_PRIVATE);
 			SharedPreferences.Editor editor = mPreferences.edit();
 			editor.putString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE),
 					getTextFromId(R.id.txtServerName).trim());
@@ -394,22 +393,31 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			editor.commit();
 
 			// Pass the values to the account manager
-			Account account = new Account(username,
+			Account account = null;
+//			for(Account acc : am.getAccountsByType(getString(R.string.ACCOUNT_TYPE))) {
+//				if(accountKey.equals(acc.name)) { //am.getUserData(acc, getString(R.string.KEY_ACCOUNT_KEY)))) {
+//					account = acc;
+//				}
+//			}
+
+			account = new Account(accountKey,
 					getString(R.string.ACCOUNT_TYPE));
-			AccountManager am = AccountManager.get(this);
-			boolean accountCreated = am.addAccountExplicitly(account,
+			am.addAccountExplicitly(account,
 					getTextFromId(R.id.txtPassword), null);
+			am.setUserData(account, getString(R.string.KEY_ACCOUNT_KEY), accountKey);
 
 			Bundle extras = getIntent().getExtras();
-			if (extras != null && accountCreated) {
+			if (extras != null) {
 				AccountAuthenticatorResponse response = extras
 						.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
 
-				Bundle result = new Bundle();
-				result.putString(AccountManager.KEY_ACCOUNT_NAME, username);
-				result.putString(AccountManager.KEY_ACCOUNT_TYPE,
-						getString(R.string.ACCOUNT_TYPE));
-				response.onResult(result);
+				if (response != null) {
+					Bundle result = new Bundle();
+					result.putString(AccountManager.KEY_ACCOUNT_NAME, username);
+					result.putString(AccountManager.KEY_ACCOUNT_TYPE,
+							getString(R.string.ACCOUNT_TYPE));
+					response.onResult(result);
+				}
 			}
 
 			// Close the activity
@@ -421,29 +429,27 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 	@TargetApi(11)
 	@Override
 	public void onChoiceDialogOptionPressed(int action) {
-		switch(action) {
+		switch (action) {
 			case android.R.id.copy:
-				if(Utility.isPreHoneycomb()) {
+				if (Utility.isPreHoneycomb()) {
 					final android.text.ClipboardManager clipboard;
 					clipboard = (android.text.ClipboardManager) getSystemService(android.content.Context.CLIPBOARD_SERVICE);
 					clipboard.setText(activeSyncManager.getDeviceId());
-				}
-				else {
+				} else {
 					ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 					clip.setPrimaryClip(ClipData.newPlainText("Android Device ID", activeSyncManager.getDeviceId()));
 				}
 				break;
 			case R.id.account_delete:
 				getSharedPreferences(accountKey, MODE_PRIVATE).edit().clear().commit(); //remove all prefs
-				AccountManager am = AccountManager.get(this);
-				for (Account acc : am.getAccountsByType(getString(R.string.ACCOUNT_TYPE)))
-				{
-					if (acc.name.equals(accountKey))
+				android.accounts.AccountManager am = android.accounts.AccountManager.get(this);
+				for (Account acc : am.getAccountsByType(getString(R.string.ACCOUNT_TYPE))) {
+					if (acc.name.equals(accountKey)) {
 						am.removeAccount(acc, new AccountManagerCallback<Boolean>() {
 							@Override
 							public void run(AccountManagerFuture<Boolean> future) {
 								try {
-									setResult(future.getResult() ? 1 : 0);
+									setResult(future.getResult() ? RESULT_OK : RESULT_CANCELED);
 								} catch (OperationCanceledException e) {
 								} catch (IOException e) {
 								} catch (AuthenticatorException e) {
@@ -451,11 +457,12 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 								finish();
 							}
 						}, null);
-					break;
+						break;
+					}
 				}
 				break;
 			case android.R.id.empty:
-				setResult(0);
+				setResult(RESULT_CANCELED);
 				finish();
 			default:
 				break;

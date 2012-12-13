@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:icon="@drawable/icon"
-    android:title="@string/settings" >
-    <PreferenceCategory android:title="Account" >
-        <Preference android:id="@+id/account_edit"
-		        android:key="@string/ACCOUNT_TYPE">
-            <intent android:targetClass="net.vivekiyer.GAL.Preferences.Configure"
-                    android:targetPackage="net.vivekiyer.GAL"
-                    android:action="@string/ACTION_PREFS_ACCOUNT_EDIT">
-            </intent>
-        </Preference>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings">
-        <net.vivekiyer.GAL.Preferences.SummarizedEditTextPreference
-            android:dialogTitle="Maximum number of results"
-            android:key="@string/PREFS_KEY_MAX_HITS"
-            android:title="Maximum number of results"
-		    android:defaultValue="@integer/PREFS_KEY_MAX_RESULT"/>
-        <CheckBoxPreference
-            android:title="Contact pictures"
-            android:key="@string/PREFS_KEY_CONTACT_PICS"
-            android:defaultValue="true"
-            android:summary="Showing contact pictures might slow down search" />
-	    <Preference android:id="@+id/account_delete"
-	            android:key="@string/ACTION_PREFS_ACCOUNT_DELETE"
-			    android:title="@string/delete_account">
-		    <intent android:targetClass="net.vivekiyer.GAL.Preferences.Configure"
-		            android:targetPackage="net.vivekiyer.GAL"
-		            android:action="@string/ACTION_PREFS_ACCOUNT_DELETE">
-		    </intent>
-	    </Preference>
-    </PreferenceCategory>
+                  android:icon="@drawable/icon"
+                  android:title="@string/settings">
+	<PreferenceCategory android:title="Account">
+		<Preference
+				android:id="@+id/account_edit"
+				android:key="@string/ACCOUNT_TYPE">
+			<intent
+					android:targetClass="net.vivekiyer.GAL.Preferences.Configure"
+					android:targetPackage="net.vivekiyer.GAL"
+					android:action="@string/ACTION_PREFS_ACCOUNT_EDIT">
+			</intent>
+		</Preference>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/settings">
+		<net.vivekiyer.GAL.Preferences.SummarizedEditTextPreference
+				android:dialogTitle="Maximum number of results"
+				android:key="@string/PREFS_KEY_MAX_HITS"
+				android:title="Maximum number of results"
+				android:defaultValue="@integer/PREFS_KEY_MAX_RESULT"/>
+		<CheckBoxPreference
+				android:title="Contact pictures"
+				android:key="@string/PREFS_KEY_CONTACT_PICS"
+				android:defaultValue="true"
+				android:summary="Showing contact pictures might slow down search"/>
+		<Preference
+				android:id="@+id/account_delete"
+				android:key="@string/ACTION_PREFS_ACCOUNT_DELETE"
+				android:title="@string/delete_account">
+			<intent
+					android:targetClass="net.vivekiyer.GAL.Preferences.AddOrDeleteAccountActivity"
+					android:targetPackage="net.vivekiyer.GAL"
+					android:action="@string/ACTION_PREFS_ACCOUNT_DELETE">
+			</intent>
+		</Preference>
+	</PreferenceCategory>
 </PreferenceScreen>
