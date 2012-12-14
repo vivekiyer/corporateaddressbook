@@ -121,14 +121,14 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			AccountManager am = AccountManager.get(App.getInstance());
 			Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
 
-			if (accounts.length > 0) {
-				Bundle extras = getIntent().getExtras();
-				AccountAuthenticatorResponse response = extras
-						.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
-				response.onError(0, "Sorry, Corporate Addressbook currently only supports one server");
-				finish();
-				return;
-			}
+//			if (accounts.length > 0) {
+//				Bundle extras = getIntent().getExtras();
+//				AccountAuthenticatorResponse response = extras
+//						.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+//				response.onError(0, "Sorry, Corporate Addressbook currently only supports one server");
+//				finish();
+//				return;
+//			}
 		}
 		// Delete account
 		else if (action.equals(getString(R.string.ACTION_PREFS_ACCOUNT_DELETE))) {

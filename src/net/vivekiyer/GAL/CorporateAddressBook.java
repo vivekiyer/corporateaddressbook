@@ -15,8 +15,8 @@
 
 package net.vivekiyer.GAL;
 
-import android.accounts.*;
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -34,14 +33,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.SearchView;
+import android.widget.SpinnerAdapter;
 import com.google.common.collect.HashMultimap;
 import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
 import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
 import net.vivekiyer.GAL.Preferences.ConnectionChecker;
 import net.vivekiyer.GAL.Preferences.PrefsActivity;
 
-import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -50,25 +50,25 @@ import java.util.Set;
  *         This class is the main entry point to the application
  */
 public class CorporateAddressBook extends FragmentActivity
-		implements ContactListListener, GALSearch.OnSearchCompletedListener, OnChoiceDialogOptionClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
+		implements ContactListListener, GALSearch.OnSearchCompletedListener, OnChoiceDialogOptionClickListener,
+		ActionBar.OnNavigationListener, AccountManager.OnAccountsChangedListener {
 
 	private String accountKey;
 
 	class AccountResult {
 
 		public static final int OpCanceled = 1;
-		public static final int AuthEx = 2;
-		public static final int IOEx = 3;
-		public int error = 0;
 
+		public static final int IOEx = 3;
+
+		public int error = 0;
 		public String accountName;
 		public String errorDescription;
+
 	}
-	// TAG used for logging
 
 	// Object that performs all the ActiveSync magic
 	private ActiveSyncManager activeSyncManager;
-
 	// Preference object that stores the account credentials
 	private SharedPreferences mPreferences;
 
@@ -82,16 +82,16 @@ public class CorporateAddressBook extends FragmentActivity
 	static final String mainTag = "R.id.main_fragment"; //$NON-NLS-1$
 
 	static final String contactTag = "R.id.contact_fragment"; //$NON-NLS-1$
+
 	static final String CONTACTS = "mContacts"; //$NON-NLS-1$
+
 	static final String SEARCH_TERM = "latestSearchTerm"; //$NON-NLS-1$
 	static final String SELECTED_CONTACT = "selectedContact"; //$NON-NLS-1$
 	static final String ONGOING_SEARCH = "search";  //$NON-NLS-1$
 	// Progress bar
 	private ProgressDialog progressdialog;
-
 	// Last search term
 	private String latestSearchTerm;
-
 	private SearchView searchView;
 
 	// TAG used for logging
@@ -102,6 +102,8 @@ public class CorporateAddressBook extends FragmentActivity
 	private Contact selectedContact;
 
 	private GALSearch search;
+
+	public static final int AuthEx = 2;
 
 	private boolean isPaused = false;
 
@@ -125,7 +127,27 @@ public class CorporateAddressBook extends FragmentActivity
 		// Turn keystrokes into search
 		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
-		loadPreferences();
+		App.getAccounts().Initialize(progressdialog, this);
+		if (App.getAccounts().isEmpty()) {
+			showConfiguration(this);
+		}
+//		else {
+//			for(ActiveSyncManager syncManager : App.getAccounts().values()) {
+//				this.activeSyncManager = syncManager;
+//				break;
+//			}
+//		}
+
+		if (!Utility.isPreHoneycomb()) {
+			final ActionBar actionBar = getActionBar();
+			actionBar.setDisplayShowTitleEnabled(false);
+			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+			SpinnerAdapter adapter = new ArrayAdapter<ActiveSyncManager>(getBaseContext(), android.R.layout.simple_spinner_dropdown_item, App.getAccounts());
+			actionBar.setListNavigationCallbacks(adapter, this);
+
+			App.getAccounts().addChangeListener(this);
+		}
 
 		// Get the intent, verify the action and get the query
 		// but not if the activity is being recreated (would cause a new search)
@@ -233,7 +255,6 @@ public class CorporateAddressBook extends FragmentActivity
 		}
 	}
 
-
 	private void performSearch(String name) {
 
 		if (progressdialog != null) {
@@ -250,6 +271,21 @@ public class CorporateAddressBook extends FragmentActivity
 		search = new GALSearch(activeSyncManager);
 		search.onSearchCompletedListener = this;
 		search.execute(name);
+	}
+
+	@Override
+	public Boolean onAccountsChanged(AccountManager accountManager) {
+		SpinnerAdapter adapter = new ArrayAdapter<ActiveSyncManager>(getBaseContext(), android.R.layout.simple_spinner_dropdown_item, App.getAccounts());
+		getActionBar().setListNavigationCallbacks(adapter, this);
+		return true;
+	}
+
+
+	@Override
+	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		activeSyncManager = App.getAccounts().get(itemPosition);
+		accountKey = activeSyncManager.getAccountKey();
+		return true;
 	}
 
 	/*
@@ -333,188 +369,9 @@ public class CorporateAddressBook extends FragmentActivity
 		switch (requestCode) {
 			case DISPLAY_CONFIGURATION_REQUEST:
 				// Initialize the activesync object with the validated settings
-				loadPreferences();
+				//loadPreferences();
 				break;
 		}
-	}
-
-	protected boolean migrateServerSettings() {
-		// TODO: Make sure old settings are migrated to new account structure
-		return false;
-	}
-
-	// private static String TAG = "CorporateAddressBook";
-	// private static String TAG = "CorporateAddressBook";
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		//To change body of implemented methods use File | Settings | File Templates.
-		if (!isPaused) {
-			if (accountKey == null || sharedPreferences.getAll().size() < 6)
-				loadPreferences();
-			else
-				loadPreferences(accountKey);
-		}
-	}
-
-	/**
-	 * Reads the stored preferences and initializes the
-	 *
-	 * @return True if a valid Exchange server settings was saved during the
-	 *         previous launch. False otherwise *
-	 */
-	public void loadPreferences() {
-
-		// Initialize preferences and the activesyncmanager
-		final android.accounts.AccountManager am = android.accounts.AccountManager.get(this);
-		Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
-		if (accounts == null || accounts.length == 0) {
-			final SharedPreferences existingPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-			final String userName = existingPrefs.getString(getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), null);
-			final String serverName = existingPrefs.getString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE), null);
-			if (serverName == null) {
-				addAccount(progressdialog, am);
-			} else {
-				progressdialog.setMessage("Migrating settings...");
-				progressdialog.show();
-				final String accountKey = userName.contains("@") ?
-						userName :
-						String.format("%1$s@%2$s", userName, serverName);
-				final ActiveSyncManager syncManager = new ActiveSyncManager();
-				AsyncTask migrateTask = new AsyncTask() {
-					@Override
-					protected Object doInBackground(Object... params) {
-//						SharedPreferences existingPrefs = (SharedPreferences) params[0];
-//						ActiveSyncManager syncManager = (ActiveSyncManager) params[1];
-						return syncManager.loadPreferences(existingPrefs);
-					}
-
-					@Override
-					protected void onPostExecute(Object o) {
-						if (o instanceof Boolean && ((Boolean) o)) {
-							migrateConfiguration(am, existingPrefs, accountKey, syncManager);
-						} else {
-							if (progressdialog != null && progressdialog.isShowing()) {
-								try {
-									progressdialog.dismiss();
-								} catch (IllegalArgumentException e) {
-								}
-							}
-							addAccount(progressdialog, am);
-						}
-					}
-				};
-				migrateTask.execute(existingPrefs, syncManager);
-			}
-		} else {
-			accountKey = am.getUserData(accounts[0], getString(R.string.KEY_ACCOUNT_KEY));
-
-			if (accountKey == null || accountKey.isEmpty()) {
-				throw new RuntimeException("No account available");
-			}
-			if (!loadPreferences(accountKey)) {
-				showConfiguration(this);
-			}
-		}
-	}
-
-	private void migrateConfiguration(android.accounts.AccountManager am, SharedPreferences existingPrefs, String accountKey, ActiveSyncManager syncManager) {
-		if (syncManager.loadPreferences(existingPrefs)) {
-			try {
-
-				SharedPreferences newPrefs = getSharedPreferences(accountKey, MODE_PRIVATE);
-				SharedPreferences.Editor editor = newPrefs.edit();
-				editor.putString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE),
-						existingPrefs.getString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE), null));
-				editor.putString(getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE),
-						existingPrefs.getString(getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE), null));
-				editor.putString(getString(R.string.PREFS_KEY_USERNAME_PREFERENCE),
-						existingPrefs.getString(getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), null));
-				editor.putString(getString(R.string.PREFS_KEY_PASSWORD_PREFERENCE),
-						existingPrefs.getString(getString(R.string.PREFS_KEY_PASSWORD_PREFERENCE), null));
-				editor.putBoolean(getString(R.string.PREFS_KEY_USE_SSL),
-						existingPrefs.getBoolean(getString(R.string.PREFS_KEY_USE_SSL), true));
-				editor.putBoolean(getString(R.string.PREFS_KEY_ACCEPT_ALL_CERTS),
-						existingPrefs.getBoolean(getString(R.string.PREFS_KEY_ACCEPT_ALL_CERTS), true));
-				editor.putString(getString(R.string.PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE),
-						syncManager.getActiveSyncVersion());
-				editor.putString(getString(R.string.PREFS_KEY_DEVICE_ID_STRING),
-						syncManager.getDeviceId());
-				editor.putString(getString(R.string.PREFS_KEY_POLICY_KEY_PREFERENCE),
-						syncManager.getPolicyKey());
-				editor.putBoolean(getString(R.string.PREFS_KEY_SUCCESSFULLY_CONNECTED),
-						true);
-
-				// Commit the edits!
-				editor.commit();
-
-				if (!Debug.Enabled) {
-					//existingPrefs.edit().clear().apply();
-				}
-
-				// Pass the values to the account manager
-				Account account = new Account(accountKey,
-						getString(R.string.ACCOUNT_TYPE));
-				am.addAccountExplicitly(account,
-						existingPrefs.getString(getString(R.string.PREFS_KEY_PASSWORD_PREFERENCE), ""), null);
-				am.setUserData(account, getString(R.string.KEY_ACCOUNT_KEY), accountKey);
-
-				loadPreferences(accountKey);
-			} catch (Exception e) {
-				addAccount(progressdialog, am);
-			}
-		} else {
-			addAccount(progressdialog, am);
-		}
-		if (progressdialog != null && progressdialog.isShowing()) {
-			try {
-				progressdialog.dismiss();
-			} catch (IllegalArgumentException e) {
-			}
-		}
-	}
-
-	private void addAccount(final ProgressDialog prog, android.accounts.AccountManager acc) {
-//		final AccountManager am = acc == null ? AccountManager.get(this) : acc;
-//		final ProgressDialog dialog = prog == null ? new ProgressDialog(this) : prog;
-
-		AccountManagerCallback<Bundle> callback = new AccountManagerCallback<Bundle>() {
-			@Override
-			public void run(AccountManagerFuture<Bundle> future) {
-				String accountName;
-				try {
-					accountName = future.getResult().getString(android.accounts.AccountManager.KEY_ACCOUNT_NAME);
-					loadPreferences(accountName);
-				} catch (OperationCanceledException e) {
-				} catch (IOException e) {
-				} catch (AuthenticatorException e) {
-				}
-			}
-		};
-
-		AccountManagerFuture<Bundle> future = acc.addAccount(getString(R.string.ACCOUNT_TYPE), null, null, null, this, callback, null);
-
-	}
-
-	/**
-	 * Reads the stored preferences and initializes the
-	 *
-	 * @param accountKey
-	 * @return True if a valid Exchange server settings was saved during the
-	 *         previous launch. False otherwise *
-	 */
-	public boolean loadPreferences(String accountKey) {
-		this.accountKey = accountKey;
-		SharedPreferences thesePrefs = getSharedPreferences(accountKey, MODE_PRIVATE);
-		mPreferences = thesePrefs;
-
-		activeSyncManager = new ActiveSyncManager();
-
-		if (thesePrefs.getAll().size() < 6)
-			throw new RuntimeException("Server settings incomplete");
-
-		thesePrefs.registerOnSharedPreferenceChangeListener(this);
-
-		return activeSyncManager.loadPreferences(thesePrefs);
 	}
 
 	@TargetApi(11)

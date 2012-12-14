@@ -1,38 +1,42 @@
 /**
- * 
+ *
  */
 package net.vivekiyer.GAL;
-
-import java.util.Hashtable;
 
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
+import java.util.Hashtable;
+
 /**
  * @author Dan
- *
  */
 public class App extends Application {
 
 	private static App instance = null;
+	private static AccountManager accounts = null;
 	// Version String
 	public static String VERSION_STRING;
-	
+
 	public static final Hashtable<Integer, GALSearch> taskManager = new Hashtable<Integer, GALSearch>();
-	
+
+	public static AccountManager getAccounts() {
+		return accounts;
+	}
+
 	public App() {
 		super();
 	}
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		instance = this;
 		// Get the displayText string
-		App.VERSION_STRING = "CorporateAddressbook/"+getAppVersion(); //$NON-NLS-1$
-		if(Debug.Enabled && Debug.Verbose) {
+		App.VERSION_STRING = "CorporateAddressbook/" + getAppVersion(); //$NON-NLS-1$
+		if (Debug.Enabled && Debug.Verbose) {
 			java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST); //$NON-NLS-1$
 			java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST); //$NON-NLS-1$
 
@@ -47,17 +51,21 @@ public class App extends Application {
 
 			java.util.logging.Logger.getLogger("httpclient.wire.content").log(java.util.logging.Level.CONFIG, "hola"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
+
+		accounts = new AccountManager(this);
+
 	}
 
 	public static App getInstance() {
 		return instance;
-	}	
-	
+	}
+
 	/**
 	 * Returns the displayText of the application
+	 *
 	 * @return Version number of the application
 	 */
-	public String getAppVersion(){
+	public String getAppVersion() {
 		PackageManager manager = getPackageManager();
 		PackageInfo info;
 		try {
@@ -68,6 +76,6 @@ public class App extends Application {
 		}
 		return info.versionName;
 	}
-	
-	
+
+
 }
