@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import net.vivekiyer.GAL.ActiveSyncManager;
 import net.vivekiyer.GAL.App;
 import net.vivekiyer.GAL.R;

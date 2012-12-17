@@ -17,17 +17,17 @@ package net.vivekiyer.GAL;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.support.v4.app.FragmentActivity;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import android.widget.SearchView;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 /**
  * @author Vivek Iyer 
@@ -39,7 +39,7 @@ import android.widget.SearchView;
  * @author vivek
  * 
  */
-public class CorporateContactRecord extends FragmentActivity {
+public class CorporateContactRecord extends SherlockFragmentActivity {
 
 	private SearchView searchView;
 
@@ -65,9 +65,7 @@ public class CorporateContactRecord extends FragmentActivity {
 
 	/**
 	 * @param menu
-	 * @param v
-	 * @param menuInfo
-	 * 
+	 *
 	 *            Create a context menu for the list view Depending upon the
 	 *            item selected, shows the user different options
 	 */
@@ -83,22 +81,28 @@ public class CorporateContactRecord extends FragmentActivity {
 	@TargetApi(11)
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		final MenuInflater inflater = getMenuInflater();
+		final MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.contacts_menu, menu);
 
 		// Get the SearchView and set the searchable configuration for Honeycomb
 		// and above
-		if (!Utility.isPreHoneycomb()) {
-			final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-			final ComponentName component = getComponentName();
-			final SearchableInfo searchableInfo = searchManager
-					.getSearchableInfo(component);
-			searchView = (SearchView) menu.findItem(
-					R.id.menu_search).getActionView();
+		final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		final ComponentName component = getComponentName();
+		final SearchableInfo searchableInfo = searchManager
+				.getSearchableInfo(component);
+		MenuItem item = menu.findItem(
+				R.id.menu_search);
+		if(Utility.isPreHoneycomb()) {
+			com.actionbarsherlock.widget.SearchView searchView = new com.actionbarsherlock.widget.SearchView(this);
 			searchView.setSearchableInfo(searchableInfo);
+			item.setActionView(searchView);
 		}
-
-		return true;
+		else {
+			SearchView searchView = new SearchView(this);
+			searchView.setSearchableInfo(searchableInfo);
+			item.setActionView(searchView);
+		}
+		return super.onCreateOptionsMenu(menu);
 	}
 	/*
 	 * (non-Javadoc)

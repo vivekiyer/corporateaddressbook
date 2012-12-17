@@ -120,7 +120,7 @@ public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {
 			default:
 				// For others: hide "More actions"
 				v2.setVisibility(android.view.View.GONE);
-				
+				v.setOnClickListener(null);
 				// Try to find a reasonable label
 				final String key = kvp.getKey().toLowerCase();
 				if(key.contains("office")){ //$NON-NLS-1$

@@ -1,6 +1,7 @@
 package net.vivekiyer.GAL;
 
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 import android.os.AsyncTask;
 import com.google.common.collect.HashMultimap;
@@ -11,7 +12,7 @@ import static net.vivekiyer.GAL.Preferences.ConnectionChecker.*;
 public class GALSearch extends AsyncTask<String, Void, Boolean>
 {
 	public interface OnSearchCompletedListener{
-		void OnSearchCompleted(int result, GALSearch search);
+		void onSearchCompleted(int result, GALSearch search);
 	}
 
 	private ActiveSyncManager activeSyncManager;
@@ -113,6 +114,16 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 			errorMesg = App.getInstance().getString(R.string.timeout_title);
 			errorDetail = App.getInstance().getString(R.string.timeout_detail, App.getInstance().getString(R.string.useSecureSslText));
 			return false;
+		} catch (final UnknownHostException e) {
+			errorCode = UNKNOWN_HOST;
+			errorMesg = App.getInstance().getString(R.string.invalid_server_title);
+			errorDetail = App.getInstance().getString(R.string.invalid_server_detail, App.getInstance().getString(R.string.useSecureSslText));
+			return false;
+		} catch (javax.net.ssl.SSLPeerUnverifiedException spue) {
+			errorCode = SSL_PEER_UNVERIFIED;
+			errorMesg = App.getInstance().getString(R.string.authentication_failed_title);
+			errorDetail = App.getInstance().getString(R.string.unable_to_find_matching_certificate);
+			return false;
 		} catch (final Exception e) {
 			Debug.Log("Exception in GALSearch:\n" + e.toString());
 			errorCode = ConnectionChecker.UNDEFINED;
@@ -144,7 +155,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	protected void onPostExecute(Boolean result) {
 		super.onPostExecute(result);
 		if(getOnSearchCompletedListener() != null)
-			getOnSearchCompletedListener().OnSearchCompleted(result ? 0 : errorCode, this);
+			getOnSearchCompletedListener().onSearchCompleted(result ? 0 : errorCode, this);
 	}
 
 }

@@ -4,16 +4,16 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
+import android.preference.*;
 import android.widget.ListAdapter;
 import android.widget.Toast;
+import net.vivekiyer.GAL.App;
 import net.vivekiyer.GAL.R;
+import net.vivekiyer.GAL.Utility;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -65,12 +65,6 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		return false;
 	}
 
-	@Override
-	public void finish() {
-		super.finish();    //To change body of overridden methods use File | Settings | File Templates.
-		//finishActivity(CorporateAddressBook.DISPLAY_CONFIGURATION_REQUEST);
-	}
-
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle aSavedState) {
@@ -81,44 +75,20 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		} catch (NoSuchMethodException e) {
 		}
 
-//		if(getIntent().hasExtra(EXTRA_SHOW_FRAGMENT)) {
-//			String fragment = getIntent().getExtras().getString(EXTRA_SHOW_FRAGMENT);
-//			if(fragment.equals(ServerPrefsFragment.class.getName())) {
-//				Bundle extras = getIntent().getExtras();
-////			    getIntent().putExtra(EXTRA_PREFS_SHOW_BUTTON_BAR, true);
-////			    getIntent().putExtra(EXTRA_PREFS_SET_NEXT_TEXT, "Validate");
-////			    getIntent().putExtra(EXTRA_PREFS_SET_BACK_TEXT, getString(android.R.string.cancel));
-//				Bundle args = extras.getBundle(EXTRA_SHOW_FRAGMENT_ARGUMENTS);
-//				if(args == null) {
-//					args = new Bundle();
-//					extras.putBundle(EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
-//				}
-//				args.putString("pref-resource", "pref_server");
-//			}
-//		}
-
 		super.onCreate(aSavedState);
-
-//	    if(getIntent().hasExtra(EXTRA_SHOW_FRAGMENT)) {
-//		    String fragment = getIntent().getExtras().getString(EXTRA_SHOW_FRAGMENT);
-//		    if(fragment.equals(ServerPrefsFragment.class.getName())) {
-//			    android.app.FragmentManager fmgr = getFragmentManager();
-//			    Debug.Log(fmgr.toString());
-//		    }
-//	    }
 
 		String action = getIntent().getAction();
 		if (action != null && action.equals(getString(R.string.ACTION_PREFS_ACCOUNTS))) {
 			addPreferencesFromResource(R.xml.pref_server);
-//			addPreferencesFromResource(R.xml.pref_server_footer);
-			PreferenceManager prefs = getPreferenceManager();
-			Preference validator = prefs.findPreference("PREFS_VALIDATE");
-			validator.setOnPreferenceClickListener(this);
+			String accountKey = getIntent().getStringExtra(getString(R.string.KEY_ACCOUNT_KEY));
+			if(accountKey == null)
+				throw new IllegalArgumentException("No Account Key supplied for pref-server");
+			addServerPreference(getPreferenceScreen(), accountKey);
+
 		} else if (action != null && action.equals(getString(R.string.ACTION_PREFS_ABOUT))) {
 			addPreferencesFromResource(R.xml.pref_about);
 		} else if (!isNewV11Prefs()) {
-//		    setListAdapter(new HeaderAdapter(this, ));
-			addPreferencesFromResource(R.xml.pref_headers_legacy);
+			addNonHeaderPrefs();
 		}
 
 	}
@@ -156,6 +126,12 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 	}
 
 	@Override
+	public void finish() {
+		super.finish();    //To change body of overridden methods use File | Settings | File Templates.
+		//finishActivity(CorporateAddressBook.DISPLAY_CONFIGURATION_REQUEST);
+	}
+
+	@Override
 	public void switchToHeader(Header header) {
 		if (header.fragment == null && header.intent == null) {
 			if (mHeaders == null)
@@ -189,7 +165,6 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		} catch (InvocationTargetException e) {
 		}
 	}
-
 	int addServerHeaders(List<Header> aTarget) {
 		AccountManager am = AccountManager.get(this);
 		Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
@@ -240,17 +215,58 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		super.setListAdapter(new HeaderAdapter(this, mHeaders));
 	}
 
-	//	void refreshHeaders() {
-//		List<Header> aTarget = new ArrayList<Header>();
-//		try {
-//			mLoadHeaders.invoke(this, new Object[]{R.xml.pref_headers, aTarget});
-//			addServerHeaders(aTarget);
-//			super.setListAdapter(new HeaderAdapter(this, aTarget));
-//		} catch (IllegalArgumentException e) {
-//		} catch (IllegalAccessException e) {
-//		} catch (InvocationTargetException e) {
-//		}
-//	}
+	private void addNonHeaderPrefs() {
+		PreferenceCategory preferenceCategory = null;
+		PreferenceScreen screen = getPreferenceScreen();
+
+		if(screen != null)
+			screen.removeAll();
+		addPreferencesFromResource(R.xml.pref_headers_legacy);
+		screen = getPreferenceScreen();
+
+		for(int i = 0; i < screen.getPreferenceCount();i++) {
+			Preference p = screen.getPreference(i);
+			if(p != null && p instanceof PreferenceCategory && getString(R.id.server_heading).equals(p.getKey())) {
+				preferenceCategory = (PreferenceCategory) screen.getPreference(i);
+			}
+		}
+
+		//List<Header> newHeaders = new ArrayList<Header>();
+		AccountManager am = AccountManager.get(this);
+		Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
+
+		for (Account account : accounts) {
+			Preference accountPrefs = new Preference(this);
+			accountPrefs.setTitle(am.getUserData(account, getString(R.string.KEY_ACCOUNT_KEY)));
+			Intent i = new Intent(getString(R.string.ACTION_PREFS_ACCOUNTS));
+			i.setClass(this, this.getClass());
+			i.putExtra(getString(R.string.KEY_ACCOUNT_KEY), am.getUserData(account, getString(R.string.KEY_ACCOUNT_KEY)));
+			accountPrefs.setIntent(i);
+			assert preferenceCategory != null;
+			preferenceCategory.addPreference(accountPrefs);
+		}
+	}
+
+	static void addServerPreference(PreferenceScreen screen, String accountKey) {
+		final Context ctx = App.getInstance();
+		SharedPreferences accountPrefs = ctx.getSharedPreferences(accountKey, MODE_PRIVATE);
+		String domain = accountPrefs.getString(ctx.getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE), "");
+		String user = accountPrefs.getString(ctx.getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), "");
+		String accountServer = accountPrefs.getString(ctx.getString(R.string.PREFS_KEY_SERVER_PREFERENCE), "");
+		Preference preference = screen.findPreference(ctx.getString(R.string.ACCOUNT_TYPE));
+		if (domain.isEmpty()) {
+			preference.setTitle(user);
+		} else {
+			preference.setTitle(domain + "\\" + user);
+		}
+		preference.setSummary(accountServer);
+		Intent intent = preference.getIntent();
+		intent.putExtra(ctx.getString(R.string.KEY_ACCOUNT_KEY), accountKey);
+		preference = screen.findPreference(ctx.getString(R.string.ACTION_PREFS_ACCOUNT_DELETE));
+		intent = preference.getIntent();
+		intent.putExtra(ctx.getString(R.string.KEY_ACCOUNT_KEY), accountKey);
+	}
+
 	@Override
 	public void startActivity(android.content.Intent intents) {
 		try {
@@ -274,8 +290,15 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 
 	@Override
 	public void onAccountsUpdated(Account[] accounts) {
-		invalidateHeaders();
-		getListView().requestLayout();
+		// TODO: Enable "header" update for pre-HC
+		if(!Utility.isPreHoneycomb()) {
+			invalidateHeaders();
+			getListView().requestLayout();
+		}
+		else {
+			if(getIntent().getAction() == null)
+				addNonHeaderPrefs();
+		}
 	}
 
 	@Override

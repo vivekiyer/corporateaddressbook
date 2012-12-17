@@ -2,6 +2,7 @@
 <resources>
     <style name="AppTheme" parent="@android:style/Theme.DeviceDefault.Light">
         <item name="android:actionBarStyle">@style/MyActionBar</item>
+	    <item name="dropdownListPreferredItemHeight">48dp</item>
         <!-- Any customizations for your app running on pre-3.0 devices here -->
     </style>
     <style name="LargeDialog" parent="@android:style/Theme.DeviceDefault.Light.DialogWhenLarge"></style>

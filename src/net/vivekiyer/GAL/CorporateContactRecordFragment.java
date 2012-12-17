@@ -15,6 +15,11 @@
 
 package net.vivekiyer.GAL;
 
+import android.widget.*;
+import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.devoteam.quickaction.QuickActionWindow;
 
 import android.annotation.TargetApi;
@@ -29,18 +34,9 @@ import android.provider.ContactsContract;
 import android.text.ClipboardManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ImageButton;
-import android.widget.PopupMenu;
-import android.widget.QuickContactBadge;
-import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * @author Vivek Iyer 
@@ -53,7 +49,7 @@ import android.widget.Toast;
  * 
  */
 @SuppressWarnings("deprecation")
-public class CorporateContactRecordFragment extends android.support.v4.app.ListFragment
+public class CorporateContactRecordFragment extends SherlockListFragment
 	implements OnClickListener {
 
 	private Menu fragmentMenu = null;
@@ -144,7 +140,10 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 			Bitmap bm = BitmapFactory.decodeByteArray(pic, 0, pic.length);
 			qcb.setImageBitmap(bm);
 		} else {
-			qcb.setImageToDefault();
+			if(Utility.isPreHoneycomb())
+				qcb.setImageResource(R.drawable.ic_quick);
+			else
+				qcb.setImageToDefault();
 		}
 
 		// getListView().setOnItemLongClickListener(mListViewLongClickListener);
@@ -235,7 +234,7 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 			else {
 				PopupMenu popup = new PopupMenu(getActivity(), v);
 				popup.setOnMenuItemClickListener(HoneycombListeners.getPopupMenuListener(this));
-				MenuInflater inflater = popup.getMenuInflater();
+				android.view.MenuInflater inflater = popup.getMenuInflater();
 			
 				inflater.inflate(R.menu.contact_actions_menu, popup.getMenu());			
 				popup.show();
@@ -273,7 +272,7 @@ public class CorporateContactRecordFragment extends android.support.v4.app.ListF
 //	}
 //
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
+	public boolean onContextItemSelected(android.view.MenuItem item) {
 		final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
 

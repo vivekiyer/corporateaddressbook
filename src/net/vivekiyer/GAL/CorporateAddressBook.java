@@ -16,7 +16,6 @@
 package net.vivekiyer.GAL;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -27,14 +26,19 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
-import android.support.v4.app.FragmentActivity;
+//import android.support.v4.app.FragmentActivity;
+//import android.support.v4.app.FragmentManager;
+//import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.View;
 import android.widget.SearchView;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
 import com.google.common.collect.HashMultimap;
 import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
@@ -49,11 +53,12 @@ import java.util.Set;
  *         <p/>
  *         This class is the main entry point to the application
  */
-public class CorporateAddressBook extends FragmentActivity
+public class CorporateAddressBook extends SherlockFragmentActivity
 		implements ContactListListener, GALSearch.OnSearchCompletedListener, OnChoiceDialogOptionClickListener,
 		ActionBar.OnNavigationListener, AccountManager.OnAccountsChangedListener {
 
 	private String accountKey;
+	private boolean listeningToAccountChanges = false;
 
 	class AccountResult {
 
@@ -92,7 +97,7 @@ public class CorporateAddressBook extends FragmentActivity
 	private ProgressDialog progressdialog;
 	// Last search term
 	private String latestSearchTerm;
-	private SearchView searchView;
+	private View searchView;
 
 	// TAG used for logging
 
@@ -127,33 +132,50 @@ public class CorporateAddressBook extends FragmentActivity
 		// Turn keystrokes into search
 		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
-		App.getAccounts().Initialize(progressdialog, this);
-		if (App.getAccounts().isEmpty()) {
-			showConfiguration(this);
-		}
-//		else {
-//			for(ActiveSyncManager syncManager : App.getAccounts().values()) {
-//				this.activeSyncManager = syncManager;
-//				break;
-//			}
-//		}
-
-		if (!Utility.isPreHoneycomb()) {
-			final ActionBar actionBar = getActionBar();
-			actionBar.setDisplayShowTitleEnabled(false);
-			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-			SpinnerAdapter adapter = new ArrayAdapter<ActiveSyncManager>(getBaseContext(), android.R.layout.simple_spinner_dropdown_item, App.getAccounts());
-			actionBar.setListNavigationCallbacks(adapter, this);
-
-			App.getAccounts().addChangeListener(this);
-		}
+		initializeActionBar();
 
 		// Get the intent, verify the action and get the query
 		// but not if the activity is being recreated (would cause a new search)
 		if (savedInstanceState == null || !savedInstanceState.containsKey("mContacts")) { //$NON-NLS-1$
 			final Intent intent = getIntent();
 			onNewIntent(intent);
+		}
+	}
+
+	private void initializeActionBar() {
+		App.getAccounts().Initialize(progressdialog, this);
+		final ActionBar actionBar = getSupportActionBar();
+
+		if (App.getAccounts().size() >= 2) {
+			actionBar.setDisplayShowTitleEnabled(false);
+			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+			SpinnerAdapter adapter = new ArrayAdapter<ActiveSyncManager>(getBaseContext(), R.layout.sherlock_spinner_dropdown_item, App.getAccounts());
+			actionBar.setListNavigationCallbacks(adapter, this);
+
+			if(activeSyncManager == null || !App.getAccounts().contains(activeSyncManager)) {
+				if((activeSyncManager = App.getAccounts().getDefaultAccount()) == null) {
+					activeSyncManager = App.getAccounts().get(actionBar.getSelectedNavigationIndex());
+				}
+				else
+					actionBar.setSelectedNavigationItem(App.getAccounts().indexOf(activeSyncManager));
+			}
+			else
+				actionBar.setSelectedNavigationItem(App.getAccounts().indexOf(activeSyncManager));
+		} else {
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setTitle(getString(R.string.app_name));
+			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+			if (App.getAccounts().isEmpty()) {
+				showConfiguration(this);
+			} else {
+				activeSyncManager = App.getAccounts().get(0);
+			}
+		}
+
+		if(!listeningToAccountChanges) {
+			App.getAccounts().addChangeListener(this);
+			listeningToAccountChanges = true;
 		}
 	}
 
@@ -275,8 +297,7 @@ public class CorporateAddressBook extends FragmentActivity
 
 	@Override
 	public Boolean onAccountsChanged(AccountManager accountManager) {
-		SpinnerAdapter adapter = new ArrayAdapter<ActiveSyncManager>(getBaseContext(), android.R.layout.simple_spinner_dropdown_item, App.getAccounts());
-		getActionBar().setListNavigationCallbacks(adapter, this);
+		initializeActionBar();
 		return true;
 	}
 
@@ -285,6 +306,7 @@ public class CorporateAddressBook extends FragmentActivity
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		activeSyncManager = App.getAccounts().get(itemPosition);
 		accountKey = activeSyncManager.getAccountKey();
+		App.getAccounts().setDefaultAccount(activeSyncManager);
 		return true;
 	}
 
@@ -299,26 +321,31 @@ public class CorporateAddressBook extends FragmentActivity
 	@TargetApi(11)
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		final MenuInflater inflater = getMenuInflater();
+		final MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
 
-		// Get the SearchView and set the searchable configuration for Honeycomb
-		// and above
-		if (!Utility.isPreHoneycomb()) {
-			final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-			final ComponentName component = getComponentName();
-			final SearchableInfo searchableInfo = searchManager
-					.getSearchableInfo(component);
-			MenuItem item = menu.findItem(
-					R.id.menu_search);
-			searchView = (SearchView) item.getActionView();
+		// Get the SearchView and set the searchable configuration
+		final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		final ComponentName component = getComponentName();
+		final SearchableInfo searchableInfo = searchManager
+				.getSearchableInfo(component);
+		MenuItem item = menu.findItem(
+				R.id.menu_search);
+		if(Utility.isPreHoneycomb()) {
+			com.actionbarsherlock.widget.SearchView searchView = new com.actionbarsherlock.widget.SearchView(this);
 			searchView.setSearchableInfo(searchableInfo);
-
-			//this.onSearchRequested();
+			item.setActionView(searchView);
+			this.searchView = searchView;
 		}
-
+		else {
+			SearchView searchView = new SearchView(this);
+			searchView.setSearchableInfo(searchableInfo);
+			item.setActionView(searchView);
+			this.searchView = searchView;
+		}
 		return super.onCreateOptionsMenu(menu);
 	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -350,7 +377,7 @@ public class CorporateAddressBook extends FragmentActivity
 	/**
 	 * Launches the preferences activity
 	 */
-	public static void showConfiguration(FragmentActivity parentActivity) {
+	public static void showConfiguration(SherlockFragmentActivity parentActivity) {
 		parentActivity.startActivityForResult(new Intent(parentActivity, PrefsActivity.class), DISPLAY_CONFIGURATION_REQUEST);
 	}
 
@@ -391,8 +418,17 @@ public class CorporateAddressBook extends FragmentActivity
 		list.displayResult(mContacts, latestSearchTerm);
 
 		resetAndHideDetails(fragmentManager);
-		if (!Utility.isPreHoneycomb() && (searchView != null))
-			searchView.setQuery("", false); //$NON-NLS-1$
+		if (searchView != null) {
+			if(searchView instanceof com.actionbarsherlock.widget.SearchView) {
+				((com.actionbarsherlock.widget.SearchView)searchView).setQuery("", false); //$NON-NLS-1$
+			}
+			else if(searchView instanceof SearchView) {
+				((SearchView)searchView).setQuery("", false); //$NON-NLS-1$
+			}
+			else {
+				throw new RuntimeException("Unknown SearchView type"); //$NON-NLS-1$
+			}
+		}
 		list.getView().requestFocus();
 	}
 
@@ -457,6 +493,8 @@ public class CorporateAddressBook extends FragmentActivity
 		}
 		if (search != null)
 			search.setOnSearchCompletedListener(null);
+		if (listeningToAccountChanges)
+			App.getAccounts().removeChangeListener(this);
 		super.onDestroy();
 	}
 
@@ -510,22 +548,34 @@ public class CorporateAddressBook extends FragmentActivity
 	@TargetApi(11)
 	@Override
 	public boolean onSearchRequested() {
-		if (!Utility.isPreHoneycomb()) {
+//		if (!Utility.isPreHoneycomb()) {
 			if (searchView != null) {
-				searchView.setFocusable(true);
-				searchView.setIconified(false);
-				searchView.requestFocusFromTouch();
+				if(searchView instanceof com.actionbarsherlock.widget.SearchView) {
+					com.actionbarsherlock.widget.SearchView v = (com.actionbarsherlock.widget.SearchView) searchView;
+					v.setFocusable(true);
+					v.setIconified(false);
+					v.requestFocusFromTouch();
+				}
+				else if(searchView instanceof SearchView) {
+					SearchView v = (SearchView) searchView;
+					v.setFocusable(true);
+					v.setIconified(false);
+					v.requestFocusFromTouch();
+				}
+				else {
+					throw new RuntimeException("Unknown SearchView type"); //$NON-NLS-1$
+				}
 				return true;
 			} else {
 				Debug.Log("Running HC+ without SearchView"); //$NON-NLS-1$
 				return false;
 			}
-		}
-		return super.onSearchRequested();
+//		}
+//		return super.onSearchRequested();
 	}
 
 	@Override
-	public void OnSearchCompleted(int result,
+	public void onSearchCompleted(int result,
 	                              GALSearch search) {
 		if ((progressdialog != null) && progressdialog.isShowing()) {
 			try {

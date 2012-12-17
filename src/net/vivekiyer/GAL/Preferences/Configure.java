@@ -26,7 +26,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,6 +34,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import net.vivekiyer.GAL.*;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ import java.io.IOException;
  *         <p/>
  *         This class handles the configuration pane for the application.
  */
-public class Configure extends FragmentActivity implements OnClickListener, TaskCompleteCallback, ChoiceDialogFragment.OnChoiceDialogOptionClickListener {
+public class Configure extends SherlockFragmentActivity implements OnClickListener, TaskCompleteCallback, ChoiceDialogFragment.OnChoiceDialogOptionClickListener {
 
 	protected SharedPreferences mPreferences;
 	protected ProgressDialog progressdialog;
@@ -136,7 +136,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 			onChoiceDialogOptionPressed(R.id.account_delete);
 			return;
 		}
-		EditText text = (EditText) findViewById(R.id.txtServerName);
+		EditText text = (EditText) findViewById(R.id.txtPassword);
 		text.setOnEditorActionListener(new EditText.OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView arg0, int actionId,
@@ -307,7 +307,7 @@ public class Configure extends FragmentActivity implements OnClickListener, Task
 
 		// Looks like there was an error in the settings
 		if (!taskStatus) {
-			if (!Debug.Enabled) {
+			if (Debug.Enabled) {
 				// Send the error message via email
 				Debug.sendDebugEmail(this);
 			} else {

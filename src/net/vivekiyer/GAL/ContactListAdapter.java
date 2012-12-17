@@ -46,7 +46,7 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 	 * 
 	 * @param context 
 	 * @param textViewResourceId 
-	 * @param kvps The contact details
+	 * @param cs The contact details
 	 * 
 	 */
 	public ContactListAdapter(Context context, int textViewResourceId,
@@ -99,45 +99,14 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 				Bitmap bm = BitmapFactory.decodeByteArray(pic, 0, pic.length);
 				qcb.setImageBitmap(bm);
 			} else {
-				qcb.setImageToDefault();
+				if(Utility.isPreHoneycomb())
+					qcb.setImageResource(R.drawable.ic_quick);
+				else
+					qcb.setImageToDefault();
 			}
 			v.setTag(c);			
 			qcb.bringToFront();
-			// If the toptext contains a phone
-			// Set the icon to phone and message
-//			ImageView iv2 = (ImageView) v.findViewById(R.id.contactPicture);
-//			
-//			// Set the on click listeners
-//			iv2.setOnClickListener(mIconListener2);
-//			
-//			iv2.setTag(c);		
-			
 		}
 		return v;
 	}
-	
-	
-	// Create an anonymous implementation of OnItemClickListener
-	// Called when the user clicks the sms or the email icon
-//	private OnClickListener mIconListener2 = new OnClickListener() {
-//		@Override
-//		public void onClick(View v) {
-//			// Get the tag, which will provide us the KVP
-////			ImageView iv2 = (ImageView) v.findViewById(R.id.contactPicture);
-//			Contact c = (Contact) v.getTag();
-//			
-//			// Create a parcel with the associated contact object
-//			// This parcel is used to send data to the activity
-//			final Bundle b = new Bundle();
-//			b.putParcelable("net.vivekiyer.GAL", c);
-//
-//			// Launch the activity
-//			final Intent myIntent = new Intent();
-//			myIntent.setClassName("net.vivekiyer.GAL",
-//					"net.vivekiyer.GAL.CorporateContactRecord");
-//
-//			myIntent.putExtras(b);
-//			getContext().startActivity(myIntent);
-//		}		
-//	};
 }

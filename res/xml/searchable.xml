@@ -6,5 +6,6 @@
     android:searchSuggestSelection=" ?"
     android:includeInGlobalSearch="true"
     android:inputType="textPersonName"
+    android:voiceSearchMode="showVoiceSearchButton|launchRecognizer"
     >
 </searchable>

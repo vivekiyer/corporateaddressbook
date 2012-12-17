@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/clear"
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:icon="@drawable/ic_action_close_clear_cancel"
         android:showAsAction="ifRoom|withText"
         android:title="@string/clearSearch" android:orderInCategory="100" android:menuCategory="container">
     </item>

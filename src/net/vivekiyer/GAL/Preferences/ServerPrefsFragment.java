@@ -1,11 +1,6 @@
 package net.vivekiyer.GAL.Preferences;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceScreen;
 import net.vivekiyer.GAL.R;
 
 /**
@@ -37,25 +32,7 @@ public class ServerPrefsFragment extends PrefsFragment {
 	@Override
 	public void addPreferencesFromResource(int preferencesResId) {
 		super.addPreferencesFromResource(preferencesResId);    //To change body of overridden methods use File | Settings | File Templates.
-		addServerPreference(this.getPreferenceScreen());
-	}
-
-	void addServerPreference(PreferenceScreen screen) {
-		SharedPreferences accountPrefs = getActivity().getSharedPreferences(accountKey, Context.MODE_PRIVATE);
-		String domain = accountPrefs.getString(getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE), "");
-		String user = accountPrefs.getString(getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), "");
-		Preference preference = screen.findPreference(getString(R.string.ACCOUNT_TYPE));
-		if (domain.isEmpty()) {
-			preference.setTitle(user);
-		} else {
-			preference.setTitle(domain + "\\" + user);
-		}
-		preference.setSummary(accountServer);
-		Intent intent = preference.getIntent();
-		intent.putExtra(getString(R.string.KEY_ACCOUNT_KEY), accountKey);
-		preference = screen.findPreference(getString(R.string.ACTION_PREFS_ACCOUNT_DELETE));
-		intent = preference.getIntent();
-		intent.putExtra(getString(R.string.KEY_ACCOUNT_KEY), accountKey);
+		PrefsActivity.addServerPreference(this.getPreferenceScreen(), accountKey);
 	}
 
 }

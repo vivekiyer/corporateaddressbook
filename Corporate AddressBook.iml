@@ -46,20 +46,12 @@
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
+    <orderEntry type="module" module-name="ActionBarSherlock-4.2.0" />
     <orderEntry type="module" module-name="com.devoteam.quickaction.MyTest" />
     <orderEntry type="module-library">
       <library name="guava-13.0.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/libs/guava-13.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="android-support-v4.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/android-support-v4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

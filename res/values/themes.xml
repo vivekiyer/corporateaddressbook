@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
     <resources>
-        <style name="AppTheme" parent="@android:style/Theme.Light"></style>
+        <style name="AppTheme" parent="@style/Theme.Sherlock.Light"></style>
         <!-- style name="AppTheme" parent="@android:style/Theme.Light.NoTitleBar"></style-->
-        <style name="LargeDialog" parent="@android:style/Theme.Light"></style>
+        <style name="LargeDialog" parent="@style/Theme.Sherlock.Light"></style>
     </resources>

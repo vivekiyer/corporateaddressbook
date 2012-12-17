@@ -41,16 +41,16 @@ public class Listeners {
 			
 			@Override
 			public void onClick(View v) {
-				Intent  intent = new Intent(
-						Intent.ACTION_SENDTO, 
-						Uri.parse("smsto:"+telNo)); //$NON-NLS-1$
-				try {
-					v.getContext().startActivity(intent);
-					if(qa != null)
-						qa.dismiss();					
-				} catch (android.content.ActivityNotFoundException e) {
-					Toast.makeText(v.getContext(), R.string.could_not_find_sms_application , Toast.LENGTH_SHORT).show();
-				}
+			Intent  intent = new Intent(
+					Intent.ACTION_SENDTO,
+					Uri.parse("smsto:"+telNo)); //$NON-NLS-1$
+			try {
+				v.getContext().startActivity(intent);
+				if(qa != null)
+					qa.dismiss();
+			} catch (android.content.ActivityNotFoundException e) {
+				Toast.makeText(v.getContext(), R.string.could_not_find_sms_application , Toast.LENGTH_SHORT).show();
+			}
 			}
 			
 		};
@@ -68,9 +68,14 @@ public class Listeners {
 				Intent  intent = new Intent(
 						Intent.ACTION_SENDTO, 
 						Uri.parse("mailto:"+mailAddress)); //$NON-NLS-1$
-				v.getContext().startActivity(intent);
-				if(qa != null)
-					qa.dismiss();
+
+				try {
+					v.getContext().startActivity(intent);
+					if(qa != null)
+						qa.dismiss();
+				} catch (android.content.ActivityNotFoundException e) {
+					Toast.makeText(v.getContext(), R.string.could_not_find_email_application, Toast.LENGTH_SHORT).show();
+				}
 			}
 			
 		};

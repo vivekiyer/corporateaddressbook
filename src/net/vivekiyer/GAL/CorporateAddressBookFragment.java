@@ -20,15 +20,16 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.common.collect.HashMultimap;
 
 import java.util.Arrays;
@@ -50,7 +51,7 @@ import java.util.Arrays;
  * @author danm
  *
  */
-public class CorporateAddressBookFragment extends android.support.v4.app.Fragment {
+public class CorporateAddressBookFragment extends SherlockFragment {
  
 	public interface ContactListListener {
 		public void onContactSelected(Contact contact);

@@ -21,15 +21,32 @@ import java.util.ArrayList;
  * This class handles accounts for Exchange server. As a centralized location for change notification as well as
  * reading and storing changes, it is the source for configuration for the app.
  */
-public class AccountManager extends ArrayList<ActiveSyncManager> {
+public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAccountsUpdateListener {
 
 	public interface OnAccountsChangedListener {
+
 		Boolean onAccountsChanged(AccountManager accountManager);
+
 	}
 
 	private ArrayList<OnAccountsChangedListener> changeListeners = new ArrayList<OnAccountsChangedListener>();
+	private ActiveSyncManager defaultAccount = null;
+	private boolean listeningToAccountUpdates = false;
+
 	protected Context context = null;
 	protected Boolean isInitialized = false;
+
+	public ActiveSyncManager getDefaultAccount() {
+		return defaultAccount;
+	}
+
+	public void setDefaultAccount(ActiveSyncManager defaultAccount) {
+		this.defaultAccount = defaultAccount;
+		if(defaultAccount != null) {
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getInstance());
+			prefs.edit().putString(App.getInstance().getString(R.string.PREFS_KEY_DEFAULT_ACCOUNT), defaultAccount.getAccountKey()).apply();
+		}
+	}
 
 	private AccountManager() {
 	}
@@ -42,6 +59,13 @@ public class AccountManager extends ArrayList<ActiveSyncManager> {
 	public void Initialize(ProgressDialog progressdialog, Activity activity) {
 		if (!isInitialized) {
 			loadPreferences(progressdialog, activity);
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getInstance());
+			String defaultAccount = prefs.getString(App.getInstance().getString(R.string.PREFS_KEY_DEFAULT_ACCOUNT), null);
+			for(ActiveSyncManager syncManager : this) {
+				if(syncManager.getAccountKey().equals(defaultAccount))
+					this.defaultAccount = syncManager;
+			}
+			isInitialized = true;
 		}
 	}
 
@@ -109,19 +133,58 @@ public class AccountManager extends ArrayList<ActiveSyncManager> {
 				migrateTask.execute(existingPrefs, syncManager);
 			}
 		} else {
-			for (Account account : accounts) {
+			reloadAccounts(am, accounts, false);
+		}
+		if(!listeningToAccountUpdates) {
+			am.addOnAccountsUpdatedListener(this, null, false);
+			listeningToAccountUpdates = true;
+		}
+	}
+
+	private void reloadAccounts(android.accounts.AccountManager am, Account[] accounts, boolean triggerListeners) {
+		Boolean needsNotification = false;
+		for (Account account : accounts) {
+			Boolean changeHandled = false;
+			if(account.type.equals(getString(R.string.ACCOUNT_TYPE))) {
 				String accountKey = am.getUserData(account, context.getString(R.string.KEY_ACCOUNT_KEY));
 
 				if (accountKey == null || accountKey.isEmpty()) {
 					throw new RuntimeException("Unknown account key");
 				}
 
-				ActiveSyncManager activeSyncManager = new ActiveSyncManager();
-				if (activeSyncManager.loadPreferences(accountKey)) {
-					add(activeSyncManager);
+				for(ActiveSyncManager syncManager : this) {
+					if(syncManager.getAccountKey().equals(accountKey)) {
+						changeHandled = true;
+						if(!syncManager.reloadPreferences())
+							remove(syncManager);
+					}
+				}
+				if(!changeHandled) {
+					ActiveSyncManager activeSyncManager = new ActiveSyncManager();
+					if(activeSyncManager.loadPreferences(accountKey))
+					{
+						changeHandled = true;
+						add(activeSyncManager);
+					}
+				}
+
+			}
+			needsNotification |= changeHandled;
+		}
+		for(ActiveSyncManager syncManager : this) {
+			Boolean found = false;
+			for(Account account : accounts) {
+				if(account.type.equals(getString(R.string.ACCOUNT_TYPE))) {
+					String accountKey = am.getUserData(account, context.getString(R.string.KEY_ACCOUNT_KEY));
+					if(syncManager.getAccountKey().equals(accountKey))
+						found = true;
 				}
 			}
+			if(!found)
+				remove(syncManager);
 		}
+		if(needsNotification && triggerListeners)
+			notifyChange();
 	}
 
 	private void migrateConfiguration(android.accounts.AccountManager am, SharedPreferences existingPrefs, String accountKey, ActiveSyncManager syncManager, ProgressDialog progressdialog, Activity parentActivity) {
@@ -179,6 +242,13 @@ public class AccountManager extends ArrayList<ActiveSyncManager> {
 			}
 		}
 	}
+
+	@Override
+	public void onAccountsUpdated(Account[] accounts) {
+		reloadAccounts(android.accounts.AccountManager.get(context), accounts, true);
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
 
 	private void addAccount(android.accounts.AccountManager acc, Activity activity) {
 

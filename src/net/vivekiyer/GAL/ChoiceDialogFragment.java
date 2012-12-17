@@ -6,9 +6,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import com.actionbarsherlock.app.SherlockDialogFragment;
 
-public class ChoiceDialogFragment extends DialogFragment implements OnClickListener {
+public class ChoiceDialogFragment extends SherlockDialogFragment implements OnClickListener {
 	private static final String ARG_TITLE = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_TITLE"; //$NON-NLS-1$
 	private static final String ARG_MESSAGE = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_MESSAGE"; //$NON-NLS-1$
 	private static final String ARG_POSITIVE_BUTTON_TEXT = "net.vivekiyer.GAL.ChoiceDialogFragment.ARG_POSITIVE_BUTTON_TEXT"; //$NON-NLS-1$

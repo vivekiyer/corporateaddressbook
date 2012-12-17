@@ -65,8 +65,8 @@
 				android:label="@string/settings"
 				android:enabled="true">
 			<intent-filter>
-				<action android:name="net.vivekiyer.GAL.Preferences.PREFS_SERVER"/>
-				<action android:name="net.vivekiyer.GAL.Preferences.PREFS_ABOUT"/>
+				<action android:name="@string/ACTION_PREFS_ACCOUNTS"/>
+				<action android:name="@string/ACTION_PREFS_ABOUT"/>
 
 				<category android:name="android.intent.category.PREFERENCE"/>
 			</intent-filter>
@@ -77,7 +77,6 @@
 				android:enabled="true"
 				android:theme="@style/LargeDialog">
 			<intent-filter>
-				<action android:name="net.vivekiyer.GAL.Preferences.PREFS_ABOUT"/>
 				<action android:name="@string/ACTION_PREFS_ACCOUNT_ADD"/>
 				<action android:name="@string/ACTION_PREFS_ACCOUNT_EDIT"/>
 				<action android:name="@string/ACTION_PREFS_ACCOUNT_DELETE"/>

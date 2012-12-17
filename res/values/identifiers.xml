@@ -16,6 +16,7 @@
     <string name="PREFS_KEY_SUCCESSFULLY_CONNECTED">successfullyConnected</string>
 	<string name="PREFS_KEY_CONTACT_PICS">contactPics</string>
 	<string name="PREFS_KEY_MAX_HITS">maxHits</string>
+	<string name="PREFS_KEY_DEFAULT_ACCOUNT">defaultAccount</string>
 	<string name="KEY_ACCOUNT_KEY">net.vivekiyer.GAL.Preferences.ACCOUNT_KEY</string>
 	<string name="KEY_ACCOUNT_SERVER">net.vivekiyer.GAL.Preferences.ACCOUNT_SERVER</string>
 	<string name="ACTION_PREFS_ACCOUNT_ADD">net.vivekiyer.GAL.Preferences.ACCOUNT_ADD</string>

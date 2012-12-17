@@ -187,6 +187,14 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if(o instanceof ActiveSyncManager) {
+			return accountKey == null ? false : accountKey.equals(((ActiveSyncManager) o).getAccountKey());
+		}
+		return false;
+	}
+
+	@Override
 	public String toString() {
 		return getAccountKey();
 	}
