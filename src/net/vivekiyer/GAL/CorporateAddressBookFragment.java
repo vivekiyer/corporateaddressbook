@@ -16,7 +16,6 @@
 package net.vivekiyer.GAL;
 
 import android.annotation.SuppressLint;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Bundle;
@@ -25,14 +24,15 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.common.collect.HashMultimap;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Vivek Iyer
@@ -52,7 +52,10 @@ import java.util.Arrays;
  *
  */
 public class CorporateAddressBookFragment extends SherlockFragment {
- 
+
+
+	private ContactListAdapter listadapter;
+
 	public interface ContactListListener {
 		public void onContactSelected(Contact contact);
 		public void onSearchCleared();
@@ -62,7 +65,7 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 	// private static String TAG = "CorporateAddressBook";
 
 	// List of names in the list view control
-	private Contact[] contactList;
+	private List<Contact> contactList;
 
 	protected ContactListListener contactListListener;
 	
@@ -118,12 +121,6 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-//		if(savedInstanceState != null && savedInstanceState.containsKey("mContacts")) {
-//			@SuppressWarnings("unchecked")
-//			HashMultimap<String, Contact> contacts = (HashMultimap<String, Contact>) savedInstanceState.getSerializable("mContacts");
-//			String searchTerm = savedInstanceState.getString("latestSearchTerm");
-//			this.displayResult(contacts, searchTerm);
-//		}
 	};
 	
     /* (non-Javadoc)
@@ -235,7 +232,7 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 		super.onStop();
 	}
 
-	public void displayResult(HashMultimap<String, Contact> mContacts, String latestSearchTerm) {
+	public void displayResult(HashMultimap<String, Contact> mContacts, String latestSearchTerm, ActiveSyncManager syncManager) {
 		if(mContacts == null)
 		{
 			//Toast.makeText(getActivity(), R.string.undefined_result_please_try_again, Toast.LENGTH_LONG).show();
@@ -248,36 +245,38 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 			tv.setText(String.format(getString(R.string.found_x_results_for_y), mContacts.size(), latestSearchTerm));
 		
 		// Get the accountName and sort the alphabetically
-		contactList = new Contact[mContacts.size()];
-		
-		int i = 0;
-		for (Contact contact : mContacts.values()) {
-			contactList[i++] = contact;
-		}
-
-		Arrays.sort(contactList);
+		contactList = new ArrayList<Contact>(mContacts.size());
+		contactList.addAll(mContacts.values());
+		Collections.sort(contactList);
 
 		// Create a new array adapter and add the accountName to this
-		final ContactListAdapter listadapter = new ContactListAdapter(
-				this.getActivity(), R.layout.contact_row,
-				contactList);
+		listadapter = new ContactListAdapter(
+				this.getActivity(),
+				R.layout.contact_row,
+				contactList,
+				mContacts.size() % syncManager.getMaxResults() == 0 ? syncManager : null);
+		listadapter.setSearchTerm(latestSearchTerm);
 
 		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
 		lv.setAdapter(listadapter);
 		lv.setOnItemClickListener(mListViewListener);
 	}
 
+	public void addResult(HashMultimap<String,Contact> contacts) {
+		listadapter.addAll(contacts.values());
+		//contactList.addAll(contacts.values());
+	}
 	/**
 	 * Clear the results from the listview
 	 */
 	protected void clearResult() {
 		contactListListener.onSearchCleared();
-		contactList = new Contact[0];
+		contactList = new ArrayList<Contact>(0);
 
 		// Create a new array adapter and add the accountName to this
-		final ContactListAdapter listadapter = new ContactListAdapter(
+		listadapter = new ContactListAdapter(
 				this.getActivity(), R.layout.contact_row,
-				contactList);
+				contactList, null);
 
 		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
 		lv.setAdapter(listadapter);
@@ -289,8 +288,11 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 
 	public void setSelectedContact(Contact selectedContact) {
 		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
-		for(int i = 0; i < contactList.length ; i++)
-			if(contactList[i].compareTo(selectedContact) == 0)
-				lv.setSelection(i);
+//		for(int i = 0; i < contactList.length ; i++)
+//			if(contactList[i].compareTo(selectedContact) == 0)
+//				lv.setSelection(i);
+		for(Contact c : contactList)
+			if(c.compareTo(selectedContact) == 0)
+				lv.setSelection(contactList.indexOf(c));
 	}
 }

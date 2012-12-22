@@ -100,4 +100,5 @@
 	<string name="editingWarning">Once an account is set up, you cannot change server or user name. Please create a new
 		account to change these settings.
 	</string>
+	<string name="next_search">Get more</string>
 </resources>

@@ -51,6 +51,8 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	private String mPassword;
 	private String mQuery = ""; //$NON-NLS-1$
 	private boolean mUseSSL;
+	private int mMaxResults;
+	private boolean mShowPictures;
 	private boolean mAcceptAllCerts;
 	private String mActiveSyncVersion = ""; //$NON-NLS-1$
 	private String mDeviceId;
@@ -96,6 +98,23 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 		mDomain = domain;
 	}
 
+	@Override
+	protected void finalize() throws Throwable {
+		Context ctx = App.getInstance();
+		// Make sure that the activesync policy key get written
+		// to the preferences
+		final SharedPreferences.Editor editor = App.getInstance().getSharedPreferences(getAccountKey(), Context.MODE_PRIVATE).edit();
+		editor.putString(ctx.getString(R.string.PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE),
+				getActiveSyncVersion());
+		editor.putString(ctx.getString(R.string.PREFS_KEY_DEVICE_ID_STRING), getDeviceId());
+		editor.putString(ctx.getString(R.string.PREFS_KEY_POLICY_KEY_PREFERENCE),
+				getPolicyKey());
+
+		// Commit the edits!
+		editor.commit();
+		super.finalize();    //To change body of overridden methods use File | Settings | File Templates.
+	}
+
 	public String getPolicyKey() {
 		return mPolicyKey;
 	}
@@ -126,6 +145,22 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 
 	public void setDeviceId(String deviceId) {
 		mDeviceId = deviceId;
+	}
+
+	public int getMaxResults() {
+		return mMaxResults;
+	}
+
+	public void setMaxResults(int mMaxResults) {
+		this.mMaxResults = mMaxResults;
+	}
+
+	public boolean isShowPictures() {
+		return mShowPictures;
+	}
+
+	public void setShowPictures(boolean mShowPictures) {
+		this.mShowPictures = mShowPictures;
 	}
 
 	public HashMultimap<String, Contact> getResults() {
@@ -189,7 +224,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	@Override
 	public boolean equals(Object o) {
 		if(o instanceof ActiveSyncManager) {
-			return accountKey == null ? false : accountKey.equals(((ActiveSyncManager) o).getAccountKey());
+			return getAccountKey() == null ? false : getAccountKey().equals(((ActiveSyncManager) o).getAccountKey());
 		}
 		return false;
 	}
@@ -275,12 +310,14 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	}
 
 	/**
+	 *
 	 * @param query The name to search the GAL for
+	 * @param startWith
 	 * @return The status code returned from the Exchange server
 	 * @throws Exception This method searches the GAL on the Exchange server
 	 */
-	public int searchGAL(String query) throws Exception {
-		return searchGAL(query, true);
+	public int searchGAL(String query, int startWith) throws Exception {
+		return searchGAL(query, startWith, true);
 	}
 
 	/**
@@ -292,12 +329,13 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	 * @return The status code returned from the Exchange server
 	 * @throws Exception This method searches the GAL on the Exchange server
 	 */
-	private int searchGAL(String query, boolean reprovision) throws Exception {
+	private int searchGAL(String query, int startWith, boolean reprovision) throws Exception {
 		mQuery = query;
 
 		int ret;
 		GalRequest request = new GalRequest(mUri, mAuthString, mUseSSL,
-				mActiveSyncVersion, mAcceptAllCerts, mPolicyKey, query, 100);
+				mActiveSyncVersion, mAcceptAllCerts, mPolicyKey, query, mMaxResults, mShowPictures);
+		request.setStartWith(startWith);
 
 		// Get the WBXML input stream from the response
 		CommandResponse resp = new CommandResponse(request.getResponse(true));
@@ -316,7 +354,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 					case Parser.STATUS_INVALID_POLICY_KEY:
 						if (reprovision) {
 							provisionDevice();
-							return searchGAL(query, false);
+							return searchGAL(query, startWith, false);
 						} else {
 							Debug.Log("Unable to reprovision device while searching: request status=" + requestStatus); //$NON-NLS-1$
 							return ERROR_UNABLE_TO_REPROVISION;
@@ -444,17 +482,17 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 		}
 	}
 
-	boolean reloadPreferences() {
-		if (accountKey != null) {
-			SharedPreferences prefs = App.getInstance().getSharedPreferences(accountKey, Context.MODE_PRIVATE);
-			return loadPreferences(prefs);
-		}
-		return false;
-	}
-
 	boolean loadPreferences(String accountKey) {
 		this.accountKey = accountKey;
 		return reloadPreferences();
+	}
+
+	boolean reloadPreferences() {
+		if (getAccountKey() != null) {
+			SharedPreferences prefs = App.getInstance().getSharedPreferences(getAccountKey(), Context.MODE_PRIVATE);
+			return loadPreferences(prefs);
+		}
+		return false;
 	}
 
 	boolean loadPreferences(SharedPreferences thesePrefs) {
@@ -472,14 +510,20 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 		// Clean up server name from previous displayText of the app
 		setServerName(cleanUpServerName(thesePrefs));
 
+		setUseSSL(thesePrefs.getBoolean(
+				context.getString(R.string.PREFS_KEY_USE_SSL), true)); //$NON-NLS-1$
+		setAcceptAllCerts(thesePrefs.getBoolean(
+				context.getString(R.string.PREFS_KEY_ACCEPT_ALL_CERTS), true));
+		int maxResults = Integer.parseInt(thesePrefs.getString(
+				context.getString(R.string.PREFS_KEY_MAX_HITS),
+				App.getInstance().getString(R.integer.PREFS_KEY_MAX_RESULT)));
+		setMaxResults(maxResults);
+		setShowPictures(thesePrefs.getBoolean(
+				context.getString(R.string.PREFS_KEY_CONTACT_PICS), true));
 		setActiveSyncVersion(thesePrefs.getString(
 				context.getString(R.string.PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE), "")); //$NON-NLS-1$
 		setPolicyKey(thesePrefs.getString(
 				context.getString(R.string.PREFS_KEY_POLICY_KEY_PREFERENCE), "")); //$NON-NLS-1$
-		setAcceptAllCerts(thesePrefs.getBoolean(
-				context.getString(R.string.PREFS_KEY_ACCEPT_ALL_CERTS), true));
-		setUseSSL(thesePrefs.getBoolean(
-				context.getString(R.string.PREFS_KEY_USE_SSL), true));
 
 		// Fix for null device_id
 		String device_id_string = thesePrefs.getString(context.getString(R.string.PREFS_KEY_DEVICE_ID_STRING), null);
@@ -561,4 +605,5 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		reloadPreferences();
 	}
+
 }

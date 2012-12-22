@@ -297,4 +297,16 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 	private String getString(int id) {
 		return context.getString(id);
 	}
+
+	public ActiveSyncManager get(String accountKey) {
+		for(ActiveSyncManager a : this) {
+			if(a.getAccountKey().equals(accountKey))
+				return a;
+		}
+		return null;
+	}
+
+	public boolean hasKey(String accountKey) {
+		return (get(accountKey) != null);
+	}
 }

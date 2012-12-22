@@ -16,6 +16,8 @@
 package net.vivekiyer.GAL;
 
 import android.content.Context;
+import android.content.Intent;
+import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
@@ -25,6 +27,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 
@@ -37,24 +42,32 @@ import android.widget.TextView;
  * @author Vivek Iyer
  *
  */
-public class ContactListAdapter extends ArrayAdapter<Contact> {	
+public class ContactListAdapter extends ArrayAdapter<Contact> {
 	
 	//private static String TAG = "ContactListAdapter";
-	
+	private ActiveSyncManager syncManager;
+	private String searchTerm;
+
+	@Override
+	public int getCount() {
+		// If syncManager != null then it means that there are more results available
+		// and we add another item to the list labeled "Get more..."
+		return super.getCount() + (syncManager != null ? 1 : 0);    //To change body of overridden methods use File | Settings | File Templates.
+	}
+
 	/**
 	 * Adds the contact details to the array adapter
-	 * 
-	 * @param context 
-	 * @param textViewResourceId 
+	 *
+	 * @param context
+	 * @param textViewResourceId
 	 * @param cs The contact details
-	 * 
+	 *
 	 */
 	public ContactListAdapter(Context context, int textViewResourceId,
-			Contact[] cs) {
-		super(context, textViewResourceId);
+			List<Contact> cs, ActiveSyncManager syncManager) {
+		super(context, textViewResourceId, cs);
 
-		for (Contact c : cs)
-			this.add(c);
+		this.syncManager = syncManager;
 	}
 
 	/* (non-Javadoc)
@@ -64,8 +77,11 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 	 */
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		if(position == super.getCount())
+			return getNextSearchView(convertView, parent);
+
 		View v = convertView;
-		if (v == null) {
+		if (v == null || !(v instanceof ContactRowView)) {
 			LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
 					Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.contact_row, null);
@@ -108,5 +124,40 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 			qcb.bringToFront();
 		}
 		return v;
+	}
+
+	private View getNextSearchView(View convertView, ViewGroup parent) {
+		View v = convertView;
+//		if (v == null || !(v instanceof ContactRowView)) {
+		LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
+				Context.LAYOUT_INFLATER_SERVICE);
+		v = vi.inflate(R.layout.next_search, null);
+//		}
+		v.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getContext(), CorporateAddressBook.class);
+				i.setAction(Intent.ACTION_SEARCH);
+				i.putExtra(CorporateAddressBook.ACCOUNT_KEY, syncManager.getAccountKey());
+				i.putExtra(CorporateAddressBook.START_WITH, getCount());
+				i.putExtra(CorporateAddressBook.REQUERY, true);
+				getContext().startActivity(i);
+			}
+		});
+		return v;
+	}
+
+	@Override
+	public void addAll(Collection<? extends Contact> collection) {
+		super.addAll(collection);    //To change body of overridden methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void registerDataSetObserver(DataSetObserver observer) {
+		super.registerDataSetObserver(observer);    //To change body of overridden methods use File | Settings | File Templates.
+	}
+
+	public void setSearchTerm(String searchTerm) {
+		this.searchTerm = searchTerm;
 	}
 }

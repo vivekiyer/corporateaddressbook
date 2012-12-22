@@ -18,7 +18,8 @@
 				android:dialogTitle="Maximum number of results"
 				android:key="@string/PREFS_KEY_MAX_HITS"
 				android:title="Maximum number of results"
-				android:defaultValue="@integer/PREFS_KEY_MAX_RESULT"/>
+				android:numeric="integer"
+				android:defaultValue="@integer/PREFS_KEY_MAX_RESULT" />
 		<CheckBoxPreference
 				android:title="Contact pictures"
 				android:key="@string/PREFS_KEY_CONTACT_PICS"

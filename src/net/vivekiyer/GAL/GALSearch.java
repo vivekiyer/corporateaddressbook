@@ -1,11 +1,12 @@
 package net.vivekiyer.GAL;
 
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-
+import android.app.Activity;
 import android.os.AsyncTask;
 import com.google.common.collect.HashMultimap;
 import net.vivekiyer.GAL.Preferences.ConnectionChecker;
+
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 import static net.vivekiyer.GAL.Preferences.ConnectionChecker.*;
 
@@ -15,16 +16,28 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 		void onSearchCompleted(int result, GALSearch search);
 	}
 
+	private int startWith = 0;
+	private boolean clearResults = true;
 	private ActiveSyncManager activeSyncManager;
-
 	private int errorCode = 0;
+
 	private String errorMesg = ""; //$NON-NLS-1$
 	private String errorDetail = ""; //$NON-NLS-1$
-
 	protected volatile OnSearchCompletedListener onSearchCompletedListener;
-	
+
 	HashMultimap<String,Contact> mContacts = null;
 
+	public void setStartWith(int startWith) {
+		this.startWith = startWith;
+	}
+
+	public boolean getClearResults() {
+		return clearResults;
+	}
+
+	public void setClearResults(boolean clearResults) {
+		this.clearResults = clearResults;
+	}
 
 	public HashMultimap<String,Contact> getContacts() {
 		return mContacts;
@@ -56,13 +69,13 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	@Override
 	protected Boolean doInBackground(String... params) {
 		try {
-			// Search the GAL
-			mContacts = null;
+			if(params.length > 1)
+				startWith = Integer.parseInt(params[1]);
 
 			int statusCode = 0;
 
 				do {
-				statusCode = activeSyncManager.searchGAL(params[0]);
+				statusCode = activeSyncManager.searchGAL(params[0], startWith);
 					switch (statusCode) {
 						case 200:
 							// All went ok, get the results
@@ -126,6 +139,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 			return false;
 		} catch (final Exception e) {
 			Debug.Log("Exception in GALSearch:\n" + e.toString());
+			e.printStackTrace();
 			errorCode = ConnectionChecker.UNDEFINED;
 			errorDetail = App.getInstance().getString(R.string.unhandled_error_occured) +
 					"\n" + e.toString();
@@ -155,7 +169,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	protected void onPostExecute(Boolean result) {
 		super.onPostExecute(result);
 		if(getOnSearchCompletedListener() != null)
-			getOnSearchCompletedListener().onSearchCompleted(result ? 0 : errorCode, this);
+			getOnSearchCompletedListener().onSearchCompleted(result ? Activity.RESULT_OK : errorCode, this);
 	}
 
 }
