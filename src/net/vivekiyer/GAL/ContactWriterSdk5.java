@@ -208,6 +208,9 @@ public class ContactWriterSdk5 extends ContactWriter {
 				.withValue(
 						ContactsContract.CommonDataKinds.Organization.COMPANY,
 						mContact.getCompany())
+				.withValue(
+						ContactsContract.CommonDataKinds.Organization.OFFICE_LOCATION,
+						mContact.getOfficeLocation())
 				.withValue(ContactsContract.CommonDataKinds.Organization.TYPE,
 						ContactsContract.CommonDataKinds.Organization.TYPE_WORK)
 				.build());
@@ -230,6 +233,34 @@ public class ContactWriterSdk5 extends ContactWriter {
 						mContact.getFirstName() + " " + mContact.getLastName()) //$NON-NLS-1$
 				.build());
 
+		// Add the alias
+		if(mContact.getAlias().length() > 0) {
+			ops.add(ContentProviderOperation
+					.newInsert(ContactsContract.Data.CONTENT_URI)
+					.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+					.withValue(
+							ContactsContract.Data.MIMETYPE,
+							ContactsContract.CommonDataKinds.Identity.CONTENT_ITEM_TYPE)
+					.withValue(
+							ContactsContract.CommonDataKinds.Identity.IDENTITY,
+							mContact.getAlias())
+					.build());
+		}
+
+		// Add picture, if available
+		if (mContact.getPicture().length > 0) { //$NON-NLS-1$
+			ops.add(ContentProviderOperation
+					.newInsert(ContactsContract.Data.CONTENT_URI)
+					.withValueBackReference(
+							ContactsContract.Data.RAW_CONTACT_ID, 0)
+					.withValue(
+							ContactsContract.Data.MIMETYPE,
+							ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+					.withValue(ContactsContract.CommonDataKinds.Photo.PHOTO,
+							mContact.getPicture())
+					.build());
+		}
+
 	}
 
 	/**
@@ -251,7 +282,8 @@ public class ContactWriterSdk5 extends ContactWriter {
 				.withValue(ContactsContract.RawContacts.ACCOUNT_TYPE,
 						selectedAccount.getType())
 				.withValue(ContactsContract.RawContacts.ACCOUNT_NAME,
-						selectedAccount.getName()).build());
+						selectedAccount.getName())
+				.build());
 
 		// Write information for each key value pair in contact
 		addContactFields(ops);

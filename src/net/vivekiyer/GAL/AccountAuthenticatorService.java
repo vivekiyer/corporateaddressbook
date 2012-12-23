@@ -1,5 +1,6 @@
 package net.vivekiyer.GAL;
 
+import net.vivekiyer.GAL.Preferences.Configure;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
@@ -10,11 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceActivity;
 import android.util.Log;
-import net.vivekiyer.GAL.Preferences.Configure;
-import net.vivekiyer.GAL.Preferences.PrefsActivity;
-import net.vivekiyer.GAL.Preferences.ServerPrefsFragment;
 
 public class AccountAuthenticatorService extends Service {
 	private static final String TAG = "AccountAuthenticatorService";

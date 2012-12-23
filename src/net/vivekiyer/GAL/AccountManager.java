@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,6 +23,11 @@ import java.util.ArrayList;
  * reading and storing changes, it is the source for configuration for the app.
  */
 public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAccountsUpdateListener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public interface OnAccountsChangedListener {
 
@@ -44,7 +50,7 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 		this.defaultAccount = defaultAccount;
 		if(defaultAccount != null) {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getInstance());
-			prefs.edit().putString(App.getInstance().getString(R.string.PREFS_KEY_DEFAULT_ACCOUNT), defaultAccount.getAccountKey()).apply();
+			prefs.edit().putString(App.getInstance().getString(R.string.PREFS_KEY_DEFAULT_ACCOUNT), defaultAccount.getAccountKey()).commit();
 		}
 	}
 
@@ -148,15 +154,17 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 			if(account.type.equals(getString(R.string.ACCOUNT_TYPE))) {
 				String accountKey = am.getUserData(account, context.getString(R.string.KEY_ACCOUNT_KEY));
 
-				if (accountKey == null || accountKey.isEmpty()) {
+				if (accountKey == null || accountKey.length() == 0) {
 					throw new RuntimeException("Unknown account key");
 				}
 
 				for(ActiveSyncManager syncManager : this) {
 					if(syncManager.getAccountKey().equals(accountKey)) {
 						changeHandled = true;
-						if(!syncManager.reloadPreferences())
+						if(!syncManager.reloadPreferences()) {
 							remove(syncManager);
+							break;
+						}
 					}
 				}
 				if(!changeHandled) {
@@ -171,7 +179,10 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 			}
 			needsNotification |= changeHandled;
 		}
-		for(ActiveSyncManager syncManager : this) {
+		Iterator<ActiveSyncManager> it = this.iterator();
+		while(it.hasNext())
+		{
+			ActiveSyncManager syncManager = it.next();
 			Boolean found = false;
 			for(Account account : accounts) {
 				if(account.type.equals(getString(R.string.ACCOUNT_TYPE))) {
@@ -181,7 +192,7 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 				}
 			}
 			if(!found)
-				remove(syncManager);
+				it.remove();
 		}
 		if(needsNotification && triggerListeners)
 			notifyChange();

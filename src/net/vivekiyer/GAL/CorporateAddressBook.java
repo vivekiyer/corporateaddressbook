@@ -437,7 +437,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			Debug.Log("List fragment missing from main activity, discarding search result"); //$NON-NLS-1$
 			return;
 		}
-		listFragment.addResult(contacts);
+		listFragment.addResult(contacts, activeSyncManager);
 	}
 
 	@TargetApi(11)

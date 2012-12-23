@@ -15,16 +15,17 @@
 
 package net.vivekiyer.GAL.Preferences;
 
-import android.util.Log;
-import net.vivekiyer.GAL.Debug;
-import net.vivekiyer.GAL.ActiveSyncManager;
-import net.vivekiyer.GAL.Parser;
-import net.vivekiyer.GAL.TaskCompleteCallback;
-import android.os.AsyncTask;
-import org.apache.http.conn.ConnectTimeoutException;
-
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+
+import net.vivekiyer.GAL.ActiveSyncManager;
+import net.vivekiyer.GAL.Debug;
+import net.vivekiyer.GAL.Parser;
+import net.vivekiyer.GAL.TaskCompleteCallback;
+
+import org.apache.http.conn.ConnectTimeoutException;
+
+import android.os.AsyncTask;
 
 /**
  * @author Vivek Iyer

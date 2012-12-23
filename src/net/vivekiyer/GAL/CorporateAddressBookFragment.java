@@ -165,6 +165,8 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 			contactListListener.onContactSelected(selectedItem);		
 		}
 	};
+
+	private String searchTerm;
 	
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
@@ -238,14 +240,12 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 			//Toast.makeText(getActivity(), R.string.undefined_result_please_try_again, Toast.LENGTH_LONG).show();
 			return;
 		}
-		TextView tv = (TextView) this.getView().findViewById(R.id.resultheader);
-		if(latestSearchTerm == null || latestSearchTerm.length() == 0)
-			tv.setText(String.format(getString(R.string.last_search_produced_x_results), mContacts.size()));
-		else
-			tv.setText(String.format(getString(R.string.found_x_results_for_y), mContacts.size(), latestSearchTerm));
+		searchTerm = latestSearchTerm;
+		final int numberOfHits = mContacts.size();
+		setHeaderText(numberOfHits);
 		
 		// Get the accountName and sort the alphabetically
-		contactList = new ArrayList<Contact>(mContacts.size());
+		contactList = new ArrayList<Contact>(numberOfHits);
 		contactList.addAll(mContacts.values());
 		Collections.sort(contactList);
 
@@ -254,7 +254,7 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 				this.getActivity(),
 				R.layout.contact_row,
 				contactList,
-				mContacts.size() % syncManager.getMaxResults() == 0 ? syncManager : null);
+				numberOfHits > 0 && numberOfHits % syncManager.getMaxResults() == 0 ? syncManager : null);
 		listadapter.setSearchTerm(latestSearchTerm);
 
 		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
@@ -262,9 +262,17 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 		lv.setOnItemClickListener(mListViewListener);
 	}
 
-	public void addResult(HashMultimap<String,Contact> contacts) {
-		listadapter.addAll(contacts.values());
-		//contactList.addAll(contacts.values());
+	private void setHeaderText(final int numberOfHits) {
+		TextView tv = (TextView) this.getView().findViewById(R.id.resultheader);
+		if(searchTerm == null || searchTerm.length() == 0)
+			tv.setText(String.format(getString(R.string.last_search_produced_x_results), numberOfHits));
+		else
+			tv.setText(String.format(getString(R.string.found_x_results_for_y), numberOfHits, searchTerm));
+	}
+
+	public void addResult(HashMultimap<String,Contact> contacts, ActiveSyncManager syncManager) {
+		listadapter.addAll(contacts.values(), contacts.size() == syncManager.getMaxResults());
+		setHeaderText(this.contactList.size());
 	}
 	/**
 	 * Clear the results from the listview

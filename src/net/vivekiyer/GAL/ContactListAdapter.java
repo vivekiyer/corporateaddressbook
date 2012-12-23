@@ -15,6 +15,7 @@
 
 package net.vivekiyer.GAL;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -75,6 +76,7 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 	 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
 	 * 
 	 */
+	@SuppressLint("NewApi")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if(position == super.getCount())
@@ -116,7 +118,7 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 				qcb.setImageBitmap(bm);
 			} else {
 				if(Utility.isPreHoneycomb())
-					qcb.setImageResource(R.drawable.ic_quick);
+					qcb.setImageResource(R.drawable.abs__menu_dropdown_panel_holo_light);
 				else
 					qcb.setImageToDefault();
 			}
@@ -147,9 +149,23 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 		return v;
 	}
 
+	@SuppressLint("NewApi")
+	public void addAll(Collection<? extends Contact> collection, boolean allowMoreResults) {
+		if(!allowMoreResults)
+			this.syncManager = null;
+		addAll(collection);
+	}
+
+	@SuppressLint("NewApi")
 	@Override
 	public void addAll(Collection<? extends Contact> collection) {
-		super.addAll(collection);    //To change body of overridden methods use File | Settings | File Templates.
+		if(Utility.isPreHoneycomb()) {
+			for(Contact c : collection) {
+				add(c);
+			}
+		}
+		else
+			super.addAll(collection);    //To change body of overridden methods use File | Settings | File Templates.
 	}
 
 	@Override

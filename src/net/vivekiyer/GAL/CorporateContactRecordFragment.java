@@ -141,7 +141,7 @@ public class CorporateContactRecordFragment extends SherlockListFragment
 			qcb.setImageBitmap(bm);
 		} else {
 			if(Utility.isPreHoneycomb())
-				qcb.setImageResource(R.drawable.ic_quick);
+				qcb.setImageResource(R.drawable.abs__menu_dropdown_panel_holo_light);
 			else
 				qcb.setImageToDefault();
 		}
