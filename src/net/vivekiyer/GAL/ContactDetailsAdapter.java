@@ -16,6 +16,7 @@
 package net.vivekiyer.GAL;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.devoteam.quickaction.QuickActionWindow;
 
@@ -122,15 +123,27 @@ public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {
 				v2.setVisibility(android.view.View.GONE);
 				v.setOnClickListener(null);
 				// Try to find a reasonable label
-				final String key = kvp.getKey().toLowerCase();
+				final String key = kvp.getKey().toLowerCase(Locale.getDefault());
 				if(key.contains("office")){ //$NON-NLS-1$
 					bt.setText(Utility.getUCString(R.string.location));
 				}
 				else if(key.contains("alias")){ //$NON-NLS-1$
 					bt.setText(Utility.getUCString(R.string.alias));
 				}
+				else if(key.contains("firstname")){ //$NON-NLS-1$
+					bt.setText(Utility.getUCString(R.string.firstname));
+				}
+				else if(key.contains("lastname")){ //$NON-NLS-1$
+					bt.setText(Utility.getUCString(R.string.lastname));
+				}
+				else if(key.contains("title")){ //$NON-NLS-1$
+					bt.setText(Utility.getUCString(R.string.title));
+				}
+				else if(key.contains("company")){ //$NON-NLS-1$
+					bt.setText(Utility.getUCString(R.string.company));
+				}
 				else{
-					bt.setText(key.toUpperCase());
+					bt.setText(key.toUpperCase(Locale.getDefault()));
 				}
 			}
 			im.setTag(kvp);			

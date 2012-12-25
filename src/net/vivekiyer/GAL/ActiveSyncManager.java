@@ -593,7 +593,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 
 	public String getAccountKey() {
 		if (accountKey == null) {
-			if (getServerName() == null || getServerName().isEmpty())
+			if (getServerName() == null || getServerName().length() == 0)
 				accountKey = mUsername;
 			else
 				accountKey = mUsername + "@" + getServerName();

@@ -15,15 +15,35 @@
 
 package net.vivekiyer.GAL.Preferences;
 
-import android.accounts.*;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import net.vivekiyer.GAL.AccountAdapter;
+import net.vivekiyer.GAL.AccountData;
+import net.vivekiyer.GAL.ActiveSyncManager;
+import net.vivekiyer.GAL.ChoiceDialogFragment;
+import net.vivekiyer.GAL.Debug;
+import net.vivekiyer.GAL.Parser;
+import net.vivekiyer.GAL.R;
+import net.vivekiyer.GAL.TaskCompleteCallback;
+import net.vivekiyer.GAL.Utility;
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -33,11 +53,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import net.vivekiyer.GAL.*;
 
-import java.io.IOException;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 /**
  * @author Vivek Iyer
@@ -54,20 +73,6 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 	protected String accountKey;
 	protected Boolean accountRemoved;
 
-	/*
-		public static final String PREFS_KEY_USERNAME_PREFERENCE = "username";
-		public static final String PREFS_KEY_PASSWORD_PREFERENCE = "password";
-		public static final String PREFS_KEY_DOMAIN_PREFERENCE = "domain";
-		public static final String PREFS_KEY_SERVER_PREFERENCE = "server";
-		public static final String PREFS_KEY_ACTIVESYNCVERSION_PREFERENCE = "activesyncversion";
-		public static final String PREFS_KEY_DEVICE_ID = "deviceid";
-		public static final String PREFS_KEY_POLICY_PREFS_KEY_PREFERENCE = "policykey";
-		public static final String PREFS_KEY_USE_SSL = "usessl";
-		public static final String PREFS_KEY_ACCEPT_ALL_CERTS = "acceptallcerts";
-		public static final String PREFS_KEY_RESULTS_PREFERENCE = "results";
-		public static final String PREFS_KEY_SEARCH_TERM_PREFERENCE = "searchTerm";
-		public static final String PREFS_KEY_SUCCESSFULLY_CONNECTED = "successfullyConnected";
-	*/
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 * 
@@ -86,17 +91,17 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 		String action = getIntent().getAction();
 		// Edit account
 		if (action.equals(getString(R.string.ACTION_PREFS_ACCOUNT_EDIT))) {
-			this.setTitle("Edit account");
+			this.setTitle(R.string.edit_account);
 			String accountKey = getIntent().getStringExtra(getString(R.string.KEY_ACCOUNT_KEY));
 			if (accountKey == null)
-				throw new RuntimeException("No account key was supplied for editing");
+				throw new RuntimeException("No account key was supplied for editing"); //$NON-NLS-1$
 
 			// Get the preferences that were entered by the user and display those to the user
 			mPreferences = getSharedPreferences(accountKey, MODE_PRIVATE);
 
 			String domain = mPreferences.getString(getString(R.string.PREFS_KEY_DOMAIN_PREFERENCE), ""),
 					user = mPreferences.getString(getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), "");
-			user = domain + (domain.length() > 0 ? "\\" : "") + user;
+			user = domain + (domain.length() > 0 ? "\\" : "") + user; //$NON-NLS-1$  //$NON-NLS-2$
 			if (user.length() > 0)
 				setTextForId(R.id.txtDomainUserName, user);
 			setTextForId(
@@ -112,23 +117,17 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 			// Disable editing of username and server; this would mess up our settings
 			findViewById(R.id.txtDomainUserName).setEnabled(false);
 			findViewById(R.id.lblDomainUserName).setEnabled(false);
+			findViewById(R.id.search_username_button).setEnabled(false);
 			findViewById(R.id.txtServerName).setEnabled(false);
 			findViewById(R.id.lblServerName).setEnabled(false);
 			findViewById(R.id.editingWarning).setVisibility(View.VISIBLE);
 		}
 		// Add account
 		else if (action.equals(getString(R.string.ACTION_PREFS_ACCOUNT_ADD))) {
-			AccountManager am = AccountManager.get(App.getInstance());
-			Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
-
-//			if (accounts.length > 0) {
-//				Bundle extras = getIntent().getExtras();
-//				AccountAuthenticatorResponse response = extras
-//						.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
-//				response.onError(0, "Sorry, Corporate Addressbook currently only supports one server");
-//				finish();
-//				return;
-//			}
+			// Enable user name lookup
+			ImageButton ib = (ImageButton) findViewById(R.id.search_username_button);
+			if(ib != null)
+				ib.setOnClickListener(this);
 		}
 		// Delete account
 		else if (action.equals(getString(R.string.ACTION_PREFS_ACCOUNT_DELETE))) {
@@ -148,12 +147,11 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 				return false;
 			}
 		});
-
+		
 		if (!Utility.isPreHoneycomb()) {
 			ActionBar actionBar = getActionBar();
 			if (actionBar != null)
 				actionBar.setDisplayHomeAsUpEnabled(true);
-//			actionBar.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
 		}
 	}
 
@@ -269,17 +267,52 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 	 */
 	@Override
 	public void onClick(View v) {
-		connect();
+		if(R.id.buttonSignIn == v.getId())
+			connect();
+		else if(R.id.search_username_button == v.getId()) {
+			populateUsername(this);
+		}
+	}
+
+	@SuppressLint("NewApi")
+	public void populateUsername(Context ctx) {
+
+		final ArrayList<AccountData> accountData = new ArrayList<AccountData>();
+		final AccountAdapter accAdapter = new AccountAdapter(this, accountData);
+		
+		Builder builder;
+		if(Utility.isPreHoneycomb())
+			builder = new AlertDialog.Builder(ctx);
+		else
+			builder = new AlertDialog.Builder(ctx, AlertDialog.THEME_HOLO_LIGHT);
+		builder.setTitle(ctx.getString(R.string.select_account));
+
+		builder.setSingleChoiceItems(accAdapter, -1,
+				new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						EditText v = ((EditText)findViewById(R.id.txtDomainUserName));
+						v.setText(accountData.get(which).getName());
+						dialog.dismiss();
+					}
+				});
+		builder.show();
 	}
 
 	/**
 	 * @param s The alert message Displays an alert dialog with the messaged
 	 *          provided
 	 */
+	@SuppressLint("NewApi")
 	private void showAlert(String s) {
-		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
-		alt_bld.setMessage(s).setPositiveButton(getResources().getString(android.R.string.ok), null);
-		AlertDialog alert = alt_bld.create();
+		Builder builder;
+		if(Utility.isPreHoneycomb())
+			builder = new AlertDialog.Builder(this);
+		else
+			builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
+		builder.setMessage(s).setPositiveButton(getResources().getString(android.R.string.ok), null);
+		AlertDialog alert = builder.create();
 		alert.show();
 	}
 
@@ -468,5 +501,5 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 				break;
 		}
 	}
-
+	
 }

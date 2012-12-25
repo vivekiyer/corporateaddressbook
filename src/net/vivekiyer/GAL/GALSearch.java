@@ -8,6 +8,8 @@ import net.vivekiyer.GAL.Preferences.ConnectionChecker;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import org.apache.http.conn.ConnectTimeoutException;
+
 import static net.vivekiyer.GAL.Preferences.ConnectionChecker.*;
 
 public class GALSearch extends AsyncTask<String, Void, Boolean>
@@ -123,6 +125,11 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 					}
 				} while (statusCode != 200);
 		} catch (final SocketTimeoutException e) {
+			errorCode = TIMEOUT;
+			errorMesg = App.getInstance().getString(R.string.timeout_title);
+			errorDetail = App.getInstance().getString(R.string.timeout_detail, App.getInstance().getString(R.string.useSecureSslText));
+			return false;
+		} catch (final ConnectTimeoutException e) {
 			errorCode = TIMEOUT;
 			errorMesg = App.getInstance().getString(R.string.timeout_title);
 			errorDetail = App.getInstance().getString(R.string.timeout_detail, App.getInstance().getString(R.string.useSecureSslText));

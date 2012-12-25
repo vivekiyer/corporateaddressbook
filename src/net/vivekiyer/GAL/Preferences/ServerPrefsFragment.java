@@ -1,5 +1,7 @@
 package net.vivekiyer.GAL.Preferences;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import net.vivekiyer.GAL.R;
 
@@ -10,9 +12,9 @@ import net.vivekiyer.GAL.R;
  * Time: 23:56
  * To change this template use File | Settings | File Templates.
  */
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ServerPrefsFragment extends PrefsFragment {
 	private String accountKey;
-	private String accountServer;
 
 	@Override
 	protected void onBeforeAddPrefs() {
@@ -25,7 +27,6 @@ public class ServerPrefsFragment extends PrefsFragment {
 		accountKey = getArguments().getString(getString(R.string.KEY_ACCOUNT_KEY));
 		if (accountKey == null)
 			throw new RuntimeException("Unable to get accountKey for account");
-		accountServer = getArguments().getString(getString(R.string.KEY_ACCOUNT_SERVER));
 		super.onCreate(aSavedState, "pref_server");    //To change body of overridden methods use File | Settings | File Templates.
 	}
 

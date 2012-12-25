@@ -15,6 +15,8 @@
 
 package net.vivekiyer.GAL;
 
+import java.util.Locale;
+
 import android.app.AlertDialog;
 import android.content.Context;
 
@@ -88,6 +90,6 @@ public class Utility {
 	}
 	
 	public static String getUCString(int stringID) {
-		return App.getInstance().getString(stringID).toUpperCase();		
+		return App.getInstance().getString(stringID).toUpperCase(Locale.getDefault());		
 	}
 }

@@ -47,7 +47,6 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 	
 	//private static String TAG = "ContactListAdapter";
 	private ActiveSyncManager syncManager;
-	private String searchTerm;
 
 	@Override
 	public int getCount() {
@@ -118,7 +117,7 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 				qcb.setImageBitmap(bm);
 			} else {
 				if(Utility.isPreHoneycomb())
-					qcb.setImageResource(R.drawable.abs__menu_dropdown_panel_holo_light);
+					qcb.setImageResource(R.drawable.abs__menu_dropdown_panel_holo_light); // TODO: reset to proper image
 				else
 					qcb.setImageToDefault();
 			}
@@ -171,9 +170,5 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 	@Override
 	public void registerDataSetObserver(DataSetObserver observer) {
 		super.registerDataSetObserver(observer);    //To change body of overridden methods use File | Settings | File Templates.
-	}
-
-	public void setSearchTerm(String searchTerm) {
-		this.searchTerm = searchTerm;
 	}
 }

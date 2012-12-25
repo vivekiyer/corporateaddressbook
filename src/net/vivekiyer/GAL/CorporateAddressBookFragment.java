@@ -255,7 +255,6 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 				R.layout.contact_row,
 				contactList,
 				numberOfHits > 0 && numberOfHits % syncManager.getMaxResults() == 0 ? syncManager : null);
-		listadapter.setSearchTerm(latestSearchTerm);
 
 		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
 		lv.setAdapter(listadapter);

@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="fill_parent"
-              android:layout_height="48dp">
-<TextView android:id="@+id/next_search"
-          android:background="@color/holo_blue_dark"
-          android:text="@string/next_search"
-          android:layout_width="fill_parent"
-          android:layout_height="48dp"
-          android:textColor="@android:color/white"
-          android:textStyle="bold"
+    android:id="@+id/next_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:background="@color/holo_blue_dark" >
 
-          android:gravity="center_vertical|center_horizontal"/>
+    <TextView
+        android:id="@+id/next_search"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:drawableStart="@drawable/ic_action_download"
+        android:gravity="center_vertical|center_horizontal"
+        android:paddingRight="8dp"
+        android:text="@string/next_search"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
 </LinearLayout>

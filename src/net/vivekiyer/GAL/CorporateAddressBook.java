@@ -15,6 +15,12 @@
 
 package net.vivekiyer.GAL;
 
+import java.util.Set;
+
+import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
+import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
+import net.vivekiyer.GAL.Preferences.ConnectionChecker;
+import net.vivekiyer.GAL.Preferences.PrefsActivity;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
@@ -31,18 +37,13 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.SpinnerAdapter;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.common.collect.HashMultimap;
-import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
-import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
-import net.vivekiyer.GAL.Preferences.ConnectionChecker;
-import net.vivekiyer.GAL.Preferences.PrefsActivity;
-
-import java.util.Set;
 
 
 /**
@@ -54,7 +55,6 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		implements ContactListListener, GALSearch.OnSearchCompletedListener, OnChoiceDialogOptionClickListener,
 		ActionBar.OnNavigationListener, AccountManager.OnAccountsChangedListener {
 
-	private String accountKey;
 	private boolean listeningToAccountChanges = false;
 
 	class AccountResult {
@@ -330,7 +330,6 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		activeSyncManager = App.getAccounts().get(itemPosition);
-		accountKey = activeSyncManager.getAccountKey();
 		App.getAccounts().setDefaultAccount(activeSyncManager);
 		return true;
 	}
@@ -357,7 +356,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		MenuItem item = menu.findItem(
 				R.id.menu_search);
 		if(Utility.isPreHoneycomb()) {
-			SearchView searchView = new SearchView(this);
+			com.actionbarsherlock.widget.SearchView searchView = new com.actionbarsherlock.widget.SearchView(this);
 			searchView.setSearchableInfo(searchableInfo);
 			item.setActionView(searchView);
 			this.searchView = searchView;
@@ -458,8 +457,8 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 		resetAndHideDetails(fragmentManager);
 		if (searchView != null) {
-			if(searchView instanceof SearchView) {
-				((SearchView)searchView).setQuery("", false); //$NON-NLS-1$
+			if(searchView instanceof com.actionbarsherlock.widget.SearchView) {
+				((com.actionbarsherlock.widget.SearchView)searchView).setQuery("", false); //$NON-NLS-1$
 			}
 			else if(searchView instanceof SearchView) {
 				((SearchView)searchView).setQuery("", false); //$NON-NLS-1$
@@ -575,13 +574,13 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	public boolean onSearchRequested() {
 //		if (!Utility.isPreHoneycomb()) {
 			if (searchView != null) {
-				if(searchView instanceof SearchView) {
-					SearchView v = (SearchView) searchView;
+				if(searchView instanceof com.actionbarsherlock.widget.SearchView) {
+					com.actionbarsherlock.widget.SearchView v = (com.actionbarsherlock.widget.SearchView) searchView;
 					v.setFocusable(true);
 					v.setIconified(false);
 					v.requestFocusFromTouch();
 				}
-				else if(searchView instanceof SearchView) {
+				else if(searchView.getClass().toString().equals(SearchView.class.toString())) {
 					SearchView v = (SearchView) searchView;
 					v.setFocusable(true);
 					v.setIconified(false);

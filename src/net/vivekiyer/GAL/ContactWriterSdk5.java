@@ -16,27 +16,18 @@
 package net.vivekiyer.GAL;
 
 import java.util.ArrayList;
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AuthenticatorDescription;
-import android.accounts.OnAccountsUpdateListener;
+
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Application;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 /**
  * An implementation of {@link ContactWriter} that uses current Contacts API.
@@ -48,7 +39,6 @@ public class ContactWriterSdk5 extends ContactWriter {
 	private static ArrayList<AccountData> mAccounts = null;
 	private static AccountAdapter mAccountAdapter = null;
 	private Context context;
-	private LayoutInflater layoutInflater;
 	private Contact mContact;
 
 	// TAG used for logging
@@ -62,8 +52,6 @@ public class ContactWriterSdk5 extends ContactWriter {
 	@Override
 	public void Initialize(Application appCtx, Contact contact) {
 		context = appCtx;
-		layoutInflater = (LayoutInflater)appCtx.getSystemService
-			      (Context.LAYOUT_INFLATER_SERVICE);
 		mContact = contact;
 
 		// TODO: Refactor into non-singelton object
@@ -75,27 +63,6 @@ public class ContactWriterSdk5 extends ContactWriter {
 			// below, we also ask for
 			// an initial callback to pre-populate the account list.
 		}		
-	}
-
-	/**
-	 * Obtain the AuthenticatorDescription for a given account type.
-	 * 
-	 * @param type
-	 *            The account type to locate.
-	 * @param dictionary
-	 *            An array of AuthenticatorDescriptions, as returned by
-	 *            AccountManager.
-	 * @return The description for the specified account type.
-	 */
-	private static AuthenticatorDescription getAuthenticatorDescription(
-			String type, AuthenticatorDescription[] dictionary) {
-		for (int i = 0; i < dictionary.length; i++) {
-			if (dictionary[i].type.equals(type)) {
-				return dictionary[i];
-			}
-		}
-		// No match found
-		throw new RuntimeException("Unable to find matching authenticator"); //$NON-NLS-1$
 	}
 
 	private void addContactFields(ArrayList<ContentProviderOperation> ops) {
@@ -311,10 +278,15 @@ public class ContactWriterSdk5 extends ContactWriter {
 	 * Displays an option that allows the user to save the contact being
 	 * displayed to the addressbook on the device
 	 */
+	@SuppressLint("NewApi")
 	@Override
 	public void saveContact(Context ctx) {
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+		Builder builder;
+		if(Utility.isPreHoneycomb())
+			builder = new AlertDialog.Builder(ctx);
+		else
+			builder = new AlertDialog.Builder(ctx, AlertDialog.THEME_HOLO_LIGHT);
 		builder.setTitle(ctx.getString(R.string.select_account));
 
 		builder.setSingleChoiceItems(mAccountAdapter, -1,
@@ -329,159 +301,6 @@ public class ContactWriterSdk5 extends ContactWriter {
 				});
 		builder.show();
 	}
-
-	/**
-	 * A container class used to represent all known information about an
-	 * account.
-	 */
-	private class AccountData {
-		private String mName;
-		private String mType;
-		private CharSequence mTypeLabel;
-		private Drawable mIcon;
-
-		/**
-		 * @param name
-		 *            The name of the account. This is usually the user's email
-		 *            address or username.
-		 * @param description
-		 *            The description for this account. This will be dictated by
-		 *            the type of account returned, and can be obtained from the
-		 *            system AccountManager.
-		 */
-		public AccountData(String name, AuthenticatorDescription description) {
-			mName = name;
-			if (description != null) {
-				mType = description.type;
-
-				// The type string is stored in a resource, so we need to
-				// convert it into something
-				// human readable.
-				String packageName = description.packageName;
-				PackageManager pm = context.getPackageManager();
-
-				if (description.labelId != 0) {
-					mTypeLabel = pm.getText(packageName, description.labelId,
-							null);
-					if (mTypeLabel == null) {
-						throw new IllegalArgumentException(
-								"LabelID provided, but label not found"); //$NON-NLS-1$
-					}
-				} else {
-					mTypeLabel = ""; //$NON-NLS-1$
-				}
-
-				if (description.iconId != 0) {
-					mIcon = pm.getDrawable(packageName, description.iconId,
-							null);
-					if (mIcon == null) {
-						throw new IllegalArgumentException(
-								"IconID provided, but drawable not " + "found"); //$NON-NLS-1$ //$NON-NLS-2$
-					}
-				} else {
-					mIcon = context.getResources().getDrawable(
-							android.R.drawable.sym_def_app_icon);
-				}
-			}
-		}
-
-		public String getName() {
-			return mName;
-		}
-
-		public String getType() {
-			return mType;
-		}
-
-		public CharSequence getTypeLabel() {
-			return mTypeLabel;
-		}
-
-		public Drawable getIcon() {
-			return mIcon;
-		}
-
-		public String toString() {
-			return mName;
-		}
-	}
-
-	/**
-	 * Custom adapter used to display account icons and descriptions in the
-	 * account spinner.
-	 */
-	private class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccountsUpdateListener {
-		
-		public AccountAdapter(Context context,
-				ArrayList<AccountData> accountData) {
-			super(context, android.R.layout.simple_list_item_1, accountData);
-			AccountManager.get(context).addOnAccountsUpdatedListener(this, null,
-					true);
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			// Inflate a view template
-			if (convertView == null) {
-				convertView = layoutInflater.inflate(R.layout.account_entry,
-						parent, false);
-			}
-			TextView firstAccountLine = (TextView) convertView
-					.findViewById(R.id.firstAccountLine);
-			TextView secondAccountLine = (TextView) convertView
-					.findViewById(R.id.secondAccountLine);
-			ImageView accountIcon = (ImageView) convertView
-					.findViewById(R.id.accountIcon);
-
-			// Populate template
-			AccountData data = getItem(position);
-			firstAccountLine.setText(data.getName());
-			secondAccountLine.setText(data.getTypeLabel());
-			Drawable icon = data.getIcon();
-			if (icon == null) {
-				icon = context.getResources().getDrawable(
-						android.R.drawable.ic_menu_search);
-			}
-			accountIcon.setImageDrawable(icon);
-			return convertView;
-		}
-
-		@Override
-		public void onAccountsUpdated(Account[] accounts) {
-			//Log.i(TAG, "Account list update detected");
-			// Clear out any old data to prevent duplicates
-			mAccounts.clear();
-
-			// Get account data from system
-			AuthenticatorDescription[] accountTypes = AccountManager.get(context)
-					.getAuthenticatorTypes();
-
-			// Populate tables
-			for (int i = 0; i < accounts.length; i++) {
-				// The user may have multiple accounts with the same name, so we
-				// need to construct a
-				// meaningful display name for each.
-				String systemAccountType = accounts[i].type;
-
-				AuthenticatorDescription ad = getAuthenticatorDescription(
-						systemAccountType, accountTypes);
-				AccountData data = new AccountData(accounts[i].name, ad);
-				mAccounts.add(data);
-			}
-
-			// Update the account spinner
-			this.notifyDataSetChanged();
-
-		}
-		
-		@Override
-		protected void finalize() throws Throwable {
-			// Make sure listener is un-registered when this object is destructed, will otherwise cause leak
-			AccountManager.get(context).removeOnAccountsUpdatedListener(this);
-			
-			super.finalize();
-		}
-}
 
 	@Override
 	public void cleanUp() {

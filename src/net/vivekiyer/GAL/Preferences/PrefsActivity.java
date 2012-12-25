@@ -3,10 +3,12 @@ package net.vivekiyer.GAL.Preferences;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
+import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.*;
 import android.widget.ListAdapter;
@@ -79,10 +81,11 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 
 		String action = getIntent().getAction();
 		if (action != null && action.equals(getString(R.string.ACTION_PREFS_ACCOUNTS))) {
-			addPreferencesFromResource(R.xml.pref_server);
 			String accountKey = getIntent().getStringExtra(getString(R.string.KEY_ACCOUNT_KEY));
 			if(accountKey == null)
 				throw new IllegalArgumentException("No Account Key supplied for pref-server");
+			getPreferenceManager().setSharedPreferencesName(accountKey);
+			addPreferencesFromResource(R.xml.pref_server);
 			addServerPreference(getPreferenceScreen(), accountKey);
 
 		} else if (action != null && action.equals(getString(R.string.ACTION_PREFS_ABOUT))) {
@@ -131,19 +134,22 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		//finishActivity(CorporateAddressBook.DISPLAY_CONFIGURATION_REQUEST);
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void switchToHeader(Header header) {
 		if (header.fragment == null && header.intent == null) {
 			if (mHeaders == null)
 				return;
 			for (Header h : mHeaders) {
-				if (header.fragment != null || header.intent != null)
-					super.switchToHeader(header);
+				if (h.fragment != null || h.intent != null) {
+					super.switchToHeader(h);
+				}
 			}
 		} else
 			super.switchToHeader(header);    //To change body of overridden methods use File | Settings | File Templates.
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onBuildHeaders(List<Header> aTarget) {
 		try {
@@ -165,6 +171,7 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		} catch (InvocationTargetException e) {
 		}
 	}
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	int addServerHeaders(List<Header> aTarget) {
 		AccountManager am = AccountManager.get(this);
 		Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
@@ -215,6 +222,7 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		super.setListAdapter(new HeaderAdapter(this, mHeaders));
 	}
 
+	@SuppressWarnings("deprecation")
 	private void addNonHeaderPrefs() {
 		PreferenceCategory preferenceCategory = null;
 		PreferenceScreen screen = getPreferenceScreen();
@@ -254,7 +262,7 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		String user = accountPrefs.getString(ctx.getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), "");
 		String accountServer = accountPrefs.getString(ctx.getString(R.string.PREFS_KEY_SERVER_PREFERENCE), "");
 		Preference preference = screen.findPreference(ctx.getString(R.string.ACCOUNT_TYPE));
-		if (domain.isEmpty()) {
+		if (domain.length() == 0) {
 			preference.setTitle(user);
 		} else {
 			preference.setTitle(domain + "\\" + user);
@@ -288,6 +296,7 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		}
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onAccountsUpdated(Account[] accounts) {
 		// TODO: Enable "header" update for pre-HC

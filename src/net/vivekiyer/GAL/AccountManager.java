@@ -115,15 +115,15 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 						userName :
 						String.format("%1$s@%2$s", userName, serverName);
 				final ActiveSyncManager syncManager = new ActiveSyncManager();
-				AsyncTask migrateTask = new AsyncTask() {
+				AsyncTask<Object, Void, Boolean> migrateTask = new AsyncTask<Object, Void, Boolean>() {
 					@Override
-					protected Object doInBackground(Object... params) {
+					protected Boolean doInBackground(Object... params) {
 						return syncManager.loadPreferences(existingPrefs);
 					}
 
 					@Override
-					protected void onPostExecute(Object o) {
-						if (o instanceof Boolean && ((Boolean) o)) {
+					protected void onPostExecute(Boolean success) {
+						if (success) {
 							migrateConfiguration(am, existingPrefs, accountKey, syncManager, progressdialog, null);
 						} else {
 							if (progressdialog != null && progressdialog.isShowing()) {
@@ -277,7 +277,7 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 			}
 		};
 
-		AccountManagerFuture<Bundle> future = acc.addAccount(getString(R.string.ACCOUNT_TYPE), null, null, null, activity, callback, null);
+		/*AccountManagerFuture<Bundle> future =*/ acc.addAccount(getString(R.string.ACCOUNT_TYPE), null, null, null, activity, callback, null);
 
 	}
 

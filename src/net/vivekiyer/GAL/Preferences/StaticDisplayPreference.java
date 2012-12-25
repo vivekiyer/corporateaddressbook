@@ -15,6 +15,7 @@ import android.widget.Toast;
  * Time: 23:40
  * To change this template use File | Settings | File Templates.
  */
+@SuppressWarnings("deprecation")
 public class StaticDisplayPreference extends DialogPreference {
 	protected String displayText = "";
 

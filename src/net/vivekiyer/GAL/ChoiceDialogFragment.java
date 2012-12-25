@@ -1,5 +1,6 @@
 package net.vivekiyer.GAL;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -56,11 +57,16 @@ public class ChoiceDialogFragment extends SherlockDialogFragment implements OnCl
 		return this;
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-		Builder builder = new AlertDialog.Builder(getActivity())
-				.setIcon(android.R.drawable.ic_dialog_alert);
+		Builder builder;
+		if(Utility.isPreHoneycomb())
+			builder = new AlertDialog.Builder(getActivity());
+		else
+			builder = new AlertDialog.Builder(getActivity(), AlertDialog.THEME_HOLO_LIGHT);
+		builder.setIcon(android.R.drawable.ic_dialog_alert);
 
 		Bundle args = getArguments();
 

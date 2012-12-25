@@ -2,11 +2,8 @@ package net.vivekiyer.GAL.Preferences;
 
 import android.content.Context;
 import android.preference.EditTextPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.text.InputType;
 import android.util.AttributeSet;
-import org.apache.commons.codec.binary.StringUtils;
 
 /**
  * Created with IntelliJ IDEA.

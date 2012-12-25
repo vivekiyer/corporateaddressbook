@@ -1,20 +1,24 @@
 package net.vivekiyer.GAL.Preferences;
 
-import android.accounts.*;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import java.io.IOException;
+
 import net.vivekiyer.GAL.ActiveSyncManager;
 import net.vivekiyer.GAL.App;
 import net.vivekiyer.GAL.R;
 import net.vivekiyer.GAL.Utility;
-
-import java.io.IOException;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +27,7 @@ import java.io.IOException;
  * Time: 23:34
  * To change this template use File | Settings | File Templates.
  */
+@SuppressLint("NewApi")
 public class AddOrDeleteAccountActivity extends FragmentActivity implements AccountManagerCallback<Bundle> {
 
 
@@ -34,15 +39,11 @@ public class AddOrDeleteAccountActivity extends FragmentActivity implements Acco
 		PassedValidation
 	}
 
-	private ValidationStatus status = ValidationStatus.Undefined;
-
-	private SharedPreferences mPreferences;
-	private ProgressDialog progressdialog;
 	ActiveSyncManager activeSyncManager;
-	private String domain;
-	private String username;
 	String accountName;
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@SuppressLint("NewApi")
 	@Override
 	public void run(AccountManagerFuture<Bundle> future) {
 		try {
@@ -72,6 +73,7 @@ public class AddOrDeleteAccountActivity extends FragmentActivity implements Acco
 		}
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		getIntent().addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -79,7 +81,7 @@ public class AddOrDeleteAccountActivity extends FragmentActivity implements Acco
 
 		final String accountAction = getIntent().getAction();
 		if (accountAction.equals(getString(R.string.ACTION_PREFS_ACCOUNT_ADD))) {
-			AccountManagerFuture<Bundle> future = AccountManager.get(App.getInstance())
+			/*AccountManagerFuture<Bundle> future =*/ AccountManager.get(App.getInstance())
 					.addAccount(getString(R.string.ACCOUNT_TYPE), null, null, null, this, this, null);
 			finish();
 		} else if (accountAction.equals(getString(R.string.ACTION_PREFS_ACCOUNT_DELETE))) {

@@ -90,8 +90,6 @@ public class ContactsSyncAdapterService extends Service {
 			localContacts.put(c1.getString(1), c1.getLong(0));
 		}
 
-		int numElements = localContacts.size();
-
 		/*
 		 * get Collection of values contained in HashMap using Collection
 		 * values() method of HashMap class
@@ -115,6 +113,7 @@ public class ContactsSyncAdapterService extends Service {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static void addContact(Account account, String name, String username) {
 		Log.i(TAG, "Adding contact: " + name);
 		ArrayList<ContentProviderOperation> operationList = new ArrayList<ContentProviderOperation>();

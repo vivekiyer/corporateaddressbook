@@ -10,7 +10,6 @@ import android.preference.PreferenceFragment;
 public class PrefsFragment extends PreferenceFragment {
 	@Override
 	public void onCreate(Bundle aSavedState) {
-		Context anAct = getActivity().getApplicationContext();
 		String fragment = getArguments().getString("pref-resource");
 		onCreate(aSavedState, fragment);
 	}
