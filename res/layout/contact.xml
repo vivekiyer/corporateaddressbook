@@ -72,14 +72,16 @@
     <ListView
         android:id="@android:id/list"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:longClickable="true"
         tools:listitem="@layout/detail_row" />
 
     <android.widget.TextView
         android:id="@android:id/empty"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:text="@string/select_a_contact_to_view_details"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 

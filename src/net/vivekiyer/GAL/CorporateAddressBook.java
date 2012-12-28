@@ -15,6 +15,7 @@
 
 package net.vivekiyer.GAL;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
@@ -37,14 +38,13 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.common.collect.HashMultimap;
-
 
 /**
  * @author Vivek Iyer
@@ -93,7 +93,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	static final String REQUERY = "requery_previous";
 
 	// Progress bar
-	private ProgressDialog progressdialog;
+//	private ProgressDialog progressdialog;
 	// Last search term
 	private String latestSearchTerm;
 	private View searchView;
@@ -101,13 +101,15 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	// TAG used for logging
 
 	// Stores the list of contacts returned
-	private HashMultimap<String, Contact> mContacts;
+	private HashMap<String, Contact> mContacts;
 	private Contact selectedContact;
 	private GALSearch search;
 
 	public static final int AuthEx = 2;
 
 	private boolean isPaused = false;
+
+	private View headerView;
 
 	/*
 	 * (non-Javadoc)
@@ -121,11 +123,9 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_fragment);
 
-		// Create the progress bar
-		progressdialog = new ProgressDialog(this);
-		progressdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		progressdialog.setCancelable(false);
 
+		headerView = findViewById(R.id.result_header);
+		
 		// Turn keystrokes into search
 		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
@@ -140,7 +140,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	}
 
 	private void initializeActionBar() {
-		App.getAccounts().Initialize(progressdialog, this);
+		App.getAccounts().Initialize(this);
 		final ActionBar actionBar = getSupportActionBar();
 
 		if (App.getAccounts().size() >= 2) {
@@ -239,7 +239,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		super.onPostCreate(savedInstanceState);
 
 		if (savedInstanceState != null && savedInstanceState.containsKey(CONTACTS)) {
-			mContacts = (HashMultimap<String, Contact>) savedInstanceState.get(CONTACTS);
+			mContacts = (HashMap<String, Contact>) savedInstanceState.get(CONTACTS);
 			String latestSearchTerm = savedInstanceState.getString(SEARCH_TERM);
 			selectedContact = (Contact) savedInstanceState.get(SELECTED_CONTACT);
 			displaySearchResult(mContacts, latestSearchTerm);
@@ -252,10 +252,8 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 				if (search != null) {
 					search.setOnSearchCompletedListener(this);
 					App.taskManager.remove(searchHash);
-					if (progressdialog != null) {
-						progressdialog.setMessage(getString(R.string.retrievingResults));
-						progressdialog.show();
-					}
+					CorporateAddressBookFragment frag = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
+					frag.setHeader(getString(R.string.retrievingResults), true);
 				}
 			}
 		}
@@ -298,12 +296,16 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	void getNextSearchResult() {
 		performSearch(latestSearchTerm, activeSyncManager, mContacts.size(), false);
 	}
-
+	
 	private void performSearch(String name, ActiveSyncManager syncManager, int startWith, boolean clearResults) {
 
-		if (progressdialog != null) {
-			progressdialog.setMessage(getString(R.string.retrievingResults));
-			progressdialog.show();
+//		if (progressdialog != null) {
+//			progressdialog.setMessage(getString(R.string.retrievingResults));
+//			progressdialog.show();
+//		}
+		if(clearResults) {
+			CorporateAddressBookFragment frag = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
+			frag.setHeader(getString(R.string.retrievingResults), true);
 		}
 
 		// Save search in recent list
@@ -425,7 +427,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		}
 	}
 
-	private void addSearchResults(HashMultimap<String,Contact> contacts) {
+	private void addSearchResults(HashMap<String,Contact> contacts) {
 		mContacts.putAll(contacts);
 
 		final FragmentManager fragmentManager = getSupportFragmentManager();
@@ -440,7 +442,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	}
 
 	@TargetApi(11)
-	private void displaySearchResult(HashMultimap<String, Contact> contacts, String searchTerm) {
+	private void displaySearchResult(HashMap<String, Contact> contacts, String searchTerm) {
 
 		this.mContacts = contacts;
 		this.latestSearchTerm = searchTerm;
@@ -509,12 +511,6 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 	@Override
 	protected void onDestroy() {
-		if ((progressdialog != null) && progressdialog.isShowing()) {
-			try {
-				progressdialog.dismiss();
-			} catch (java.lang.IllegalArgumentException e) {
-			}
-		}
 		if (search != null)
 			search.setOnSearchCompletedListener(null);
 		if (listeningToAccountChanges)
@@ -601,12 +597,12 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	@Override
 	public void onSearchCompleted(int result,
 	                              GALSearch search) {
-		if ((progressdialog != null) && progressdialog.isShowing()) {
-			try {
-				progressdialog.dismiss();
-			} catch (java.lang.IllegalArgumentException e) {
-			}
-		}
+//		if ((progressdialog != null) && progressdialog.isShowing()) {
+//			try {
+//				progressdialog.dismiss();
+//			} catch (java.lang.IllegalArgumentException e) {
+//			}
+//		}
 		if (result == RESULT_OK) {
 			if(search.getClearResults())
 				displaySearchResult(search.getContacts(), search.getSearchTerm());
@@ -614,6 +610,10 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 				addSearchResults(search.getContacts());
 			return;
 		}
+		
+		CorporateAddressBookFragment fragment = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
+		fragment.resetHeader();
+		
 		ChoiceDialogFragment dialogFragment;
 		String title = search.getErrorMesg();
 		String message = search.getErrorDetail();

@@ -12,6 +12,6 @@
     <color name="listItemBackgroundChecked">@color/holo_blue_dark</color>
     <color name="listItemBackgroundUnchecked">@android:color/transparent</color>
     <color name="details_list_background">@android:color/background_light</color>
-    <color name="header_background">@android:color/secondary_text_dark</color>
+    <color name="header_background">#f0f0f0</color>
 
 </resources>

@@ -17,7 +17,8 @@ package com.android.exchange.adapter;
 
 import java.io.IOException;
 import java.io.InputStream;
-import com.google.common.collect.HashMultimap;
+import java.util.HashMap;
+
 import net.vivekiyer.GAL.Contact;
 import net.vivekiyer.GAL.Debug;
 
@@ -28,19 +29,19 @@ public class GalParser extends Parser {
 
 	private int numResults = 0;
 	
-	private HashMultimap<String,Contact> contacts;
+	private java.util.HashMap<String,Contact> contacts;
 	
 	public int getNumResults(){
 		return numResults;
 	}
 
-	public HashMultimap<String,Contact> getResults(){
+	public HashMap<String, Contact> getResults(){
 		return contacts;
 	}
 	
 	public GalParser(InputStream in) throws IOException {
 		super(in);
-		contacts = HashMultimap.create();
+		contacts = new java.util.HashMap<String, Contact>();
 	}
 
 	@Override

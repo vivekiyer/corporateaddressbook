@@ -62,9 +62,9 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 		this.context = context;
 	}
 
-	public void Initialize(ProgressDialog progressdialog, Activity activity) {
+	public void Initialize(Activity activity) {
 		if (!isInitialized) {
-			loadPreferences(progressdialog, activity);
+			loadPreferences(activity);
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getInstance());
 			String defaultAccount = prefs.getString(App.getInstance().getString(R.string.PREFS_KEY_DEFAULT_ACCOUNT), null);
 			for(ActiveSyncManager syncManager : this) {
@@ -97,7 +97,12 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 	 * <p/>
 	 * If no prefs exist it launches the "Add account" dialog.
 	 */
-	public void loadPreferences(final ProgressDialog progressdialog, final Activity parentActivity) {
+	public void loadPreferences(final Activity parentActivity) {
+
+		// Create the progress bar
+		final ProgressDialog progressdialog = new ProgressDialog(parentActivity);
+		progressdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progressdialog.setCancelable(false);
 
 		// Initialize preferences and the corresponding ActiveSyncManager(s)
 		final android.accounts.AccountManager am = android.accounts.AccountManager.get(context);

@@ -1,5 +1,6 @@
 package net.vivekiyer.GAL;
 
+import net.vivekiyer.GAL.view.QuickActionView;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
@@ -15,7 +16,7 @@ public class Listeners {
 	}
 
 	public static OnClickListener getCallListener(final String telNo,
-		final QuickActionWindow qa) {
+		final Object qa) {
 		return new OnClickListener() {
 			
 			@Override
@@ -25,7 +26,12 @@ public class Listeners {
 						Uri.parse("tel:"+telNo)); //$NON-NLS-1$
 				v.getContext().startActivity(intent);
 				if(qa != null)
-					qa.dismiss();
+					if(qa instanceof QuickActionView)
+						((QuickActionView)qa).setVisibility(View.GONE);
+					else if(qa instanceof QuickActionWindow)
+						((QuickActionWindow)qa).dismiss();
+					else
+						throw new IllegalArgumentException("getSmsListener must have QuickActionWindow or QuickActionView target");
 			}
 			
 		};
@@ -36,7 +42,7 @@ public class Listeners {
 	}
 
 	public static OnClickListener getSmsListener(final String telNo,
-		final QuickActionWindow qa) {
+		final Object qa) {
 		return new OnClickListener() {
 			
 			@Override
@@ -46,8 +52,14 @@ public class Listeners {
 					Uri.parse("smsto:"+telNo)); //$NON-NLS-1$
 			try {
 				v.getContext().startActivity(intent);
-				if(qa != null)
-					qa.dismiss();
+				if(qa != null) {
+					if(qa instanceof QuickActionView)
+						((QuickActionView)qa).setVisibility(View.GONE);
+					else if(qa instanceof QuickActionWindow)
+						((QuickActionWindow)qa).dismiss();
+					else
+						throw new IllegalArgumentException("getSmsListener must have QuickActionWindow or QuickActionView target");
+				}
 			} catch (android.content.ActivityNotFoundException e) {
 				Toast.makeText(v.getContext(), R.string.could_not_find_sms_application , Toast.LENGTH_SHORT).show();
 			}
@@ -60,7 +72,7 @@ public class Listeners {
 		return getMailListener(mailAddress, null);
 	}
 	public static OnClickListener getMailListener(final String mailAddress,
-		final QuickActionWindow qa) {
+		final Object qa) {
 		return new OnClickListener() {
 			
 			@Override
@@ -72,7 +84,12 @@ public class Listeners {
 				try {
 					v.getContext().startActivity(intent);
 					if(qa != null)
-						qa.dismiss();
+						if(qa instanceof QuickActionView)
+							((QuickActionView)qa).setVisibility(View.GONE);
+						else if(qa instanceof QuickActionWindow)
+							((QuickActionWindow)qa).dismiss();
+						else
+							throw new IllegalArgumentException("getSmsListener must have QuickActionWindow or QuickActionView target");
 				} catch (android.content.ActivityNotFoundException e) {
 					Toast.makeText(v.getContext(), R.string.could_not_find_email_application, Toast.LENGTH_SHORT).show();
 				}

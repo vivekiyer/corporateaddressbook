@@ -39,6 +39,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignWithParentIfMissing="true"
         android:layout_toRightOf="@id/accountIcon"
+        android:ellipsize="end"
         android:gravity="center_vertical"
         android:hint="@string/app_name"
         android:textAppearance="?android:attr/textAppearanceMedium"

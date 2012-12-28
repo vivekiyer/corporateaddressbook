@@ -137,6 +137,11 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 		v.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				View vg = v.findViewById(R.id.next_search_layout);
+				vg.setVisibility(View.GONE);
+				vg = v.findViewById(R.id.next_searching_layout);
+				vg.setVisibility(View.VISIBLE);
+				
 				Intent i = new Intent(getContext(), CorporateAddressBook.class);
 				i.setAction(Intent.ACTION_SEARCH);
 				i.putExtra(CorporateAddressBook.ACCOUNT_KEY, syncManager.getAccountKey());

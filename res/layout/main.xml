@@ -1,40 +1,56 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout1"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="top"
     android:orientation="vertical" >
 
-	<TextView
-        android:id="@+id/resultheader"
-        android:layout_width="match_parent"
+<LinearLayout
+    android:id="@+id/result_header"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/header_background" >
+
+    <ProgressBar
+        android:id="@+id/result_header_progress"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0"
+        android:indeterminate="true"
         android:padding="6dp"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/result_header_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
         android:text="@string/startBySelectingSearch"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/darker_gray"
-        android:background="#f0f0f0"
-         />
-
-	<View
-			android:layout_width="fill_parent"
-			android:layout_height="2dp"
-	        android:background="@color/holo_blue_light"
-			/>
-
-	<ListView
-        android:id="@+id/contactsListView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="fill"
-        android:layout_weight="1"
-        android:listSelector="@drawable/list_selector"
-        tools:listitem="@layout/contact_row"
-        android:choiceMode="singleChoice"
-        android:background="@drawable/border_shading"
-		>
-    </ListView>
+        android:textColor="@android:color/darker_gray" />
 
 </LinearLayout>
+    <View
+        android:id="@+id/View1"
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/result_header"
+        android:background="@color/holo_blue_light" />
+
+    <ListView
+        android:id="@+id/contactsListView"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/View1"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/border_shading"
+        android:choiceMode="singleChoice"
+        android:listSelector="@drawable/list_selector"
+        tools:listitem="@layout/contact_row" >
+    </ListView>
+
+</RelativeLayout>

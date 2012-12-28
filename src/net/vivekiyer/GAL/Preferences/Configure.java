@@ -392,16 +392,9 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 		// All went well. Store the settings and return to the main page
 		else {
 			AccountManager am = AccountManager.get(this);
-//			Account[] accounts = am.getAccountsByType(getString(R.string.ACCOUNT_TYPE));
 			String accountKey = username.contains("@") ?
 					username :
 					String.format("%1$s@%2$s", username, getTextFromId(R.id.txtServerName).trim());
-//			for(Account acc : accounts) {
-//				if(accountKey.equals(acc.name));
-//			}
-//			if(null == accountKey) {
-//				accountKey = UUID.randomUUID().toString();
-//			}
 
 			mPreferences = getSharedPreferences(accountKey, MODE_PRIVATE);
 			SharedPreferences.Editor editor = mPreferences.edit();
@@ -427,11 +420,6 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 
 			// Pass the values to the account manager
 			Account account = null;
-//			for(Account acc : am.getAccountsByType(getString(R.string.ACCOUNT_TYPE))) {
-//				if(accountKey.equals(acc.name)) { //am.getUserData(acc, getString(R.string.KEY_ACCOUNT_KEY)))) {
-//					account = acc;
-//				}
-//			}
 
 			account = new Account(accountKey,
 					getString(R.string.ACCOUNT_TYPE));

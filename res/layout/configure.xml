@@ -46,7 +46,9 @@
                 android:id="@+id/search_username_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/abs__ic_search_api_holo_light" android:contentDescription="@string/select_account"/>
+                android:src="@drawable/abs__ic_search_api_holo_light"
+                android:contentDescription="@string/select_account"
+                />
 
         </LinearLayout>
 

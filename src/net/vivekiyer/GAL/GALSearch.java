@@ -2,11 +2,11 @@ package net.vivekiyer.GAL;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import com.google.common.collect.HashMultimap;
 import net.vivekiyer.GAL.Preferences.ConnectionChecker;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import org.apache.http.conn.ConnectTimeoutException;
 
@@ -27,7 +27,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	private String errorDetail = ""; //$NON-NLS-1$
 	protected volatile OnSearchCompletedListener onSearchCompletedListener;
 
-	HashMultimap<String,Contact> mContacts = null;
+	HashMap<String,Contact> mContacts = null;
 
 	public void setStartWith(int startWith) {
 		this.startWith = startWith;
@@ -41,7 +41,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 		this.clearResults = clearResults;
 	}
 
-	public HashMultimap<String,Contact> getContacts() {
+	public HashMap<String,Contact> getContacts() {
 		return mContacts;
 	}
 	public String getSearchTerm() {

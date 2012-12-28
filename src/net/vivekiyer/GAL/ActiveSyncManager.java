@@ -20,7 +20,6 @@ import android.content.SharedPreferences;
 import android.provider.Settings.Secure;
 import com.android.exchange.adapter.GalParser;
 import com.android.exchange.adapter.ProvisionParser;
-import com.google.common.collect.HashMultimap;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 
@@ -28,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -57,7 +57,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	private String mActiveSyncVersion = ""; //$NON-NLS-1$
 	private String mDeviceId;
 	private String accountKey = null;
-	private HashMultimap<String, Contact> mResults;
+	private HashMap<String, Contact> mResults;
 	private int requestStatus = Parser.STATUS_NOT_SET;
 
 	public static final int ERROR_UNABLE_TO_REPROVISION = 449;
@@ -163,7 +163,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 		this.mShowPictures = mShowPictures;
 	}
 
-	public HashMultimap<String, Contact> getResults() {
+	public HashMap<String, Contact> getResults() {
 		return mResults;
 	}
 
