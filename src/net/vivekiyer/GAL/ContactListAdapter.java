@@ -47,6 +47,11 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 	
 	//private static String TAG = "ContactListAdapter";
 	private ActiveSyncManager syncManager;
+	private View searchNextView = null;
+
+	public View getSearchNextView() {
+		return searchNextView;
+	}
 
 	@Override
 	public int getCount() {
@@ -142,6 +147,9 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 				vg = v.findViewById(R.id.next_searching_layout);
 				vg.setVisibility(View.VISIBLE);
 				
+				// Save view so that it can be reset when search is completed or canceled.
+				searchNextView = v;
+				
 				Intent i = new Intent(getContext(), CorporateAddressBook.class);
 				i.setAction(Intent.ACTION_SEARCH);
 				i.putExtra(CorporateAddressBook.ACCOUNT_KEY, syncManager.getAccountKey());
@@ -170,6 +178,18 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 		}
 		else
 			super.addAll(collection);    //To change body of overridden methods use File | Settings | File Templates.
+		resetSearchNextView();
+	}
+
+	void resetSearchNextView() {
+		if(searchNextView != null) {
+			View v = searchNextView.findViewById(R.id.next_search_layout);
+			v.setVisibility(View.VISIBLE);
+			v = searchNextView.findViewById(R.id.next_searching_layout);
+			v.setVisibility(View.GONE);
+			
+			searchNextView = null;
+		}
 	}
 
 	@Override

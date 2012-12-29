@@ -9,14 +9,16 @@
     android:id="@+id/result_header"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@color/header_background" >
+    android:background="@color/header_background"
+    android:minHeight="36dp"
+    android:orientation="horizontal" >
 
     <ProgressBar
         android:id="@+id/result_header_progress"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:indeterminate="true"
         android:padding="6dp"
         android:visibility="invisible" />
@@ -32,20 +34,29 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/darker_gray" />
 
+    <ImageButton
+        android:id="@+id/result_header_cancel"
+        style="@style/flatImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/clearSearch"
+        android:src="@drawable/ic_action_close_clear_cancel" />
+
 </LinearLayout>
-    <View
+<!--     <View
         android:id="@+id/View1"
         android:layout_width="fill_parent"
         android:layout_height="2dp"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/result_header"
         android:background="@color/holo_blue_light" />
-
+ -->
     <ListView
         android:id="@+id/contactsListView"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_below="@+id/View1"
+        android:layout_below="@+id/result_header"
         android:layout_alignParentBottom="true"
         android:background="@drawable/border_shading"
         android:choiceMode="singleChoice"

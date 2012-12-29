@@ -77,7 +77,11 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 			int statusCode = 0;
 
 				do {
-				statusCode = activeSyncManager.searchGAL(params[0], startWith);
+					if(isCancelled())
+						return false;
+					statusCode = activeSyncManager.searchGAL(params[0], startWith);
+					if(isCancelled())
+						return false;
 					switch (statusCode) {
 						case 200:
 							// All went ok, get the results

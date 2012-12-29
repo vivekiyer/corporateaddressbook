@@ -19,12 +19,14 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/quickaction_slider_grip_left" />
+                android:src="@drawable/quickaction_slider_grip_left"
+                android:contentDescription="@string/actions" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/quickaction_slider_grip_right" />
+                android:src="@drawable/quickaction_slider_grip_right"
+                android:contentDescription="@string/actions" />
 
         </LinearLayout>
 </HorizontalScrollView>

@@ -6,7 +6,7 @@
         android:icon="@android:drawable/ic_menu_search"
         android:showAsAction="ifRoom|withText"
         android:title="@string/searchDirectory"
-        android:titleCondensed="@string/search" android:menuCategory="container" android:orderInCategory="1">
+        android:titleCondensed="@string/search" android:menuCategory="container" android:orderInCategory="1" android:actionViewClass="android.widget.SearchView">
     </item>
     <item
         android:id="@+id/clearSearchHistory"

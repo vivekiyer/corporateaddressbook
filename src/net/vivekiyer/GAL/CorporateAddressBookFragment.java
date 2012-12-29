@@ -59,6 +59,7 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 	public interface ContactListListener {
 		public void onContactSelected(Contact contact);
 		public void onSearchCleared();
+		public void onSearchCanceled();
 	}
 	
 	// TAG used for logging
@@ -150,6 +151,13 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		View v = getFragmentManager().findFragmentById(R.id.main_fragment).getView().findViewById(R.id.result_header_cancel);
+		v.setVisibility(View.GONE);
+		v.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) { if (contactListListener != null) contactListListener.onSearchCanceled(); }
+		});
+
 	};
 	
     /* (non-Javadoc)
@@ -276,13 +284,18 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 		}
 		View v = getView().findViewById(R.id.result_header_progress);
 		v.setVisibility(isInProgress ? View.VISIBLE : View.INVISIBLE);
+		v = getView().findViewById(R.id.result_header_cancel);
+		v.setVisibility(isInProgress ? View.VISIBLE : View.INVISIBLE);
 	}
 
 	void resetHeader() {
 		setHeader(previousHeaderText, false);
+		if(listadapter != null) {
+			listadapter.resetSearchNextView();
+		}
 	}
 
-		public void addResult(HashMap<String,Contact> contacts, ActiveSyncManager syncManager) {
+	public void addResult(HashMap<String,Contact> contacts, ActiveSyncManager syncManager) {
 		listadapter.addAll(contacts.values(), contacts.size() == syncManager.getMaxResults());
 		setHeaderText(this.contactList.size());
 	}
@@ -308,9 +321,6 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 
 	public void setSelectedContact(Contact selectedContact) {
 		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
-//		for(int i = 0; i < contactList.length ; i++)
-//			if(contactList[i].compareTo(selectedContact) == 0)
-//				lv.setSelection(i);
 		for(Contact c : contactList)
 			if(c.compareTo(selectedContact) == 0)
 				lv.setSelection(contactList.indexOf(c));

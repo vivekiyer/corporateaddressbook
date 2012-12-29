@@ -1,8 +1,10 @@
 package net.vivekiyer.GAL.view;
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 /**
@@ -13,26 +15,30 @@ import android.widget.RelativeLayout;
  */
 public class ExpandAnimation extends Animation {
     private View mAnimatedView;
-    private RelativeLayout.LayoutParams mViewLayoutParams;
+    private ViewGroup.MarginLayoutParams mViewLayoutParams;
     private int mMarginStart, mMarginEnd;
     private boolean mIsVisibleAfter = false;
     private boolean mWasEndedAlready = false;
-
+    private boolean mSlideFromTop = false;
     /**
      * Initialize the animation
      * @param view The layout we want to animate
      * @param duration The duration of the animation, in ms
      */
     public ExpandAnimation(View view, int duration) {
+    	this(view, duration, false);
+    }
+       public ExpandAnimation(View view, int duration, boolean slideFromTop) {
 
         setDuration(duration);
         mAnimatedView = view;
-        mViewLayoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+        mSlideFromTop = slideFromTop;
+        mViewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
         // decide to show or hide the view
         mIsVisibleAfter = (view.getVisibility() == View.VISIBLE);
 
-        mMarginStart = mViewLayoutParams.bottomMargin;
+        mMarginStart = slideFromTop ? mViewLayoutParams.topMargin : mViewLayoutParams.bottomMargin;
         mMarginEnd = (mMarginStart == 0 ? (0- view.getHeight()) : 0);
 
         view.setVisibility(View.VISIBLE);
@@ -44,16 +50,26 @@ public class ExpandAnimation extends Animation {
 
         if (interpolatedTime < 1.0f) {
 
-            // Calculating the new bottom margin, and setting it
-            mViewLayoutParams.bottomMargin = mMarginStart
-                    + (int) ((mMarginEnd - mMarginStart) * interpolatedTime);
+            // Calculating the new margin, and setting it
+        	if(mSlideFromTop) {
+        		mViewLayoutParams.topMargin = mMarginStart
+        				+ (int) ((mMarginEnd - mMarginStart) * interpolatedTime);
+        	}
+        	else {
+        		mViewLayoutParams.bottomMargin = mMarginStart
+        				+ (int) ((mMarginEnd - mMarginStart) * interpolatedTime);
+        	}
 
             // Invalidating the layout, making us seeing the changes we made
             mAnimatedView.requestLayout();
 
         // Making sure we didn't run the ending before (it happens!)
         } else if (!mWasEndedAlready) {
-            mViewLayoutParams.bottomMargin = mMarginEnd;
+        	if(mSlideFromTop)
+                mViewLayoutParams.topMargin = mMarginEnd;
+        	else
+                mViewLayoutParams.bottomMargin = mMarginEnd;
+
             mAnimatedView.requestLayout();
 
             if (mIsVisibleAfter) {

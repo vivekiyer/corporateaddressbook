@@ -1,15 +1,15 @@
 package net.vivekiyer.GAL.view;
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
-import android.widget.RelativeLayout.LayoutParams;
 
 public class ViewScaler extends ScaleAnimation {
 
     private View mView;
 
-    private LayoutParams mLayoutParams;
+    private ViewGroup.MarginLayoutParams mLayoutParams;
 
     private int mMarginBottomFromY, mMarginBottomToY;
 
@@ -21,7 +21,7 @@ public class ViewScaler extends ScaleAnimation {
         setDuration(duration);
         mView = view;
         mVanishAfter = vanishAfter;
-        mLayoutParams = (LayoutParams) view.getLayoutParams();
+        mLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         int height = mView.getHeight();
         mMarginBottomFromY = (int) (height * fromY) + mLayoutParams.bottomMargin - height;
         mMarginBottomToY = (int) (0 - ((height * toY) + mLayoutParams.bottomMargin)) - height;

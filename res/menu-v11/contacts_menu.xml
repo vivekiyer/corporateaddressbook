@@ -9,7 +9,7 @@
         android:titleCondensed="@string/search"
         android:menuCategory="container"
         android:orderInCategory="1"
-        android:actionViewClass="com.actionbarsherlock.widget.SearchView">
+        android:actionViewClass="android.widget.SearchView">
     </item>
     <item
         android:id="@+id/settings"

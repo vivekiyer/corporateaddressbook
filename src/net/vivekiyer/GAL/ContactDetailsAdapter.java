@@ -20,25 +20,18 @@ import java.util.Locale;
 
 import net.vivekiyer.GAL.view.ExpandAnimation;
 import net.vivekiyer.GAL.view.QuickActionView;
-import net.vivekiyer.GAL.view.ViewScaler;
-
-import com.devoteam.quickaction.QuickActionWindow;
-
 import android.content.Context;
-import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.Transformation;
-import android.webkit.WebView.FindListener;
+import android.view.animation.RotateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * @author Vivek Iyer
@@ -49,6 +42,9 @@ import android.widget.Toast;
  * and email addresses, and provides action buttons if any of those are found
  */
 public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {	
+	
+	final private static int ANIM_DURATION = 500;
+	final private static boolean ANIM_FROM_TOP = false;
 	
 	/**
 	 * @param context 
@@ -99,7 +95,6 @@ public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {
 	 */
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		final ViewGroup parentViewGroup = parent;
 		View v = convertView;
 		if (v == null) {
 			LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
@@ -173,8 +168,8 @@ public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {
 				}
 				final View qa = v.findViewById(R.id.details_actions);
 				im.setTag(R.id.details_actions, qa);		
-	            ((RelativeLayout.LayoutParams) qa.getLayoutParams()).bottomMargin = -76;
-	            ((RelativeLayout.LayoutParams) qa.getLayoutParams()).height = 76;
+//	            ((LinearLayout.LayoutParams) qa.getLayoutParams()).bottomMargin = -76;
+//	            ((LinearLayout.LayoutParams) qa.getLayoutParams()).height = 76;
 
 				im.setTag(R.id.detailsMoreActions, kvp);
 				//im.setTag(R.id.contactsListView, parentViewGroup);
@@ -193,29 +188,25 @@ public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {
 			// Get the tag, which will provide us the KVP and the QuickActionView
 			final ImageButton ib = (ImageButton) v;
 			final QuickActionView qav = (QuickActionView) v.getTag(R.id.details_actions);
-			if(ib.getTag() != null && ((Boolean)ib.getTag()).equals(Boolean.TRUE)) { //qav.getVisibility() != View.GONE) {
-				ib.setImageResource(R.drawable.ic_action_expand);
-				//qav.setVisibility(View.GONE);
+			final Boolean isCollapsing = ib.getTag() == null ? false : (Boolean)ib.getTag();
+			if(isCollapsing) { //qav.getVisibility() != View.GONE) {
+
                 // Creating the expand animation for the item
 				Animation anim;
-				anim = new ExpandAnimation(qav, 1500);
-//				ScaleAnimation anim = new ViewScaler(1.0f, 1.0f, 1.0f, 0.0f, 1500, qav, true);
+				anim = new ExpandAnimation(qav, ANIM_DURATION, ANIM_FROM_TOP);
+//				anim = new ViewScaler(1.0f, 1.0f, 1.0f, 0.0f, ANIM_DURATION, qav, true);
+    			anim.setInterpolator(new AccelerateDecelerateInterpolator());
 
-				// Start the animation on the toolbar
+    			// Start the animation on the toolbar
 				qav.startAnimation(anim);
 				ib.setTag(Boolean.FALSE);
-				return;
 			}
 			else {
 				final KeyValuePair kvp = (KeyValuePair) v.getTag(R.id.detailsMoreActions);
 				final ViewGroup qa = ((ViewGroup)qav.findViewById(R.id.quickaction));
-				//final ViewGroup parent = ((ViewGroup)v.getTag(R.id.contactsListView));
 
 				ib.setTag(Boolean.TRUE);
-				// Remove possible previous QuickAction views (views might be reused)
-				// UPDATE: No reuse since the logic has been changed (see getItemViewType())
-				//qa.removeViews(1, qa.getChildCount() - 2);
-				
+
 				// Only add QuickActions if QuickActionView is not already populated
 				if(qa.getChildCount() <= 2) {
 					switch (kvp.get_type()){
@@ -237,37 +228,42 @@ public class ContactDetailsAdapter extends ArrayAdapter<KeyValuePair> {
 					qav.addItem(R.drawable.ic_menu_copy, R.string.copyToClipboard, Listeners.getCopyListener(kvp.getValue(), null));
 				}
 				
-				ib.setImageResource(R.drawable.ic_action_collapse);
-				//qav.setVisibility(View.VISIBLE);
-				//parent.invalidate();
-				
                 // Creating the expand animation for the item
+				MarginLayoutParams params = (MarginLayoutParams) qav.getLayoutParams();
+				params.bottomMargin = -(params.height);
+				
 				Animation anim;
-                anim = new ExpandAnimation(qav, 1500);
-//				anim = new ViewScaler(1.0f, 1.0f, 0.0f, 1.0f, 1500, qav, false);
-				anim.setAnimationListener(new Animation.AnimationListener() {
-					
-					@Override
-					public void onAnimationStart(Animation animation) {
-						// TODO Auto-generated method stub
-						Toast.makeText(getContext(), "Start", Toast.LENGTH_SHORT).show();
-					}
-					
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-						Toast.makeText(getContext(), "Repeat", Toast.LENGTH_SHORT).show();
-					}
-					
-					@Override
-					public void onAnimationEnd(Animation animation) {
-						Toast.makeText(getContext(), "End", Toast.LENGTH_SHORT).show();
-					}
-				});
+                anim = new ExpandAnimation(qav, ANIM_DURATION, ANIM_FROM_TOP);
+//				anim = new ViewScaler(1.0f, 1.0f, 0.0f, 1.0f, ANIM_DURATION, qav, false);
+    			anim.setInterpolator(new AccelerateDecelerateInterpolator());
 
                 // Start the animation on the toolbar
-                qav.startAnimation(anim);
-				
+                qav.startAnimation(anim);				
 			}
+			RotateAnimation buttonAnim = new RotateAnimation(
+					isCollapsing ? -180.0f : 0.0f, 
+					isCollapsing ? 0.0f : -180.0f, 
+					Animation.RELATIVE_TO_SELF, 
+					0.5f, 
+					Animation.RELATIVE_TO_SELF, 
+					0.5f);
+			buttonAnim.setDuration(ANIM_DURATION);
+			buttonAnim.setFillAfter(true);
+			buttonAnim.setInterpolator(new AccelerateDecelerateInterpolator());
+//			buttonAnim.setAnimationListener(new Animation.AnimationListener() {
+//				@Override
+//				public void onAnimationStart(Animation animation) { }
+//
+//				@Override
+//				public void onAnimationRepeat(Animation animation) { }
+//
+//				@Override
+//				public void onAnimationEnd(Animation animation) {
+//					ib.setImageResource(!isCollapsing ? R.drawable.ic_action_expand : R.drawable.ic_action_collapse);
+//				}
+//			});
+
+			ib.startAnimation(buttonAnim);
 		}
 
 	};
