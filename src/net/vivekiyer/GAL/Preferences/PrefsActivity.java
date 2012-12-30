@@ -141,7 +141,7 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 			if (mHeaders == null)
 				return;
 			for (Header h : mHeaders) {
-				if (h.fragment != null || h.intent != null) {
+				if (h.fragment != null /*|| h.intent != null*/) {
 					super.switchToHeader(h);
 				}
 			}
