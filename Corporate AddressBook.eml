@@ -3,9 +3,6 @@
 	<output-test url="file://$MODULE_DIR$/out/test/Corporate AddressBook"/>
 	<exclude-output/>
 	<contentEntry url="file://$MODULE_DIR$"/>
-	<lib name="guava-13.0.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/guava-13.0.jar!/"/>
-	</lib>
 	<lib name="commons-codec-1.4.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/commons-codec-1.4.jar!/"/>
 	</lib>

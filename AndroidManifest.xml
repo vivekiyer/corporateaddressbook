@@ -110,21 +110,21 @@
 					android:name="android.accounts.AccountAuthenticator"
 					android:resource="@xml/authenticator"/>
 		</service>
-		<!--<service-->
-				<!--android:name=".ContactsSyncAdapterService"-->
-				<!--android:exported="true"-->
-				<!--android:process=":contacts">-->
-			<!--<intent-filter>-->
-				<!--<action android:name="android.content.SyncAdapter"/>-->
-			<!--</intent-filter>-->
+		<service
+				android:name=".ContactsSyncAdapterService"
+				android:exported="true"
+				android:process=":contacts">
+			<intent-filter>
+				<action android:name="android.content.SyncAdapter"/>
+			</intent-filter>
 
-			<!--<meta-data-->
-					<!--android:name="android.content.SyncAdapter"-->
-					<!--android:resource="@xml/sync_contacts"/>-->
-			<!--<meta-data-->
-					<!--android:name="android.provider.CONTACTS_STRUCTURE"-->
-					<!--android:resource="@xml/contacts"/>-->
-		<!--</service>-->
+			<meta-data
+					android:name="android.content.SyncAdapter"
+					android:resource="@xml/sync_contacts"/>
+			<meta-data
+					android:name="android.provider.CONTACTS_STRUCTURE"
+					android:resource="@xml/contacts"/>
+		</service>
 
 	</application>
 

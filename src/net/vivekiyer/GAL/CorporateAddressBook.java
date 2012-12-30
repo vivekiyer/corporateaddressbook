@@ -15,13 +15,6 @@
 
 package net.vivekiyer.GAL;
 
-import java.util.HashMap;
-import java.util.Set;
-
-import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
-import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
-import net.vivekiyer.GAL.Preferences.ConnectionChecker;
-import net.vivekiyer.GAL.Preferences.PrefsActivity;
 import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -37,12 +30,18 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.SpinnerAdapter;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
+import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
+import net.vivekiyer.GAL.Preferences.ConnectionChecker;
+import net.vivekiyer.GAL.Preferences.PrefsActivity;
+
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * @author Vivek Iyer
@@ -123,7 +122,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
 		initializeActionBar();
-		
+
 		// Get the intent, verify the action and get the query
 		// but not if the activity is being recreated (would cause a new search)
 		if (savedInstanceState == null || !savedInstanceState.containsKey("mContacts")) { //$NON-NLS-1$
@@ -143,14 +142,12 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			SpinnerAdapter adapter = new ArrayAdapter<ActiveSyncManager>(getBaseContext(), R.layout.sherlock_spinner_dropdown_item, App.getAccounts());
 			actionBar.setListNavigationCallbacks(adapter, this);
 
-			if(activeSyncManager == null || !App.getAccounts().contains(activeSyncManager)) {
-				if((activeSyncManager = App.getAccounts().getDefaultAccount()) == null) {
+			if (activeSyncManager == null || !App.getAccounts().contains(activeSyncManager)) {
+				if ((activeSyncManager = App.getAccounts().getDefaultAccount()) == null) {
 					activeSyncManager = App.getAccounts().get(actionBar.getSelectedNavigationIndex());
-				}
-				else
+				} else
 					actionBar.setSelectedNavigationItem(App.getAccounts().indexOf(activeSyncManager));
-			}
-			else
+			} else
 				actionBar.setSelectedNavigationItem(App.getAccounts().indexOf(activeSyncManager));
 		} else {
 			actionBar.setDisplayShowTitleEnabled(true);
@@ -163,7 +160,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			}
 		}
 
-		if(!listeningToAccountChanges) {
+		if (!listeningToAccountChanges) {
 			App.getAccounts().addChangeListener(this);
 			listeningToAccountChanges = true;
 		}
@@ -178,7 +175,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		// Did we get a SEARCH intent?
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			// First: is this to continue search
-			if(intent.getBooleanExtra(REQUERY, false)) {
+			if (intent.getBooleanExtra(REQUERY, false)) {
 				getNextSearchResult();
 				return;
 			}
@@ -289,14 +286,14 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	void getNextSearchResult() {
 		performSearch(latestSearchTerm, activeSyncManager, mContacts.size(), false);
 	}
-	
+
 	private void performSearch(String name, ActiveSyncManager syncManager, int startWith, boolean clearResults) {
 
 //		if (progressdialog != null) {
 //			progressdialog.setMessage(getString(R.string.retrievingResults));
 //			progressdialog.show();
 //		}
-		if(clearResults) {
+		if (clearResults) {
 			CorporateAddressBookFragment frag = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
 			frag.setHeader(getString(R.string.retrievingResults), true);
 		}
@@ -314,10 +311,10 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		search.setStartWith(startWith);
 		search.execute(name);
 	}
-	
+
 	// Cancels the current search if there is one and return true if an actual, ongoing search was canselled
 	boolean cancelSearch() {
-		if(this.search == null || !search.getStatus().equals(AsyncTask.Status.RUNNING))
+		if (this.search == null || !search.getStatus().equals(AsyncTask.Status.RUNNING))
 			return false;
 		CorporateAddressBookFragment fragment = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
 		fragment.resetHeader();
@@ -354,7 +351,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		final MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
 
-		if(!Utility.isPreFroYo()) {
+		if (!Utility.isPreFroYo()) {
 			// Get the SearchView and set the searchable configuration
 			final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 			final ComponentName component = getComponentName();
@@ -362,17 +359,13 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 					.getSearchableInfo(component);
 			MenuItem item = menu.findItem(
 					R.id.menu_search);
-			if(Utility.isPreHoneycomb()) {
-				com.actionbarsherlock.widget.SearchView searchView = new com.actionbarsherlock.widget.SearchView(this);
-				searchView.setSearchableInfo(searchableInfo);
-				item.setActionView(searchView);
-				this.searchView = searchView;
-			}
-			else {
-				SearchView searchView = new SearchView(this);
-				searchView.setSearchableInfo(searchableInfo);
-				item.setActionView(searchView);
-				this.searchView = searchView;
+			searchView = item.getActionView();
+			if (searchView instanceof com.actionbarsherlock.widget.SearchView) {
+				((com.actionbarsherlock.widget.SearchView) searchView).setSearchableInfo(searchableInfo);
+				((com.actionbarsherlock.widget.SearchView) searchView).setIconifiedByDefault(false);
+			} else if (searchView instanceof SearchView) {
+				((android.widget.SearchView) searchView).setSearchableInfo(searchableInfo);
+				((android.widget.SearchView) searchView).setIconifiedByDefault(false);
 			}
 		}
 		return super.onCreateOptionsMenu(menu);
@@ -433,7 +426,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		}
 	}
 
-	private void addSearchResults(HashMap<String,Contact> contacts) {
+	private void addSearchResults(HashMap<String, Contact> contacts) {
 		mContacts.putAll(contacts);
 
 		final FragmentManager fragmentManager = getSupportFragmentManager();
@@ -465,13 +458,11 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 		resetAndHideDetails(fragmentManager);
 		if (searchView != null) {
-			if(searchView instanceof com.actionbarsherlock.widget.SearchView) {
-				((com.actionbarsherlock.widget.SearchView)searchView).setQuery("", false); //$NON-NLS-1$
-			}
-			else if(searchView instanceof SearchView) {
-				((SearchView)searchView).setQuery("", false); //$NON-NLS-1$
-			}
-			else {
+			if (searchView instanceof com.actionbarsherlock.widget.SearchView) {
+				((com.actionbarsherlock.widget.SearchView) searchView).setQuery("", false); //$NON-NLS-1$
+			} else if (searchView instanceof SearchView) {
+				((SearchView) searchView).setQuery("", false); //$NON-NLS-1$
+			} else {
 				throw new RuntimeException("Unknown SearchView type"); //$NON-NLS-1$
 			}
 		}
@@ -576,19 +567,17 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	public boolean onSearchRequested() {
 		if (!Utility.isPreFroYo()) {
 			if (searchView != null) {
-				if(searchView instanceof com.actionbarsherlock.widget.SearchView) {
+				if (searchView instanceof com.actionbarsherlock.widget.SearchView) {
 					com.actionbarsherlock.widget.SearchView v = (com.actionbarsherlock.widget.SearchView) searchView;
 					v.setFocusable(true);
 					v.setIconified(false);
 					v.requestFocusFromTouch();
-				}
-				else if(searchView.getClass().toString().equals(SearchView.class.toString())) {
+				} else if (searchView.getClass().toString().equals(SearchView.class.toString())) {
 					SearchView v = (SearchView) searchView;
 					v.setFocusable(true);
 					v.setIconified(false);
 					v.requestFocusFromTouch();
-				}
-				else {
+				} else {
 					throw new RuntimeException("Unknown SearchView type"); //$NON-NLS-1$
 				}
 				return true;
@@ -604,16 +593,16 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	public void onSearchCompleted(int result,
 	                              GALSearch search) {
 		if (result == RESULT_OK) {
-			if(search.getClearResults())
+			if (search.getClearResults())
 				displaySearchResult(search.getContacts(), search.getSearchTerm());
 			else
 				addSearchResults(search.getContacts());
 			return;
 		}
-		
+
 		CorporateAddressBookFragment fragment = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
 		fragment.resetHeader();
-		
+
 		ChoiceDialogFragment dialogFragment;
 		String title = search.getErrorMesg();
 		String message = search.getErrorDetail();

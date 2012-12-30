@@ -1,85 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/LinearLayout1"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:baselineAligned="false"
-    android:minHeight="48dp"
-    android:orientation="vertical" >
+              android:id="@+id/LinearLayout1"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:baselineAligned="false"
+              android:minHeight="48dp"
+              android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/LinearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:orientation="horizontal" >
+	<LinearLayout
+			android:id="@+id/LinearLayout2"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:baselineAligned="false"
+			android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:baselineAligned="false"
-            android:orientation="vertical" >
+		<LinearLayout
+				android:id="@+id/text"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:layout_marginBottom="8dp"
+				android:layout_marginLeft="8dp"
+				android:layout_marginTop="8dp"
+				android:layout_weight="1"
+				android:baselineAligned="false"
+				android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/toptext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/dummyPhoneNumber"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+			<TextView
+					android:id="@+id/toptext"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/dummyPhoneNumber"
+					android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-            <TextView
-                android:id="@+id/bottomtext"
-                style="@style/detailsLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:singleLine="true"
-                android:text="@string/mobile"
-                android:textAllCaps="true" />
+			<TextView
+					android:id="@+id/bottomtext"
+					style="@style/detailsLabel"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ellipsize="marquee"
+					android:singleLine="true"
+					android:text="@string/mobile"
+					android:textAllCaps="true"/>
 
-        </LinearLayout>
+		</LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/detailsContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" >
+		<LinearLayout
+				android:id="@+id/detailsContainer"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/detailsDivider"
-                android:layout_width="1dip"
-                android:layout_height="fill_parent"
-                android:layout_marginBottom="6dp"
-                android:layout_marginTop="6dp"
-                android:clickable="false"
-                android:contentDescription="@string/verticalDivider"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:longClickable="false"
-                android:src="@drawable/vert_divider" />
+			<ImageView
+					android:id="@+id/detailsDivider"
+					android:layout_width="1dip"
+					android:layout_height="fill_parent"
+					android:layout_marginBottom="6dp"
+					android:layout_marginTop="6dp"
+					android:clickable="false"
+					android:contentDescription="@string/verticalDivider"
+					android:focusable="false"
+					android:focusableInTouchMode="false"
+					android:longClickable="false"
+					android:src="@drawable/vert_divider"/>
 
-            <ImageButton
-                android:id="@+id/detailsMoreActions"
-                style="@style/flatImageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="8dp"
-                android:contentDescription="@string/actions"
-                android:src="@drawable/ic_action_expand" />
+			<ImageButton
+					android:id="@+id/detailsMoreActions"
+					style="@style/flatImageButton"
+					android:layout_width="wrap_content"
+					android:layout_height="match_parent"
+					android:layout_gravity="center_vertical"
+					android:contentDescription="@string/actions"
+					android:src="@drawable/ic_action_expand"
+					android:padding="8dp"/>
 
-            </LinearLayout>
-    </LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
 
-    <net.vivekiyer.GAL.view.QuickActionView
-        android:id="@+id/details_actions"
-        android:layout_width="match_parent"
-        android:layout_height="76dp"
-        android:visibility="gone" />
+	<net.vivekiyer.GAL.view.QuickActionView
+			android:id="@+id/details_actions"
+			android:layout_width="match_parent"
+			android:layout_height="76dp"
+			android:visibility="gone"/>
 
 </LinearLayout>

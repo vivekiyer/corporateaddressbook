@@ -3,6 +3,7 @@
 
 	<item
 			android:id="@+id/menu_search"
+			android:actionViewClass="com.actionbarsherlock.widget.SearchView"
 			android:icon="@drawable/abs__ic_search_api_holo_light"
 			android:showAsAction="ifRoom|withText"
 			android:title="@string/searchDirectory"

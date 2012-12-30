@@ -1,16 +1,6 @@
 package net.vivekiyer.GAL.Preferences;
 
-import java.io.IOException;
-
-import net.vivekiyer.GAL.ActiveSyncManager;
-import net.vivekiyer.GAL.App;
-import net.vivekiyer.GAL.R;
-import net.vivekiyer.GAL.Utility;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
+import android.accounts.*;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -19,6 +9,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import net.vivekiyer.GAL.ActiveSyncManager;
+import net.vivekiyer.GAL.App;
+import net.vivekiyer.GAL.R;
+import net.vivekiyer.GAL.Utility;
+
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,7 +46,39 @@ public class AddOrDeleteAccountActivity extends FragmentActivity implements Acco
 			accountName = future.getResult().getString(AccountManager.KEY_ACCOUNT_NAME);
 			finish();
 		} catch (OperationCanceledException e) {
+			AlertDialog.Builder builder;
+			if (Utility.isPreHoneycomb())
+				builder = new AlertDialog.Builder(this);
+			else
+				builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
+
+			builder.setMessage(e.getMessage())
+					.setCancelable(false)
+					.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							finish();
+						}
+					})
+					.create()
+					.show();
 		} catch (IOException e) {
+			AlertDialog.Builder builder;
+			if (Utility.isPreHoneycomb())
+				builder = new AlertDialog.Builder(this);
+			else
+				builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
+
+			builder.setMessage(e.getMessage())
+					.setCancelable(false)
+					.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							finish();
+						}
+					})
+					.create()
+					.show();
 		} catch (AuthenticatorException e) {
 			AlertDialog.Builder builder;
 			if (Utility.isPreHoneycomb())
@@ -81,9 +109,10 @@ public class AddOrDeleteAccountActivity extends FragmentActivity implements Acco
 
 		final String accountAction = getIntent().getAction();
 		if (accountAction.equals(getString(R.string.ACTION_PREFS_ACCOUNT_ADD))) {
-			/*AccountManagerFuture<Bundle> future =*/ AccountManager.get(App.getInstance())
+			/*AccountManagerFuture<Bundle> future =*/
+			AccountManager.get(App.getInstance())
 					.addAccount(getString(R.string.ACCOUNT_TYPE), null, null, null, this, this, null);
-			finish();
+//			finish();
 		} else if (accountAction.equals(getString(R.string.ACTION_PREFS_ACCOUNT_DELETE))) {
 			final String accountKey = getIntent().getStringExtra(getString(R.string.KEY_ACCOUNT_KEY));
 			if (accountKey == null)

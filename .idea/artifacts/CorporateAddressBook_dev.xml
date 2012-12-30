@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact type="apk" name="CorporateAddressBook_dev">
+    <output-path>$PROJECT_DIR$/..</output-path>
+    <properties id="android-properties">
+      <options>
+        <option name="includeSystemProGuardCfgFile" value="true" />
+        <option name="keyAlias" value="default" />
+        <option name="keyPassword" value="d29ya19iYWJ5X3dvcms=" />
+        <option name="keyStorePassword" value="aG9wZV90aGlzX3dvcmtz" />
+        <option name="keyStoreUrl" value="file://$PROJECT_DIR$/../Android_Keystore" />
+        <option name="proGuardCfgFileUrl" value="file://" />
+        <option name="signingMode" value="RELEASE_SIGNED" />
+      </options>
+    </properties>
+    <root id="archive" name="Corporate AddressBook.apk">
+      <element id="android-final-package" facet="Corporate AddressBook/android/Android" />
+    </root>
+  </artifact>
+</component>

@@ -23,11 +23,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.SearchView;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import android.widget.SearchView;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 /**
  * @author Vivek Iyer 
@@ -35,9 +35,9 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
  * The class takes a parceled Contact object and displays the
  * DisplayName. It also allows the user to save the contact
  */
+
 /**
  * @author vivek
- * 
  */
 public class CorporateContactRecord extends SherlockFragmentActivity {
 
@@ -64,10 +64,8 @@ public class CorporateContactRecord extends SherlockFragmentActivity {
 	}
 
 	/**
-	 * @param menu
-	 *
-	 *            Create a context menu for the list view Depending upon the
-	 *            item selected, shows the user different options
+	 * @param menu Create a context menu for the list view Depending upon the
+	 *             item selected, shows the user different options
 	 */
 
 	/*
@@ -84,26 +82,28 @@ public class CorporateContactRecord extends SherlockFragmentActivity {
 		final MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.contacts_menu, menu);
 
-		// Get the SearchView and set the searchable configuration for Honeycomb
-		// and above
-		final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		final ComponentName component = getComponentName();
-		final SearchableInfo searchableInfo = searchManager
-				.getSearchableInfo(component);
-		MenuItem item = menu.findItem(
-				R.id.menu_search);
-		if(Utility.isPreHoneycomb()) {
-			com.actionbarsherlock.widget.SearchView searchView = new com.actionbarsherlock.widget.SearchView(this);
-			searchView.setSearchableInfo(searchableInfo);
-			item.setActionView(searchView);
-		}
-		else {
-			SearchView searchView = new SearchView(this);
-			searchView.setSearchableInfo(searchableInfo);
-			item.setActionView(searchView);
+		// Get the SearchView and set the searchable configuration for FroYo
+		// and above (getSearchableInfo() not supported pre-FroYo)
+		if (!Utility.isPreFroYo()) {
+			final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+			final ComponentName component = getComponentName();
+			final SearchableInfo searchableInfo = searchManager
+					.getSearchableInfo(component);
+			MenuItem item = menu.findItem(
+					R.id.menu_search);
+			if (Utility.isPreHoneycomb()) {
+				com.actionbarsherlock.widget.SearchView searchView = new com.actionbarsherlock.widget.SearchView(this);
+				searchView.setSearchableInfo(searchableInfo);
+				item.setActionView(searchView);
+			} else {
+				SearchView searchView = new SearchView(this);
+				searchView.setSearchableInfo(searchableInfo);
+				item.setActionView(searchView);
+			}
 		}
 		return super.onCreateOptionsMenu(menu);
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -115,34 +115,33 @@ public class CorporateContactRecord extends SherlockFragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			// app icon in action bar clicked; go home
-			final Intent intent = new Intent(this,
-					net.vivekiyer.GAL.CorporateAddressBook.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);
-			return true;
-		case R.id.menu_search:
-			return this.onSearchRequested();
-		case R.id.settings:
-			CorporateAddressBook.showConfiguration(this);
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+			case android.R.id.home:
+				// app icon in action bar clicked; go home
+				final Intent intent = new Intent(this,
+						net.vivekiyer.GAL.CorporateAddressBook.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				return true;
+			case R.id.menu_search:
+				return this.onSearchRequested();
+			case R.id.settings:
+				CorporateAddressBook.showConfiguration(this);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	@TargetApi(11)
 	@Override
 	public boolean onSearchRequested() {
-		if(!Utility.isPreHoneycomb()) {
-			if(searchView != null) {
+		if (!Utility.isPreHoneycomb()) {
+			if (searchView != null) {
 				searchView.setFocusable(true);
-			    searchView.setIconified(false);
-			    searchView.requestFocusFromTouch();
-			    return true;
-			}
-			else {
+				searchView.setIconified(false);
+				searchView.requestFocusFromTouch();
+				return true;
+			} else {
 				Debug.Log("Running HC+ without SearchView"); //$NON-NLS-1$
 				return false;
 			}
