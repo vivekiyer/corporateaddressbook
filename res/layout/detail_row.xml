@@ -80,6 +80,7 @@
 			android:id="@+id/details_actions"
 			android:layout_width="match_parent"
 			android:layout_height="76dp"
-			android:visibility="gone"/>
+			android:visibility="visible"
+			android:orientation="horizontal"/>
 
 </LinearLayout>

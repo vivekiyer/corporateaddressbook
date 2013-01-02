@@ -62,17 +62,19 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 		this.context = context;
 	}
 
-	public void Initialize(Activity activity) {
+	public boolean Initialize(Activity activity) {
 		if (!isInitialized) {
-			loadPreferences(activity);
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getInstance());
-			String defaultAccount = prefs.getString(App.getInstance().getString(R.string.PREFS_KEY_DEFAULT_ACCOUNT), null);
-			for(ActiveSyncManager syncManager : this) {
-				if(syncManager.getAccountKey().equals(defaultAccount))
-					this.defaultAccount = syncManager;
+			if(loadPreferences(activity)) {
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getInstance());
+				String defaultAccount = prefs.getString(App.getInstance().getString(R.string.PREFS_KEY_DEFAULT_ACCOUNT), null);
+				for(ActiveSyncManager syncManager : this) {
+					if(syncManager.getAccountKey().equals(defaultAccount))
+						this.defaultAccount = syncManager;
+				}
+				isInitialized = true;
 			}
-			isInitialized = true;
 		}
+		return isInitialized;
 	}
 
 	public void addChangeListener(OnAccountsChangedListener listener) {
@@ -97,7 +99,7 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 	 * <p/>
 	 * If no prefs exist it launches the "Add account" dialog.
 	 */
-	public void loadPreferences(final Activity parentActivity) {
+	public boolean loadPreferences(final Activity parentActivity) {
 
 		// Create the progress bar
 		final ProgressDialog progressdialog = new ProgressDialog(parentActivity);
@@ -106,6 +108,11 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 
 		// Initialize preferences and the corresponding ActiveSyncManager(s)
 		final android.accounts.AccountManager am = android.accounts.AccountManager.get(context);
+		if(!listeningToAccountUpdates) {
+			am.addOnAccountsUpdatedListener(this, null, false);
+			listeningToAccountUpdates = true;
+		}
+
 		Account[] accounts = am.getAccountsByType(context.getString(R.string.ACCOUNT_TYPE));
 		if (accounts == null || accounts.length == 0) {
 			final SharedPreferences existingPrefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -113,6 +120,7 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 			final String serverName = existingPrefs.getString(context.getString(R.string.PREFS_KEY_SERVER_PREFERENCE), null);
 			if (serverName == null) {
 				addAccount(am, parentActivity);
+				return false;
 			} else {
 				progressdialog.setMessage("Migrating settings...");
 				progressdialog.show();
@@ -142,14 +150,12 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 					}
 				};
 				migrateTask.execute(existingPrefs, syncManager);
+				return false;
 			}
 		} else {
 			reloadAccounts(am, accounts, false);
 		}
-		if(!listeningToAccountUpdates) {
-			am.addOnAccountsUpdatedListener(this, null, false);
-			listeningToAccountUpdates = true;
-		}
+		return true;
 	}
 
 	private void reloadAccounts(android.accounts.AccountManager am, Account[] accounts, boolean triggerListeners) {

@@ -132,7 +132,8 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	}
 
 	private void initializeActionBar() {
-		App.getAccounts().Initialize(this);
+		if(!App.getAccounts().Initialize(this))
+			return;
 		final ActionBar actionBar = getSupportActionBar();
 
 		if (App.getAccounts().size() >= 2) {

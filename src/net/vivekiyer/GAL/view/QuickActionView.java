@@ -1,31 +1,20 @@
 
 package net.vivekiyer.GAL.view;
 
-import java.util.zip.Inflater;
-
-import com.devoteam.quickaction.QuickActionItem;
-
-import net.vivekiyer.GAL.R;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
+import android.widget.LinearLayout;
+import com.devoteam.quickaction.QuickActionItem;
+import net.vivekiyer.GAL.R;
 
 /**
  * A class that can display, as a popup badge, a collection 
@@ -34,7 +23,7 @@ import android.widget.PopupWindow;
  * Based on the great work done by Mohd Faruq
  *
  */
-public class QuickActionView extends FrameLayout implements KeyEvent.Callback {
+public class QuickActionView extends LinearLayout implements KeyEvent.Callback {
 	
 	private final Context mContext;
 	private final LayoutInflater mInflater;
@@ -60,11 +49,12 @@ public class QuickActionView extends FrameLayout implements KeyEvent.Callback {
 		mContext = context;
 		mInflater = (LayoutInflater) mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 		
-		setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.quickaction_slider_background));
+//		setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.quickaction_slider_background));
 
 		contentView = mInflater.inflate(R.layout.quickactionview, null);
-		addView(contentView);
-		
+		LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+		addView(contentView, lp);
+
 		mTrack = (ViewGroup) contentView.findViewById(R.id.quickaction);
 
 		setFocusable(true);
