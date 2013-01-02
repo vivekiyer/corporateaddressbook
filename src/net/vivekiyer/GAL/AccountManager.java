@@ -307,10 +307,9 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 		if (thesePrefs.getAll().size() < 6)
 			throw new RuntimeException("Server settings incomplete");
 
-		thesePrefs.registerOnSharedPreferenceChangeListener(activeSyncManager);
-
 		if (activeSyncManager.loadPreferences(thesePrefs)) {
 			add(activeSyncManager);
+			notifyChange();
 			return true;
 		}
 		return false;
