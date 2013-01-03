@@ -132,6 +132,11 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	}
 
 	private void initializeActionBar() {
+		if (!listeningToAccountChanges) {
+			App.getAccounts().addChangeListener(this);
+			listeningToAccountChanges = true;
+		}
+
 		if(!App.getAccounts().Initialize(this))
 			return;
 		final ActionBar actionBar = getSupportActionBar();
@@ -159,11 +164,6 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			} else {
 				activeSyncManager = App.getAccounts().get(0);
 			}
-		}
-
-		if (!listeningToAccountChanges) {
-			App.getAccounts().addChangeListener(this);
-			listeningToAccountChanges = true;
 		}
 	}
 

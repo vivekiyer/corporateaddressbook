@@ -78,6 +78,7 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		}
 
 		super.onCreate(aSavedState);
+		Bundle b = getIntent().getExtras();
 
 		String action = getIntent().getAction();
 		if (action != null && action.equals(getString(R.string.ACTION_PREFS_ACCOUNTS))) {
@@ -291,8 +292,11 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);    //To change body of overridden methods use File | Settings | File Templates.
 		if (requestCode == R.string.ACTION_PREFS_ACCOUNT_DELETE && resultCode == RESULT_OK) {
-			if (!isNewV11Prefs())
+			if (!isNewV11Prefs() || mHeaders == null)
 				finish();
+			else {
+				getFragmentManager().popBackStack();
+			}
 		}
 	}
 
@@ -301,8 +305,10 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 	public void onAccountsUpdated(Account[] accounts) {
 		// TODO: Enable "header" update for pre-HC
 		if(!Utility.isPreHoneycomb()) {
-			invalidateHeaders();
-			getListView().requestLayout();
+			if(mHeaders != null) {
+				invalidateHeaders();
+				getListView().requestLayout();
+			}
 		}
 		else {
 			if(getIntent().getAction() == null)

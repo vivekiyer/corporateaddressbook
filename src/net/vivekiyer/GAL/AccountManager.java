@@ -118,7 +118,8 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 			final SharedPreferences existingPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 			final String userName = existingPrefs.getString(context.getString(R.string.PREFS_KEY_USERNAME_PREFERENCE), null);
 			final String serverName = existingPrefs.getString(context.getString(R.string.PREFS_KEY_SERVER_PREFERENCE), null);
-			if (serverName == null) {
+			final boolean isAlreadyMigrated = existingPrefs.getBoolean(getString(R.string.PREFS_KEY_ALREADY_MIGRATED), false);
+			if (serverName == null || isAlreadyMigrated) {
 				addAccount(am, parentActivity);
 				return false;
 			} else {
@@ -239,8 +240,8 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 				// Commit the edits!
 				editor.commit();
 
-				if (!Debug.Enabled) {
-					//existingPrefs.edit().clear().apply();
+				if(!App.isDebuggable()) {
+					existingPrefs.edit().clear().apply();
 				}
 
 				// Pass the values to the account manager
@@ -249,6 +250,10 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 				am.addAccountExplicitly(account,
 						existingPrefs.getString(getString(R.string.PREFS_KEY_PASSWORD_PREFERENCE), ""), null);
 				am.setUserData(account, getString(R.string.KEY_ACCOUNT_KEY), accountKey);
+
+				// Make sure we only do this once for non-debug builds
+				if(!App.isDebuggable())
+					existingPrefs.edit().putBoolean(getString(R.string.PREFS_KEY_ALREADY_MIGRATED), true).commit();
 
 				loadPreferences(accountKey);
 			} catch (Exception e) {

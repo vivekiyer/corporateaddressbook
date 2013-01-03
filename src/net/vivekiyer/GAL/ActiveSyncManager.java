@@ -593,11 +593,9 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 
 	public String getAccountKey() {
 		if (accountKey == null) {
-			if (getServerName() == null || getServerName().length() == 0)
-				accountKey = mUsername;
-			else
-				accountKey = mUsername + "@" + getServerName();
-		}
+			accountKey = mUsername.contains("@") ?
+					mUsername :
+					String.format("%1$s@%2$s", mUsername, mServerName);		}
 		return accountKey;
 	}
 

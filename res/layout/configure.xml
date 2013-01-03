@@ -78,7 +78,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:hint="@string/passwordHint"
-            android:imeOptions="actionDone"
+            android:imeOptions="actionGo"
             android:inputType="textPassword" />
 
         <CheckBox

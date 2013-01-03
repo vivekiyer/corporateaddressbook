@@ -12,7 +12,8 @@
 	    android:id="@+id/left_edge"
 	    android:layout_width="wrap_content"
 	    android:layout_height="fill_parent"
-	    android:src="@drawable/quickaction_slider_background_left"
+	    android:src="@drawable/quickaction_slider_background_left_alt"
+	    android:scaleType="fitXY"
 	    android:contentDescription="@string/error_detail"
 	    />
 	<!--
