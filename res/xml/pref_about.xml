@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/settings" android:icon="@drawable/icon">
-    <PreferenceCategory android:title="About">
-        <net.vivekiyer.GAL.Preferences.VersionPreference android:summary="x.y.z" android:title="Version" android:enabled="false"
+    <PreferenceCategory android:title="@string/about">
+        <net.vivekiyer.GAL.Preferences.VersionPreference android:summary="x.y.z" android:title="@string/version" android:enabled="false"
             style="?android:attr/preferenceInformationStyle"
         />
-        <net.vivekiyer.GAL.Preferences.DeviceIdPreference android:summary="0123456789abcdef0123456789abcdef" android:title="Device ID" android:enabled="true"
-            android:dialogMessage="Would you like to copy the Device ID to the clipboard?"
-            android:dialogTitle="Device ID"
+        <net.vivekiyer.GAL.Preferences.DeviceIdPreference android:summary="0123456789abcdef0123456789abcdef" android:title="@string/deviceId" android:enabled="true"
+            android:dialogMessage="@string/copyDeviceIdQuestion"
+            android:dialogTitle="@string/deviceId"
             android:positiveButtonText="@android:string/yes"
             android:negativeButtonText="@android:string/no"
         />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Links">
-        <Preference android:summary="Downloads, issue tracker and wiki" android:title="Corporate Addressbook on Google Code" android:icon="@drawable/google_code">
+    <PreferenceCategory android:title="@string/links">
+        <Preference android:summary="@string/googlecodeDetails" android:title="@string/googlecodeTitle" android:icon="@drawable/google_code">
             <intent android:action="android.intent.action.VIEW"
             	android:data="http://code.google.com/p/corporateaddressbook" >
             </intent>
 		</Preference>
-        <Preference android:summary="Help us translate the app" android:title="Corporate Addressbook on Crowdin" android:icon="@drawable/crowdin">
+        <Preference android:summary="@string/crowdinDetails" android:title="@string/crowdinTitle" android:icon="@drawable/crowdin">
             <intent android:action="android.intent.action.VIEW"
             	android:data="http://crowdin.net/project/corporate-addressbook/" >
             </intent>
 		</Preference>
-        <Preference android:summary="For praise, whining or help" android:title="Contact the authors">
+        <Preference android:summary="@string/contactAuthorsDetails" android:title="@string/contactAuthorsTitle">
             <intent android:action="android.intent.action.VIEW"
                     android:data="mailto:corporateaddressbook@googlegroups.com"
                 >

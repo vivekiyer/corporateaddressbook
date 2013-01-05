@@ -10,7 +10,7 @@ import android.preference.PreferenceFragment;
 public class PrefsFragment extends PreferenceFragment {
 	@Override
 	public void onCreate(Bundle aSavedState) {
-		String fragment = getArguments().getString("pref-resource");
+		String fragment = getArguments().getString("pref-resource"); //NON-NLS
 		onCreate(aSavedState, fragment);
 	}
 
@@ -19,7 +19,7 @@ public class PrefsFragment extends PreferenceFragment {
 		onBeforeAddPrefs();
 		Context anAct = getActivity().getApplicationContext();
 		int thePrefRes = anAct.getResources().getIdentifier(prefResource,
-				"xml",anAct.getPackageName());
+				"xml",anAct.getPackageName()); //NON-NLS
 		addPreferencesFromResource(thePrefRes);
 	}
 

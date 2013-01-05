@@ -125,7 +125,7 @@ public class AddOrDeleteAccountActivity extends FragmentActivity implements Acco
 				builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
 
 			builder.setTitle(getString(R.string.delete_account))
-					.setMessage("Are you sure you want to delete the account \'" + accountKey + "\'?")
+					.setMessage(getString(R.string.confirmDelete) + accountKey + "\'?")
 					.setCancelable(false)
 					.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
 						@Override

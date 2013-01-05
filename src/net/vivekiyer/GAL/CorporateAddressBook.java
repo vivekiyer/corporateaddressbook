@@ -87,7 +87,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	static final String ONGOING_SEARCH = "search";  //$NON-NLS-1$
 	static final String ACCOUNT_KEY = "accountKey";  //$NON-NLS-1$
 	static final String START_WITH = "startWith";  //$NON-NLS-1$
-	static final String REQUERY = "requery_previous";
+	static final String REQUERY = "requery_previous"; //NON-NLS
 
 	// Progress bar
 //	private ProgressDialog progressdialog;
@@ -182,16 +182,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			}
 
 			final String query = intent.getStringExtra(SearchManager.QUERY);
-//			// Get first result to get (if not 0)
-//			int firstResult = intent.getIntExtra(START_WITH, 0);
-//
-//			ActiveSyncManager syncManager = activeSyncManager;
-//
-//			// Did we get an account key? If so, use that ActiveSyncManager
-//			String accountKey = intent.getStringExtra(ACCOUNT_KEY);
-//			if(accountKey != null && App.getAccounts().hasKey(accountKey)) {
-//				syncManager = App.getAccounts().get(accountKey);
-//			}
+
 			performSearch(query);
 		}
 	}
@@ -290,10 +281,6 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 	private void performSearch(String name, ActiveSyncManager syncManager, int startWith, boolean clearResults) {
 
-//		if (progressdialog != null) {
-//			progressdialog.setMessage(getString(R.string.retrievingResults));
-//			progressdialog.show();
-//		}
 		if (clearResults) {
 			CorporateAddressBookFragment frag = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
 			frag.setHeader(getString(R.string.retrievingResults), true);
@@ -358,6 +345,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			final ComponentName component = getComponentName();
 			final SearchableInfo searchableInfo = searchManager
 					.getSearchableInfo(component);
+
 			MenuItem item = menu.findItem(
 					R.id.menu_search);
 			searchView = item.getActionView();
@@ -419,12 +407,14 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-			case DISPLAY_CONFIGURATION_REQUEST:
-				// Initialize the activesync object with the validated settings
-				//loadPreferences();
-				break;
-		}
+// Now handled via onAccountsChanged() called by AccountManager
+//		switch (requestCode) {
+//			case DISPLAY_CONFIGURATION_REQUEST:
+//				// Initialize the activesync object with the validated settings
+//				//loadPreferences();
+//				break;
+//		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	private void addSearchResults(HashMap<String, Contact> contacts) {
@@ -515,8 +505,6 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			App.getAccounts().removeChangeListener(this);
 		super.onDestroy();
 	}
-
-	;
 
 	@Override
 	public void onContactSelected(Contact contact) {

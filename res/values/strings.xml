@@ -106,4 +106,24 @@
 	<string name="lastname">Last name</string>
 	<string name="title">Title</string>
 	<string name="company">Company</string>
+	<string name="migratingSettings">Migrating settings...</string>
+	<string name="confirmDelete">Are you sure you want to delete the account \'</string>
+	<string name="cantFindApp">Can\'t find a suitable app</string>
+	<string name="deviceIdCopied">Device ID copied to clipboard</string>
+	<string name="notSet">[Not set]</string>
+	<string name="contactAuthorsDetails">For praise, whining or help</string>
+	<string name="contactAuthorsTitle">Contact the authors</string>
+	<string name="crowdinDetails">Help us translate the app</string>
+	<string name="crowdinTitle">Corporate Addressbook on Crowdin</string>
+	<string name="links">Links</string>
+	<string name="googlecodeDetails">Downloads, issue tracker and wiki</string>
+	<string name="googlecodeTitle">Corporate Addressbook on Google Code</string>
+	<string name="deviceId">Device ID</string>
+	<string name="copyDeviceIdQuestion">Would you like to copy the Device ID to the clipboard?</string>
+	<string name="version">Version</string>
+	<string name="about">About</string>
+	<string name="addAccount">Add account</string>
+	<string name="maxNumberOfResults">Maximum number of results</string>
+	<string name="contactPictures">Contact pictures</string>
+	<string name="contactPicturesWarning">Showing contact pictures might slow down search</string>
 </resources>

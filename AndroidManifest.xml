@@ -73,7 +73,7 @@
 		</activity>
 		<activity
 				android:name=".Preferences.Configure"
-				android:label="Add server"
+				android:label="@string/addAccount"
 				android:enabled="true"
 				android:theme="@style/LargeDialog">
 			<intent-filter>
@@ -86,7 +86,7 @@
 		</activity>
 		<activity
 				android:name=".Preferences.AddOrDeleteAccountActivity"
-				android:label="Add server"
+				android:label="@string/addAccount"
 				android:enabled="true"
 				android:theme="@android:style/Theme.NoDisplay">
 			<intent-filter>

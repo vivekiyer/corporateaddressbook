@@ -13,6 +13,9 @@
   <string name="useSecureSslText">Sichere Verbindung zum Exchange-Server verwenden (SSL)</string>
   <string name="serverHint">mail.example.com</string>
   <string name="serverText">Server</string>
+  <string name="serversText">Server</string>
+  <string name="serverName">Servername</string>
+  <string name="enterServerName">Servernamen eingeben</string>
   <string name="searchDirectory">Durchsuche das Adressbuch</string>
   <string name="search">Suche</string>
   <string name="icon">Symbol</string>
@@ -36,7 +39,7 @@
   <string name="sendEmail">Email</string>
   <string name="copyToClipboard">In die Zwischenablage kopieren</string>
   <string name="valid_domain_and_username_error">Bitte gib einen gültigen Domain- und Benutzernamen ein</string>
-  <string name="domain_and_username_format_error">Domainname und Benutzername müssen in dem Format DOMAIN\\Benutzername vorliegen</string>
+  <string name="domain_and_username_format_error">Domain-Name und Benutzername müssen im Format DOMÄNE\\Benutzername sein</string>
   <string name="invalid_username_error">Bitte gib einen gültigen Benutzernamen ein</string>
   <string name="invalid_password_error">Bitte geben Sie ein gültiges Passwort ein</string>
   <string name="invalid_exchange_url_error">Bitte geben sie eine gültige Exchangeadresse ein</string>
@@ -59,23 +62,41 @@
   <string name="unable_to_find_matching_certificate">Es konnte kein passendes Serverzertifikat gefunden werden. %1$s%1$s. Bitte versuchen Sie es nach Aktivierung der Option \"%2$s\" noch einmal</string>
   <string name="could_not_connect_to_server">Keine Verbindung zum Server möglich</string>
   <string name="show_settings">Einstellungen aufrufen</string>
-  <string name="undefined_result_please_try_again">Serverdaten können nicht gelesen werden. Bitte versuchen Sie es noch einmal</string>
+  <string name="undefined_result_please_try_again">Undefiniertes Ergebnis. Bitte versuchen Sie es erneut</string>
   <string name="could_not_find_sms_application">Es konnte keine Applikation zum Versenden einer SMS gefunden werden</string>
-  <string name="send_mail">EMail senden…</string>
+  <string name="could_not_find_email_application">Es konnte keine Applikation zum Versenden einer Email gefunden werden</string>
+  <string name="server_settings">Server-Einstellungen</string>
+  <string name="about_app">Über Corporate Addressbook</string>
+  <string name="send_mail">EMail senden...</string>
   <string name="too_many_device_partnerships_title">Sie haben zu viele Mobiltelefone mit dem Exchangeserver verbunden</string>
   <string name="too_many_device_partnerships_detail">Löschen Sie zu erst Verbindungen auf dem Exchange Server, bevor sie fortfahren.
-\n Dies ist direkt in Outlook Web Acess (OWA) möglich oder kontaktieren Sie hierzu ihren Server Administrator.</string>
+\n Dies ist direkt in Outlook Web Acess (OWA) möglich oder kontaktieren Sie hierzu ihren Server Administrator</string>
   <string name="unhandled_error">%d: Unbekannter Fehler</string>
-  <string name="unhandled_error_occured">An error occurred that Corporate Addressbook currently cannot handle.
-\nPlease contact the authors to have this addressed.</string>
+  <string name="unhandled_error_occured">Es ist ein unerwartetes Problem aufgetreten.
+\nBitte kontaktieren Sie den Entwickler</string>
   <string name="forbidden_by_server_title">Unterbunden durch den Exchange-Server</string>
-  <string name="forbidden_by_server_detail" formatted="false">Your device is not allowed to connect to the server.%nThis typically means that an administrator needs to allow your Device ID to connect.%n%nYour Device ID is:%n%1$s</string>
+  <string name="forbidden_by_server_detail" formatted="false">Ihr Gerät darf sich nicht zum Server verbinden.%n Dies bedeutet typischerweise, dass ihr Administrator ihr Gerät mit der Geräte-ID freischalten muss.%n%n Ihre Geräte-ID lautet:%n%1$s</string>
   <string name="invalid_server_title">Ungültiger Servername</string>
   <string name="invalid_server_detail">Werden den Server konnte nicht gefunden, sind Sie sicher, dass der Name richtig ist?</string>
-  <string name="timeout_title">Connection timeout</string>
-  <string name="timeout_detail">The connection timed out. This might be caused by an unreliable network or trying to access using the wrong method.\nPlease try again or check the option \'%1$s\' if it is currently unchecked.</string>
-  <string name="no_response_from_server">No response received from server</string>
-  <string name="server_responded_x">Der Server hat %1$d geantwortet</string>
-  <string name="text_copied_to_clipboard">Text copied to clipboard</string>
-  <string name="select_account">Select account</string>
+  <string name="timeout_title">Zeitüberschreitung bei der Verbindung</string>
+  <string name="timeout_detail">Zeitüberschreitung bei der Verbindung. Dies könnte entweder durch eine unzuverlässige Netzwerkverbindung oder durch den Zugriff über eine nicht erlaubte Methode verursacht worden sein.\n Bitte versuchen Sie es erneut oder überprüfen Sie, ob die Einstellung \'%1$s\' aktiviert ist.</string>
+  <string name="no_response_from_server">Keine Antwort vom Server empfangen</string>
+  <string name="server_responded_x">Serverantwort %1$d</string>
+  <string name="text_copied_to_clipboard">Text in Zwischenablage kopiert</string>
+  <string name="select_account">Konto wählen</string>
+  <string name="account">Konto</string>
+  <string name="accounts">Konten</string>
+  <string name="delete_account">Konto löschen</string>
+  <string name="editingWarning">Sobald ein Konto eingerichtet wurde, können Sie den Server oder Benutzernamen nicht ändern. Erstellen Sie ein neues Konto, um diese Einstellungen zu ändern.</string>
+  <string name="next_search">Holen Sie mehr</string>
+  <string name="edit_account">Konto bearbeiten</string>
+  <string name="firstname">Vorname</string>
+  <string name="lastname">Nachname</string>
+  <string name="title">Titel</string>
+  <string name="company">Unternehmen</string>
+  <string name="migratingSettings">Einstellungen werden migriert...</string>
+  <string name="confirmDelete">Sind Sie sicher, dass Sie das Konto löschen wollen?\'</string>
+  <string name="cantFindApp">Es konnte keine geeignete Anwendung gefunden werden</string>
+  <string name="deviceIdCopied">Geräte-ID in die Zwischenablage kopiert</string>
+  <string name="notSet">[Nicht festgelegt]</string>
 </resources>

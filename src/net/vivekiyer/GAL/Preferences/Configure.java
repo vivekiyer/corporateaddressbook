@@ -354,7 +354,7 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 									ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices"); //$NON-NLS-1$
 									break;
 								default:
-									ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices");
+									ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices"); //NON-NLS
 									break;
 							}
 							break;
@@ -367,7 +367,7 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 							ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
 									.setListener(this)
 											//.create()
-									.show(getSupportFragmentManager(), "forbidden");
+									.show(getSupportFragmentManager(), "forbidden"); //NON-NLS
 							break;
 						case ConnectionChecker.SSL_PEER_UNVERIFIED:
 							ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.unable_to_find_matching_certificate, "\n", getString(R.string.acceptAllSllText))) //$NON-NLS-1$
@@ -381,11 +381,11 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 							break;
 						default:
 							ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
-									.show(getSupportFragmentManager(), "connError");
+									.show(getSupportFragmentManager(), "connError"); //NON-NLS
 							break;
 					}
 				} catch (java.lang.IllegalStateException e) {
-					Debug.Log("Server configuration window was dismissed before Connection check was finished:\n" + e.toString());
+					Debug.Log("Server configuration window was dismissed before Connection check was finished:\n" + e.toString()); //NON-NLS
 				}
 			}
 		}
@@ -394,7 +394,7 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 			AccountManager am = AccountManager.get(this);
 			String accountKey = username.contains("@") ?
 					username :
-					String.format("%1$s@%2$s", username, getTextFromId(R.id.txtServerName).trim());
+					String.format("%1$s@%2$s", username, getTextFromId(R.id.txtServerName).trim()); //NON-NLS
 
 			mPreferences = getSharedPreferences(accountKey, MODE_PRIVATE);
 			SharedPreferences.Editor editor = mPreferences.edit();
@@ -458,7 +458,7 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 					clipboard.setText(activeSyncManager.getDeviceId());
 				} else {
 					ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-					clip.setPrimaryClip(ClipData.newPlainText("Android Device ID", activeSyncManager.getDeviceId()));
+					clip.setPrimaryClip(ClipData.newPlainText("Android Device ID", activeSyncManager.getDeviceId())); //NON-NLS
 				}
 				break;
 			case R.id.account_delete:

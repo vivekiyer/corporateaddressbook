@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import net.vivekiyer.GAL.R;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,7 +41,7 @@ public class StaticDisplayPreference extends DialogPreference {
 		if(positiveResult) {
 			final ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
 			clipboard.setText(displayText);
-			Toast.makeText(getContext(), "Device ID copied to clipboard", Toast.LENGTH_SHORT)
+			Toast.makeText(getContext(), getContext().getString(R.string.deviceIdCopied), Toast.LENGTH_SHORT)
 					.show();
 		}
 	}

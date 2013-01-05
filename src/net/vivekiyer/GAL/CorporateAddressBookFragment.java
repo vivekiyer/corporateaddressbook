@@ -243,7 +243,7 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 	}
 
 	public void displayResult(HashMap<String, Contact> mContacts, String latestSearchTerm, ActiveSyncManager syncManager) {
-		if(mContacts == null)
+		if(mContacts == null || syncManager == null)
 		{
 			//Toast.makeText(getActivity(), R.string.undefined_result_please_try_again, Toast.LENGTH_LONG).show();
 			return;

@@ -3,12 +3,11 @@ package net.vivekiyer.GAL;
 import android.app.Activity;
 import android.os.AsyncTask;
 import net.vivekiyer.GAL.Preferences.ConnectionChecker;
+import org.apache.http.conn.ConnectTimeoutException;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-
-import org.apache.http.conn.ConnectTimeoutException;
 
 import static net.vivekiyer.GAL.Preferences.ConnectionChecker.*;
 
@@ -149,7 +148,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 			errorDetail = App.getInstance().getString(R.string.unable_to_find_matching_certificate);
 			return false;
 		} catch (final Exception e) {
-			Debug.Log("Exception in GALSearch:\n" + e.toString());
+			Debug.Log("Exception in GALSearch:\n" + e.toString()); //NON-NLS
 			e.printStackTrace();
 			errorCode = ConnectionChecker.UNDEFINED;
 			errorDetail = App.getInstance().getString(R.string.unhandled_error_occured) +

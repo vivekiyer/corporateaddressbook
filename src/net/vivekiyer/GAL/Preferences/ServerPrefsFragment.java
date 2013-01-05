@@ -27,7 +27,7 @@ public class ServerPrefsFragment extends PrefsFragment {
 		accountKey = getArguments().getString(getString(R.string.KEY_ACCOUNT_KEY));
 		if (accountKey == null)
 			throw new RuntimeException("Unable to get accountKey for account");
-		super.onCreate(aSavedState, "pref_server");    //To change body of overridden methods use File | Settings | File Templates.
+		super.onCreate(aSavedState, "pref_server");    //To change body of overridden methods use File | Settings | File Templates. NON-NLS
 	}
 
 	@Override

@@ -16,7 +16,7 @@ public class VersionPreference extends Preference {
 		try {
 			setSummary(ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0).versionName);
 		} catch (NameNotFoundException e) {
-		    Log.e("VersionPreference", e.getMessage());
+		    Log.e("VersionPreference", e.getMessage()); //NON-NLS
 		}
 	}
 }

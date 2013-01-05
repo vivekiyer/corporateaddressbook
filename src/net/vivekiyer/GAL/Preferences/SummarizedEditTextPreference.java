@@ -4,6 +4,7 @@ import android.content.Context;
 import android.preference.EditTextPreference;
 import android.text.InputType;
 import android.util.AttributeSet;
+import net.vivekiyer.GAL.R;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,7 +53,7 @@ public class SummarizedEditTextPreference extends EditTextPreference /*implement
 	@Override
 	public void setSummary(CharSequence summary) {
 		if(summary.length()==0)
-			super.setSummary("[Not set]");
+			super.setSummary(getContext().getString(R.string.notSet));
 		else
 			if((this.getEditText().getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0)
 					super.setSummary(new String(new char[summary.length()]).replace("\0", "*"));

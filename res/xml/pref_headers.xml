@@ -6,7 +6,7 @@
 	<header
 			android:id="@+id/account_add"
 			android:icon="@drawable/ic_content_new"
-			android:title="Add account">
+			android:title="@string/addAccount">
 		<intent
 				android:targetClass="net.vivekiyer.GAL.Preferences.AddOrDeleteAccountActivity"
 				android:targetPackage="net.vivekiyer.GAL"

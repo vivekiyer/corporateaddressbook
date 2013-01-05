@@ -595,7 +595,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 		if (accountKey == null) {
 			accountKey = mUsername.contains("@") ?
 					mUsername :
-					String.format("%1$s@%2$s", mUsername, mServerName);		}
+					String.format("%1$s@%2$s", mUsername, mServerName);		} //NON-NLS
 		return accountKey;
 	}
 

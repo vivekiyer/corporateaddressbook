@@ -14,7 +14,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 public class AccountAuthenticatorService extends Service {
-	private static final String TAG = "AccountAuthenticatorService";
+	private static final String TAG = "AccountAuthenticatorService"; //NON-NLS
 	private static AccountAuthenticatorImpl sAccountAuthenticator = null;
 
 	public AccountAuthenticatorService() {
@@ -72,7 +72,7 @@ public class AccountAuthenticatorService extends Service {
 		public Bundle confirmCredentials(AccountAuthenticatorResponse response,
 				Account account, Bundle options) {
 			// TODO Auto-generated method stub
-			Log.i(TAG, "confirmCredentials");
+			Log.i(TAG, "confirmCredentials"); //NON-NLS
 			return null;
 		}
 
@@ -80,7 +80,7 @@ public class AccountAuthenticatorService extends Service {
 		public Bundle editProperties(AccountAuthenticatorResponse response,
 				String accountType) {
 			// TODO Auto-generated method stub
-			Log.i(TAG, "editProperties");
+			Log.i(TAG, "editProperties"); //NON-NLS
 			return null;
 		}
 
@@ -89,14 +89,14 @@ public class AccountAuthenticatorService extends Service {
 				Account account, String authTokenType, Bundle options)
 				throws NetworkErrorException {
 			// TODO Auto-generated method stub
-			Log.i(TAG, "getAuthToken");
+			Log.i(TAG, "getAuthToken"); //NON-NLS
 			return null;
 		}
 
 		@Override
 		public String getAuthTokenLabel(String authTokenType) {
 			// TODO Auto-generated method stub
-			Log.i(TAG, "getAuthTokenLabel");
+			Log.i(TAG, "getAuthTokenLabel"); //NON-NLS
 			return null;
 		}
 
@@ -105,7 +105,7 @@ public class AccountAuthenticatorService extends Service {
 				Account account, String[] features)
 				throws NetworkErrorException {
 			// TODO Auto-generated method stub
-			Log.i(TAG, "hasFeatures: " + features);
+			Log.i(TAG, "hasFeatures: " + features); //NON-NLS
 			return null;
 		}
 
@@ -113,7 +113,7 @@ public class AccountAuthenticatorService extends Service {
 		public Bundle updateCredentials(AccountAuthenticatorResponse response,
 				Account account, String authTokenType, Bundle options) {
 			// TODO Auto-generated method stub
-			Log.i(TAG, "updateCredentials");
+			Log.i(TAG, "updateCredentials"); //NON-NLS
 			return null;
 		}
 	}

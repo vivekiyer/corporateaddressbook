@@ -38,16 +38,16 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 
 	// show Back and Next buttons? takes boolean parameter
 	// Back will then return RESULT_CANCELED and Next RESULT_OK
-	static final String EXTRA_PREFS_SHOW_BUTTON_BAR = "extra_prefs_show_button_bar";
+	static final String EXTRA_PREFS_SHOW_BUTTON_BAR = "extra_prefs_show_button_bar"; //NON-NLS
 
 	// add a Skip button?
-	static final String EXTRA_PREFS_SHOW_SKIP = "extra_prefs_show_skip";
+	static final String EXTRA_PREFS_SHOW_SKIP = "extra_prefs_show_skip"; //NON-NLS
 
 	// specify custom text for the Back or Next buttons, or cause a button to not appear
 	// at all by setting it to null
-	static final String EXTRA_PREFS_SET_NEXT_TEXT = "extra_prefs_set_next_text";
-	static final String EXTRA_PREFS_SET_BACK_TEXT = "extra_prefs_set_back_text";
-	private ArrayList<Header> mHeaders;
+	static final String EXTRA_PREFS_SET_NEXT_TEXT = "extra_prefs_set_next_text"; //NON-NLS
+	static final String EXTRA_PREFS_SET_BACK_TEXT = "extra_prefs_set_back_text"; //NON-NLS
+	private ArrayList<Header> mHeaders = new ArrayList<Header>();
 	private boolean mListeningToAccountUpdates = false;
 
 	/**
@@ -72,8 +72,8 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 	public void onCreate(Bundle aSavedState) {
 		//onBuildHeaders() will be called during super.onCreate()
 		try {
-			mLoadHeaders = getClass().getMethod("loadHeadersFromResource", int.class, List.class);
-			mHasHeaders = getClass().getMethod("hasHeaders");
+			mLoadHeaders = getClass().getMethod("loadHeadersFromResource", int.class, List.class); //NON-NLS
+			mHasHeaders = getClass().getMethod("hasHeaders"); //NON-NLS
 		} catch (NoSuchMethodException e) {
 		}
 
@@ -117,29 +117,19 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 
 	@Override
 	protected void onPostResume() {
-		super.onPostResume();    //To change body of overridden methods use File | Settings | File Templates.
-//		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(
-//				new SharedPreferences.OnSharedPreferenceChangeListener() {
-//			@Override
-//			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//				SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(App.getInstance()).edit();
-//				e.putBoolean(getString(R.string.PREFS_KEY_SUCCESSFULLY_CONNECTED), false);
-//				e.commit();
-//			}
-//		});
+		super.onPostResume();
 	}
 
 	@Override
 	public void finish() {
-		super.finish();    //To change body of overridden methods use File | Settings | File Templates.
-		//finishActivity(CorporateAddressBook.DISPLAY_CONFIGURATION_REQUEST);
+		super.finish();
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void switchToHeader(Header header) {
 		if (header.fragment == null && header.intent == null) {
-			if (mHeaders == null)
+			if (mHeaders.size() == 0)
 				return;
 			for (Header h : mHeaders) {
 				if (h.fragment != null /*|| h.intent != null*/) {
@@ -156,13 +146,9 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		try {
 			mLoadHeaders.invoke(this, new Object[]{R.xml.pref_headers, aTarget});
 			addServerHeaders(aTarget);
-			if (mHeaders == null) {
-				mHeaders = new ArrayList<Header>();
 				// When the saved state provides the list of headers, onBuildHeaders is not called
 				// Copy the list of Headers from the adapter, preserving their order
-			} else {
-				mHeaders.clear();
-			}
+			mHeaders.clear();
 			for (Header h : aTarget) {
 				mHeaders.add(h);
 			}
@@ -184,7 +170,7 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 			h.title = am.getUserData(account, getString(R.string.KEY_ACCOUNT_KEY));
 			h.fragment = ServerPrefsFragment.class.getName();
 			Bundle b = new Bundle(2);
-			b.putString("pref-resource", "pref_server");
+			b.putString("pref-resource", "pref_server"); //NON-NLS NON-NLS
 			b.putString(getString(R.string.KEY_ACCOUNT_KEY), am.getUserData(account, getString(R.string.KEY_ACCOUNT_KEY)));
 			SharedPreferences pref = getSharedPreferences(account.name, MODE_PRIVATE);
 			String accountServer = pref.getString(getString(R.string.PREFS_KEY_SERVER_PREFERENCE), null);
@@ -279,23 +265,33 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 	@Override
 	public void startActivity(android.content.Intent intents) {
 		try {
-			if (intents.getAction().equals(getString(R.string.ACTION_PREFS_ACCOUNT_DELETE)))
+			if (intents.getAction().equals(getString(R.string.ACTION_PREFS_ACCOUNT_DELETE))) {
+				// So that we get to know if an account is deleted - if this is a ServerPrefs activity
+				// related to that account it should be finished.
 				startActivityForResult(intents, R.string.ACTION_PREFS_ACCOUNT_DELETE);
-			else
-				super.startActivity(intents);    //To change body of overridden methods use File | Settings | File Templates.
+			}
+			else {
+				super.startActivity(intents);
+			}
 		} catch (ActivityNotFoundException e) {
-			Toast.makeText(this, "Can't find a suitable app", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.cantFindApp), Toast.LENGTH_SHORT).show();
 		}
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);    //To change body of overridden methods use File | Settings | File Templates.
+		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == R.string.ACTION_PREFS_ACCOUNT_DELETE && resultCode == RESULT_OK) {
-			if (!isNewV11Prefs() || mHeaders == null)
+			if (!isNewV11Prefs() || mHeaders.size() == 0)
 				finish();
 			else {
-				getFragmentManager().popBackStack();
+				// Make sure we switch header so that the fragment for the deleted
+				// account is discarded
+				// getFragmentManager().popBackStack() didn't work
+				for(Header h : mHeaders) {
+					if(PrefsFragment.class.getName().equals(h.fragment))
+						switchToHeader(h);
+				}
 			}
 		}
 	}
@@ -303,9 +299,8 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onAccountsUpdated(Account[] accounts) {
-		// TODO: Enable "header" update for pre-HC
 		if(!Utility.isPreHoneycomb()) {
-			if(mHeaders != null) {
+			if(mHeaders.size() > 0) {
 				invalidateHeaders();
 				getListView().requestLayout();
 			}
@@ -318,18 +313,6 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 
 	@Override
 	public boolean onPreferenceClick(Preference preference) {
-
-		if (preference.getKey().equals("PREFS_VALIDATE")) {
-			String prefkey = getString(R.string.PREFS_KEY_SERVER_PREFERENCE);
-			PreferenceManager mgr = preference.getPreferenceManager();
-			Preference servpref = mgr.findPreference(prefkey);
-			EditTextPreference servtextpref = (EditTextPreference) servpref;
-			String server = servtextpref.getText();
-
-
-			Toast.makeText(this, "Yes...\n" + server, Toast.LENGTH_SHORT).show();
-			return true;
-		}
-		return false;  //To change body of implemented methods use File | Settings | File Templates.
+		return false;
 	}
 }

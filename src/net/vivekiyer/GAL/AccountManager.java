@@ -123,11 +123,11 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 				addAccount(am, parentActivity);
 				return false;
 			} else {
-				progressdialog.setMessage("Migrating settings...");
+				progressdialog.setMessage(parentActivity.getString(R.string.migratingSettings));
 				progressdialog.show();
 				final String accountKey = userName.contains("@") ?
 						userName :
-						String.format("%1$s@%2$s", userName, serverName);
+						String.format("%1$s@%2$s", userName, serverName); //NON-NLS
 				final ActiveSyncManager syncManager = new ActiveSyncManager();
 				AsyncTask<Object, Void, Boolean> migrateTask = new AsyncTask<Object, Void, Boolean>() {
 					@Override

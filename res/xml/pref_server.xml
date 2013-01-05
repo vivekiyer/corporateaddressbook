@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   android:icon="@drawable/icon"
                   android:title="@string/settings">
-	<PreferenceCategory android:title="Account">
+	<PreferenceCategory android:title="@string/account">
 		<Preference
 				android:id="@+id/account_edit"
 				android:key="@string/ACCOUNT_TYPE">
@@ -15,16 +15,16 @@
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings">
 		<net.vivekiyer.GAL.Preferences.SummarizedEditTextPreference
-				android:dialogTitle="Maximum number of results"
+				android:dialogTitle="@string/maxNumberOfResults"
 				android:key="@string/PREFS_KEY_MAX_HITS"
-				android:title="Maximum number of results"
+				android:title="@string/maxNumberOfResults"
 				android:numeric="integer"
 				android:defaultValue="@integer/PREFS_KEY_MAX_RESULT" />
 		<CheckBoxPreference
-				android:title="Contact pictures"
+				android:title="@string/contactPictures"
 				android:key="@string/PREFS_KEY_CONTACT_PICS"
 				android:defaultValue="true"
-				android:summary="Showing contact pictures might slow down search"/>
+				android:summary="@string/contactPicturesWarning"/>
 		<Preference
 				android:id="@+id/account_delete"
 				android:key="@string/ACTION_PREFS_ACCOUNT_DELETE"

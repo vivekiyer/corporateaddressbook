@@ -1,20 +1,9 @@
 package net.vivekiyer.GAL;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import android.accounts.Account;
 import android.accounts.OperationCanceledException;
 import android.app.Service;
-import android.content.AbstractThreadedSyncAdapter;
-import android.content.ContentProviderClient;
-import android.content.ContentProviderOperation;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SyncResult;
+import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,8 +13,13 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 public class ContactsSyncAdapterService extends Service {
-	private static final String TAG = "ContactsSyncAdapterService";
+	private static final String TAG = "ContactsSyncAdapterService"; //NON-NLS
 	private static SyncAdapterImpl sSyncAdapter = null;
 	private static ContentResolver mContentResolver = null;
 
@@ -115,7 +109,7 @@ public class ContactsSyncAdapterService extends Service {
 
 	@SuppressWarnings("unused")
 	private static void addContact(Account account, String name, String username) {
-		Log.i(TAG, "Adding contact: " + name);
+		Log.i(TAG, "Adding contact: " + name); //NON-NLS
 		ArrayList<ContentProviderOperation> operationList = new ArrayList<ContentProviderOperation>();
 
 		ContentProviderOperation.Builder builder = ContentProviderOperation
@@ -142,10 +136,10 @@ public class ContactsSyncAdapterService extends Service {
 				.newInsert(ContactsContract.Data.CONTENT_URI);
 		builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0);
 		builder.withValue(ContactsContract.Data.MIMETYPE,
-				"vnd.android.cursor.item/vnd.net.vivekiyer.GAL.profile");
+				"vnd.android.cursor.item/vnd.net.vivekiyer.GAL.profile"); //NON-NLS
 		builder.withValue(ContactsContract.Data.DATA1, username);
-		builder.withValue(ContactsContract.Data.DATA2, "Exchange Profile");
-		builder.withValue(ContactsContract.Data.DATA3, "View profile");
+		builder.withValue(ContactsContract.Data.DATA2, "Exchange Profile"); //NON-NLS
+		builder.withValue(ContactsContract.Data.DATA3, "View profile"); //NON-NLS
 		operationList.add(builder.build());
 
 		try {
