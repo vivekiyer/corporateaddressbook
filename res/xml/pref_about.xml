@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/settings" android:icon="@drawable/icon">
     <PreferenceCategory android:title="@string/about">
-        <net.vivekiyer.GAL.Preferences.VersionPreference android:summary="x.y.z" android:title="@string/version" android:enabled="false"
+        <net.vivekiyer.GAL.preferences.VersionPreference
+		        android:summary="x.y.z" android:title="@string/version" android:enabled="false"
             style="?android:attr/preferenceInformationStyle"
         />
-        <net.vivekiyer.GAL.Preferences.DeviceIdPreference android:summary="0123456789abcdef0123456789abcdef" android:title="@string/deviceId" android:enabled="true"
+        <net.vivekiyer.GAL.preferences.DeviceIdPreference
+		        android:summary="0123456789abcdef0123456789abcdef" android:title="@string/deviceId" android:enabled="true"
             android:dialogMessage="@string/copyDeviceIdQuestion"
             android:dialogTitle="@string/deviceId"
             android:positiveButtonText="@android:string/yes"

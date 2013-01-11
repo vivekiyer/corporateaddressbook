@@ -18,11 +18,14 @@
 	<string name="PREFS_KEY_MAX_HITS">maxHits</string>
 	<string name="PREFS_KEY_DEFAULT_ACCOUNT">defaultAccount</string>
 	<string name="PREFS_KEY_ALREADY_MIGRATED">alreadyMigrated</string>
-	<string name="KEY_ACCOUNT_KEY">net.vivekiyer.GAL.Preferences.ACCOUNT_KEY</string>
-	<string name="KEY_ACCOUNT_SERVER">net.vivekiyer.GAL.Preferences.ACCOUNT_SERVER</string>
-	<string name="ACTION_PREFS_ACCOUNT_ADD">net.vivekiyer.GAL.Preferences.ACCOUNT_ADD</string>
-	<string name="ACTION_PREFS_ACCOUNT_EDIT">net.vivekiyer.GAL.Preferences.ACCOUNT_EDIT</string>
-	<string name="ACTION_PREFS_ACCOUNT_DELETE">net.vivekiyer.GAL.Preferences.ACCOUNT_DELETE</string>
-	<string name="ACTION_PREFS_ACCOUNTS">net.vivekiyer.GAL.Preferences.PREFS_ACCOUNTS</string>
-	<string name="ACTION_PREFS_ABOUT">net.vivekiyer.GAL.Preferences.PREFS_ABOUT</string>
+	<string name="KEY_ACCOUNT_KEY">net.vivekiyer.GAL.preferences.ACCOUNT_KEY</string>
+	<string name="KEY_ACCOUNT_SERVER">net.vivekiyer.GAL.preferences.ACCOUNT_SERVER</string>
+	<string name="ACTION_PREFS_ACCOUNT_ADD">net.vivekiyer.GAL.preferences.ACCOUNT_ADD</string>
+	<string name="ACTION_PREFS_ACCOUNT_EDIT">net.vivekiyer.GAL.preferences.ACCOUNT_EDIT</string>
+	<string name="ACTION_PREFS_ACCOUNT_DELETE">net.vivekiyer.GAL.preferences.ACCOUNT_DELETE</string>
+	<string name="ACTION_PREFS_ACCOUNTS">net.vivekiyer.GAL.preferences.PREFS_ACCOUNTS</string>
+	<string name="ACTION_PREFS_ABOUT">net.vivekiyer.GAL.preferences.PREFS_ABOUT</string>
+	<string name="KEY_CONTACT_LIST">net.vivekiyer.GAL.CONTACT_LIST</string>
+	<string name="KEY_CONTACT_INDEX">net.vivekiyer.GAL.KEY_CONTACT</string>
+	<string name="KEY_CONTACT">KEY_CONTACT</string>
 </resources>

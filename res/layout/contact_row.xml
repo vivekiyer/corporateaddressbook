@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<net.vivekiyer.GAL.ContactRowView xmlns:android="http://schemas.android.com/apk/res/android"
+<net.vivekiyer.GAL.view.ContactRowView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/RelativeLayout1"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -33,18 +33,18 @@
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/contactPicture"
             android:singleLine="true"
-            android:text="@string/dummyContactName" />
+            android:text="@string/dummyContactName"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/bottomtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/toptext"
-            android:layout_below="@+id/toptext"
             android:ellipsize="marquee"
             android:singleLine="true"
             android:text="@string/dummyRoleAndCompany"
-            android:textColor="@android:color/secondary_text_dark" />
+            android:layout_alignBottom="@+id/contactPicture"/>
     </RelativeLayout>
 
     <ImageView
@@ -56,4 +56,4 @@
         android:contentDescription="@string/icon"
         android:src="@drawable/selection_marker" />
 
-</net.vivekiyer.GAL.ContactRowView>
+</net.vivekiyer.GAL.view.ContactRowView>

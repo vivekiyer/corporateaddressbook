@@ -28,6 +28,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
+import net.vivekiyer.GAL.search.ActiveSyncManager;
+import net.vivekiyer.GAL.view.ContactRowView;
 
 import java.util.Collection;
 import java.util.List;
@@ -122,7 +124,7 @@ public class ContactListAdapter extends ArrayAdapter<Contact> {
 				qcb.setImageBitmap(bm);
 			} else {
 				if(Utility.isPreHoneycomb())
-					qcb.setImageResource(R.drawable.abs__menu_dropdown_panel_holo_light); // TODO: reset to proper image
+					qcb.setImageResource(R.drawable.ic_quick);
 				else
 					qcb.setImageToDefault();
 			}

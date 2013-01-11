@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contact_fragment"
-    android:name="net.vivekiyer.GAL.CorporateContactRecordFragment"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:layout="@layout/contact" >
+    tools:layout="@layout/contact"
+    class="net.vivekiyer.GAL.ContactFragment">
 </fragment>

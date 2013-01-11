@@ -53,7 +53,7 @@
 					android:resource="@xml/searchable"/>
 		</activity>
 		<activity
-				android:name=".CorporateContactRecord"
+				android:name=".ContactActivity"
 				android:configChanges="keyboardHidden|orientation"
 				android:label="@string/app_name">
 			<meta-data
@@ -61,7 +61,7 @@
 					android:value=".CorporateAddressBook"/>
 		</activity>
 		<activity
-				android:name=".Preferences.PrefsActivity"
+				android:name=".preferences.PrefsActivity"
 				android:label="@string/settings"
 				android:enabled="true">
 			<intent-filter>
@@ -72,7 +72,7 @@
 			</intent-filter>
 		</activity>
 		<activity
-				android:name=".Preferences.Configure"
+				android:name=".preferences.Configure"
 				android:label="@string/addAccount"
 				android:enabled="true"
 				android:theme="@style/LargeDialog">
@@ -85,12 +85,12 @@
 			</intent-filter>
 		</activity>
 		<activity
-				android:name=".Preferences.AddOrDeleteAccountActivity"
+				android:name=".preferences.AddOrDeleteAccountActivity"
 				android:label="@string/addAccount"
 				android:enabled="true"
 				android:theme="@android:style/Theme.NoDisplay">
 			<intent-filter>
-				<action android:name="net.vivekiyer.GAL.Preferences.ADD_SERVER"/>
+				<action android:name="net.vivekiyer.GAL.preferences.ADD_SERVER"/>
 				<category android:name="android.intent.category.PREFERENCE"/>
 			</intent-filter>
 		</activity>
@@ -100,7 +100,7 @@
 				android:authorities="net.vivekiyer.GAL.RecentGALSearchTermsProvider"/>
 
 		<service
-				android:name=".AccountAuthenticatorService"
+				android:name=".account.AccountAuthenticatorService"
 				android:exported="true"
 				android:process=":auth">
 			<intent-filter>

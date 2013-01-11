@@ -6,7 +6,7 @@
   <string name="contactPicture">Contact picture</string>
   <string name="EnterSearchTerm">Enter search term</string>
   <string name="unameLabel">User name</string>
-  <string name="domainUnameHint">DOMAIN\Username</string>
+  <string name="domainUnameHint">DOMAIN\\Username</string>
   <string name="passwordLabel">Password</string>
   <string name="passwordHint">Password</string>
   <string name="acceptAllSllText">Accept all SSL certificates</string>

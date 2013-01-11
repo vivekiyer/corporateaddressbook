@@ -28,6 +28,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import net.vivekiyer.GAL.search.ActiveSyncManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -106,7 +107,7 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 		/*
 		 * (non-Javadoc)
 		 * When the user clicks a particular entry in the list view launch the
-		 * CorporateContactRecord activity
+		 * ContactActivity activity
 		 * 
 		 * @see
 		 * android.widget.AdapterView.OnItemClickListener#onItemClick(android

@@ -37,9 +37,14 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
 import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
-import net.vivekiyer.GAL.Preferences.ConnectionChecker;
-import net.vivekiyer.GAL.Preferences.PrefsActivity;
+import net.vivekiyer.GAL.account.AccountManager;
+import net.vivekiyer.GAL.preferences.ConnectionChecker;
+import net.vivekiyer.GAL.preferences.PrefsActivity;
+import net.vivekiyer.GAL.search.ActiveSyncManager;
+import net.vivekiyer.GAL.search.GALSearch;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -54,19 +59,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 	private boolean listeningToAccountChanges = false;
 
-	class AccountResult {
-
-		public static final int OpCanceled = 1;
-
-		public static final int IOEx = 3;
-
-		public int error = 0;
-		public String accountName;
-		public String errorDescription;
-
-	}
-
-	// Object thatboolean performs all the ActiveSync magic
+	// Object that performs all the ActiveSync magic
 	private ActiveSyncManager activeSyncManager;
 
 	// Used to launch the preference pane
@@ -75,13 +68,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	// Used to launch the initial configuration pane
 	public static final int DISPLAY_CONFIGURATION_REQUEST = 2;
 
-	// Tags for finding and retrieving fragments
-	static final String mainTag = "R.id.main_fragment"; //$NON-NLS-1$
-
-	static final String contactTag = "R.id.contact_fragment"; //$NON-NLS-1$
-
 	static final String CONTACTS = "mContacts"; //$NON-NLS-1$
-
 	static final String SEARCH_TERM = "latestSearchTerm"; //$NON-NLS-1$
 	static final String SELECTED_CONTACT = "selectedContact"; //$NON-NLS-1$
 	static final String ONGOING_SEARCH = "search";  //$NON-NLS-1$
@@ -90,7 +77,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	static final String REQUERY = "requery_previous"; //NON-NLS
 
 	// Progress bar
-//	private ProgressDialog progressdialog;
+	//	private ProgressDialog progressdialog;
 	// Last search term
 	private String latestSearchTerm;
 	private View searchView;
@@ -105,6 +92,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	public static final int AuthEx = 2;
 
 	private boolean isPaused = false;
+	private boolean mDualPane;
 
 	/*
 	 * (non-Javadoc)
@@ -120,6 +108,12 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 		// Turn keystrokes into search
 		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
+
+		// Check to see if we have a frame in which to embed the details
+		// fragment directly in the containing UI.
+		View detailsFrame = findViewById(R.id.contact_fragment);
+		mDualPane = detailsFrame != null
+				&& detailsFrame.getVisibility() == View.VISIBLE;
 
 		initializeActionBar();
 
@@ -193,7 +187,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		super.onStart();
 
 		FragmentManager fm = getSupportFragmentManager();
-		CorporateContactRecordFragment details = (CorporateContactRecordFragment) fm
+		ContactPagerFragment details = (ContactPagerFragment) fm
 				.findFragmentById(R.id.contact_fragment);
 
 		if (details != null && details.isInLayout()) {
@@ -294,7 +288,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		latestSearchTerm = name;
 
 		search = new GALSearch(syncManager);
-		search.onSearchCompletedListener = this;
+		search.setOnSearchCompletedListener(this);
 		search.setClearResults(clearResults);
 		search.setStartWith(startWith);
 		search.execute(name);
@@ -465,7 +459,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
 				.findFragmentById(R.id.main_fragment);
 
-		CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
+		ContactPagerFragment details = (ContactPagerFragment) fragmentManager
 				.findFragmentById(R.id.contact_fragment);
 
 		if (details != null && details.isInLayout() && !this.isPaused) {
@@ -477,8 +471,8 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			//ft.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
 			ft.hide(details);
 			ft.commit();
-			fragmentManager.executePendingTransactions();
-			details.clear();
+			//fragmentManager.executePendingTransactions();
+			//details.clear();
 		}
 
 		list.setViewBackground(false);
@@ -515,34 +509,41 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 		final FragmentManager fragmentManager = getSupportFragmentManager();
 
-		CorporateContactRecordFragment details = (CorporateContactRecordFragment) fragmentManager
+		ContactPagerFragment details = (ContactPagerFragment) fragmentManager
 				.findFragmentById(R.id.contact_fragment);
 
+		final Bundle b = new Bundle();
+		assert(mContacts != null);
+		ArrayList<Contact> contacts = new ArrayList<Contact>(mContacts.values());
+		Collections.sort(contacts);
+		int contactIndex = contacts.indexOf(contact);
+		b.putInt(getString(R.string.KEY_CONTACT_INDEX), contactIndex);
+		b.putParcelableArrayList(getString(R.string.KEY_CONTACT_LIST), contacts);
+
 		if (details == null || !details.isInLayout()) {
-			final Bundle b = new Bundle();
-			b.putParcelable("net.vivekiyer.GAL", selectedContact); //$NON-NLS-1$
-
 			// Launch the activity
-			final Intent myIntent = new Intent();
-			myIntent.setClassName("net.vivekiyer.GAL", //$NON-NLS-1$
-					"net.vivekiyer.GAL.CorporateContactRecord"); //$NON-NLS-1$
-
+			final Intent myIntent = new Intent(this, ContactActivity.class);
 			myIntent.putExtras(b);
 			startActivity(myIntent);
+
 		} else {
 			CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
-					.findFragmentById(R.id.main_fragment);
+				.findFragmentById(R.id.main_fragment);
 			list.setViewBackground(true);
 
-			details.setContact(selectedContact);
+			details.update(b);
 
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 			// Below does not work since it resizes the accountKey fragment before anim starts,
 			// making it look rather weird. Better off w/o anims, unfortunately.
 			//ft.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
-			ft.show(details);
-			ft.commit();
+			ft.replace(R.id.contact_fragment, details)
+				.show(details)
+				.setTransition(
+					FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+				.commit();
+//			details.getView().setVisibility(View.VISIBLE);
 		}
 	}
 

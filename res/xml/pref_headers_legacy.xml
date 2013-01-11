@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 	<PreferenceCategory android:title="@string/accounts" android:key="@+id/server_heading">
-	   <!--Preference android:fragment="net.vivekiyer.GAL.Preferences.ServerPrefsFragment"
+	   <!--Preference android:fragment="net.vivekiyer.GAL.preferences.ServerPrefsFragment"
 	        android:icon="@drawable/server_icon"
 	        android:title="@string/server_settings"
 	        >
 	        <intent
 	            android:targetPackage="net.vivekiyer.GAL"
-	            android:targetClass="net.vivekiyer.GAL.Preferences.PrefsActivity"
+	            android:targetClass="net.vivekiyer.GAL.preferences.PrefsActivity"
 	            android:action="@string/ACTION_PREFS_ACCOUNTS"
 	            />
 	    </Preference-->
@@ -16,20 +16,20 @@
 			android:icon="@drawable/ic_content_new"
 			android:title="@string/addAccount">
 			<intent
-					android:targetClass="net.vivekiyer.GAL.Preferences.AddOrDeleteAccountActivity"
+					android:targetClass="net.vivekiyer.GAL.preferences.AddOrDeleteAccountActivity"
 					android:targetPackage="net.vivekiyer.GAL"
 					android:action="@string/ACTION_PREFS_ACCOUNT_ADD">
 			</intent>
 		</Preference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings">
-		<Preference android:fragment="net.vivekiyer.GAL.Preferences.PrefsFragment"
+		<Preference android:fragment="net.vivekiyer.GAL.preferences.PrefsFragment"
 		    android:icon="@drawable/info_icon"
 		    android:title="@string/about_app"
 		    >
 		    <intent
 		            android:targetPackage="net.vivekiyer.GAL"
-		            android:targetClass="net.vivekiyer.GAL.Preferences.PrefsActivity"
+		            android:targetClass="net.vivekiyer.GAL.preferences.PrefsActivity"
 		            android:action="@string/ACTION_PREFS_ABOUT"
 		            />
 		</Preference>

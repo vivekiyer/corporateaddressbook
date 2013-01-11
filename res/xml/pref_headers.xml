@@ -8,7 +8,7 @@
 			android:icon="@drawable/ic_content_new"
 			android:title="@string/addAccount">
 		<intent
-				android:targetClass="net.vivekiyer.GAL.Preferences.AddOrDeleteAccountActivity"
+				android:targetClass="net.vivekiyer.GAL.preferences.AddOrDeleteAccountActivity"
 				android:targetPackage="net.vivekiyer.GAL"
 				android:action="@string/ACTION_PREFS_ACCOUNT_ADD">
 		</intent>
@@ -17,7 +17,7 @@
 			android:id="@+id/settings_heading"
 			android:title="@string/settings"/>
 	<header
-			android:fragment="net.vivekiyer.GAL.Preferences.PrefsFragment"
+			android:fragment="net.vivekiyer.GAL.preferences.PrefsFragment"
 			android:icon="@drawable/ic_action_about"
 			android:title="@string/about_app"
 			>

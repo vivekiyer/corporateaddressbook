@@ -58,6 +58,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ActionBarSherlock" />
     <orderEntry type="module" module-name="devoquickaction" />
+    <orderEntry type="module" module-name="ViewPagerIndicator" />
   </component>
 </module>
 

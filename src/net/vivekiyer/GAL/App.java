@@ -8,6 +8,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import net.vivekiyer.GAL.account.AccountManager;
+import net.vivekiyer.GAL.search.GALSearch;
 
 import java.util.Hashtable;
 

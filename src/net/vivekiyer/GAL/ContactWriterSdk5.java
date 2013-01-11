@@ -28,6 +28,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.provider.ContactsContract;
 import android.util.Log;
+import net.vivekiyer.GAL.account.AccountAdapter;
+import net.vivekiyer.GAL.account.AccountData;
 
 /**
  * An implementation of {@link ContactWriter} that uses current Contacts API.

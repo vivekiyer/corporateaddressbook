@@ -21,8 +21,8 @@
         <!--android:title="Account Settings"-->
         <!--android:summary="Sync frequency, notifications, etc.">-->
         <!--&lt;!&ndash;  intent-->
-            <!--android:action="fm.last.android.activity.Preferences.ACCOUNT_SETUP"-->
+            <!--android:action="fm.last.android.activity.preferences.ACCOUNT_SETUP"-->
             <!--android:targetPackage="net.vivekiyer.GAL"-->
-            <!--android:targetClass="net.vivekiyer.GAL.activity.Preferences" / &ndash;&gt;-->
+            <!--android:targetClass="net.vivekiyer.GAL.activity.preferences" / &ndash;&gt;-->
     <!--</PreferenceScreen>-->
 </PreferenceScreen>

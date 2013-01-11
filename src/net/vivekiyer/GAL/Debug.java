@@ -13,7 +13,7 @@ import android.content.Intent;
 public class Debug {
 
 	// Set this to true to enable DEBUG messages
-	public static boolean Enabled = false; //true;
+	public static boolean Enabled = true; //true;
 	public static boolean Verbose = false; //true;
 
 	// StringBuffer that stores logs

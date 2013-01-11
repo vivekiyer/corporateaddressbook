@@ -9,9 +9,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.Interpolator;
 import android.widget.LinearLayout;
 import com.devoteam.quickaction.QuickActionItem;
 import net.vivekiyer.GAL.R;
@@ -25,13 +22,12 @@ import net.vivekiyer.GAL.R;
  */
 public class QuickActionView extends LinearLayout implements KeyEvent.Callback {
 	
-	private final Context mContext;
-	private final LayoutInflater mInflater;
+	private Context mContext = null;
+	private LayoutInflater mInflater = null;
 	
 	View contentView;
 	
 	private ViewGroup mTrack;
-	private Animation mTrackAnim;
 
 	public QuickActionView(Context context) {
 		this(context, null);
@@ -39,16 +35,36 @@ public class QuickActionView extends LinearLayout implements KeyEvent.Callback {
 	}
 	
 	public QuickActionView(Context context, AttributeSet attribs) {
-		this(context, attribs, 0);
+		super(context, attribs);
+		initialize(context);
 	}
 	
 	public QuickActionView(Context context, AttributeSet attribs, int defStyle) {
-		
 		super(context, attribs, defStyle);
-		
+
+		initialize(context);
+
+//		// Prepare track entrance animation
+//		mTrackAnim = AnimationUtils.loadAnimation(mContext, R.anim.quickaction);
+//		mTrackAnim.setInterpolator(new Interpolator() {
+//			public float getInterpolation(float t) {
+//				// Pushes past the target area, then snaps back into place.
+//				// Equation for graphing: 1.2-((x*1.6)-1.1)^2
+//				final float inner = (t * 1.55f) - 1.1f;
+//				return 1.2f - inner * inner;
+//			}
+//		});
+//
+//		if(isInEditMode()) {
+//			addItem(R.drawable.ic_menu_call, R.string.call, null);
+//			addItem(R.drawable.ic_menu_start_conversation, R.string.send_email, null);
+//		}
+	}
+
+	private void initialize(Context context) {
 		mContext = context;
 		mInflater = (LayoutInflater) mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-		
+
 //		setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.quickaction_slider_background));
 
 		contentView = mInflater.inflate(R.layout.quickactionview, null);
@@ -58,24 +74,8 @@ public class QuickActionView extends LinearLayout implements KeyEvent.Callback {
 		mTrack = (ViewGroup) contentView.findViewById(R.id.quickaction);
 
 		setFocusable(true);
-
-		// Prepare track entrance animation
-		mTrackAnim = AnimationUtils.loadAnimation(mContext, R.anim.quickaction);
-		mTrackAnim.setInterpolator(new Interpolator() {
-			public float getInterpolation(float t) {
-				// Pushes past the target area, then snaps back into place.
-				// Equation for graphing: 1.2-((x*1.6)-1.1)^2
-				final float inner = (t * 1.55f) - 1.1f;
-				return 1.2f - inner * inner;
-			}
-		});	
-		
-//		if(isInEditMode()) {
-//			addItem(R.drawable.ic_menu_call, R.string.call, null);
-//			addItem(R.drawable.ic_menu_start_conversation, R.string.send_email, null);
-//		}
 	}
-	
+
 	/**
 	 * Adds an item to the QuickActionWindow
 	 * 
@@ -109,7 +109,7 @@ public class QuickActionView extends LinearLayout implements KeyEvent.Callback {
 	 * Adds an item to the QuickActionWindow
 	 * 
 	 * @param drawable Icon to be shown
-	 * @param text Label resource id to be shown below the drawable
+	 * @param resid Label resource id to be shown below the drawable
 	 * @param l Definition for the callback to be invoked when the view is cliked
 	 */
 	public void addItem(Drawable drawable, int resid, OnClickListener l) {
@@ -120,7 +120,7 @@ public class QuickActionView extends LinearLayout implements KeyEvent.Callback {
 	 * Adds an item to the QuickActionWindow
 	 * 
 	 * @param drawable Icon resource id to be shown
-	 * @param text Label resource id to be shown below the drawable
+	 * @param resid Label resource id to be shown below the drawable
 	 * @param l Definition for the callback to be invoked when the view is cliked
 	 */
 	public void addItem(int drawable, int resid, OnClickListener l) {

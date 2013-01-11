@@ -7,14 +7,14 @@
 				android:id="@+id/account_edit"
 				android:key="@string/ACCOUNT_TYPE">
 			<intent
-					android:targetClass="net.vivekiyer.GAL.Preferences.Configure"
+					android:targetClass="net.vivekiyer.GAL.preferences.Configure"
 					android:targetPackage="net.vivekiyer.GAL"
 					android:action="@string/ACTION_PREFS_ACCOUNT_EDIT">
 			</intent>
 		</Preference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings">
-		<net.vivekiyer.GAL.Preferences.SummarizedEditTextPreference
+		<net.vivekiyer.GAL.preferences.SummarizedEditTextPreference
 				android:dialogTitle="@string/maxNumberOfResults"
 				android:key="@string/PREFS_KEY_MAX_HITS"
 				android:title="@string/maxNumberOfResults"
@@ -30,7 +30,7 @@
 				android:key="@string/ACTION_PREFS_ACCOUNT_DELETE"
 				android:title="@string/delete_account">
 			<intent
-					android:targetClass="net.vivekiyer.GAL.Preferences.AddOrDeleteAccountActivity"
+					android:targetClass="net.vivekiyer.GAL.preferences.AddOrDeleteAccountActivity"
 					android:targetPackage="net.vivekiyer.GAL"
 					android:action="@string/ACTION_PREFS_ACCOUNT_DELETE">
 			</intent>
