@@ -10,11 +10,11 @@
         />
 </shape-->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient
-        android:angle="180"
-        android:centerX="0.015"
-        android:startColor="@color/holo_blue_light_shaded"
-        android:centerColor="@color/holo_blue_light"
-        android:endColor="@color/holo_blue_light"
-        android:type="linear" />
+	<gradient
+			android:angle="180"
+			android:centerX="0.010"
+			android:startColor="@color/holo_blue_light_shaded"
+			android:centerColor="@color/holo_blue_light"
+			android:endColor="@color/holo_blue_light"
+			android:type="linear"/>
 </shape>

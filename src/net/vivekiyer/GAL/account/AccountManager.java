@@ -29,7 +29,7 @@ import java.util.Iterator;
 public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAccountsUpdateListener {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -52,7 +52,7 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 
 	public void setDefaultAccount(ActiveSyncManager defaultAccount) {
 		this.defaultAccount = defaultAccount;
-		if(defaultAccount != null) {
+		if (defaultAccount != null) {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getInstance());
 			prefs.edit().putString(App.getInstance().getString(R.string.PREFS_KEY_DEFAULT_ACCOUNT), defaultAccount.getAccountKey()).commit();
 		}
@@ -68,11 +68,11 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 
 	public boolean Initialize(Activity activity) {
 		if (!isInitialized) {
-			if(loadPreferences(activity)) {
+			if (loadPreferences(activity)) {
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getInstance());
 				String defaultAccount = prefs.getString(App.getInstance().getString(R.string.PREFS_KEY_DEFAULT_ACCOUNT), null);
-				for(ActiveSyncManager syncManager : this) {
-					if(syncManager.getAccountKey().equals(defaultAccount))
+				for (ActiveSyncManager syncManager : this) {
+					if (syncManager.getAccountKey().equals(defaultAccount))
 						this.defaultAccount = syncManager;
 				}
 				isInitialized = true;
@@ -112,7 +112,7 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 
 		// Initialize preferences and the corresponding ActiveSyncManager(s)
 		final android.accounts.AccountManager am = android.accounts.AccountManager.get(context);
-		if(!listeningToAccountUpdates) {
+		if (!listeningToAccountUpdates) {
 			am.addOnAccountsUpdatedListener(this, null, false);
 			listeningToAccountUpdates = true;
 		}
@@ -167,29 +167,28 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 		Boolean needsNotification = false;
 		for (Account account : accounts) {
 			Boolean changeHandled = false;
-			if(account.type.equals(getString(R.string.ACCOUNT_TYPE))) {
+			if (account.type.equals(getString(R.string.ACCOUNT_TYPE))) {
 				String accountKey = am.getUserData(account, context.getString(R.string.KEY_ACCOUNT_KEY));
 
 				if (accountKey == null || accountKey.length() == 0) {
-					if(Debug.Enabled)
+					if (Debug.Enabled)
 						accountKey = am.getUserData(account, "net.vivekiyer.GAL.Preferences.ACCOUNT_KEY");
 					else
 						throw new RuntimeException("Unknown account key");
 				}
 
-				for(ActiveSyncManager syncManager : this) {
-					if(syncManager.getAccountKey().equals(accountKey)) {
+				for (ActiveSyncManager syncManager : this) {
+					if (syncManager.getAccountKey().equals(accountKey)) {
 						changeHandled = true;
-						if(!syncManager.reloadPreferences()) {
+						if (!syncManager.reloadPreferences()) {
 							remove(syncManager);
 							break;
 						}
 					}
 				}
-				if(!changeHandled) {
+				if (!changeHandled) {
 					ActiveSyncManager activeSyncManager = new ActiveSyncManager();
-					if(activeSyncManager.loadPreferences(accountKey))
-					{
+					if (activeSyncManager.loadPreferences(accountKey)) {
 						changeHandled = true;
 						add(activeSyncManager);
 					}
@@ -199,21 +198,20 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 			needsNotification |= changeHandled;
 		}
 		Iterator<ActiveSyncManager> it = this.iterator();
-		while(it.hasNext())
-		{
+		while (it.hasNext()) {
 			ActiveSyncManager syncManager = it.next();
 			Boolean found = false;
-			for(Account account : accounts) {
-				if(account.type.equals(getString(R.string.ACCOUNT_TYPE))) {
+			for (Account account : accounts) {
+				if (account.type.equals(getString(R.string.ACCOUNT_TYPE))) {
 					String accountKey = am.getUserData(account, context.getString(R.string.KEY_ACCOUNT_KEY));
-					if(syncManager.getAccountKey().equals(accountKey))
+					if (syncManager.getAccountKey().equals(accountKey))
 						found = true;
 				}
 			}
-			if(!found)
+			if (!found)
 				it.remove();
 		}
-		if(needsNotification && triggerListeners)
+		if (needsNotification && triggerListeners)
 			notifyChange();
 	}
 
@@ -242,12 +240,13 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 				editor.putString(getString(R.string.PREFS_KEY_POLICY_KEY_PREFERENCE),
 						syncManager.getPolicyKey());
 				editor.putBoolean(getString(R.string.PREFS_KEY_SUCCESSFULLY_CONNECTED),
-						true);
+						false);
 
 				// Commit the edits!
 				editor.commit();
 
-				if(!App.isDebuggable()) {
+				if (!App.isDebuggable()) {
+					// TODO: add flag for setting migrated
 					//existingPrefs.edit().clear().apply();
 				}
 
@@ -259,10 +258,12 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 				am.setUserData(account, getString(R.string.KEY_ACCOUNT_KEY), accountKey);
 
 				// Make sure we only do this once for non-debug builds
-				if(!App.isDebuggable())
+				if (!App.isDebuggable())
 					existingPrefs.edit().putBoolean(getString(R.string.PREFS_KEY_ALREADY_MIGRATED), true).commit();
 
-				loadPreferences(accountKey);
+				if (!loadPreferences(accountKey))
+//					editAccount(am, parentActivity);
+					addAccount(am, parentActivity);
 			} catch (Exception e) {
 				addAccount(am, parentActivity);
 			}
@@ -300,8 +301,13 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 			}
 		};
 
-		/*AccountManagerFuture<Bundle> future =*/ acc.addAccount(getString(R.string.ACCOUNT_TYPE), null, null, null, activity, callback, null);
+		/*AccountManagerFuture<Bundle> future =*/
+		acc.addAccount(getString(R.string.ACCOUNT_TYPE), null, null, null, activity, callback, null);
 
+	}
+
+	private void editAccount(String accountKey) {
+		throw new RuntimeException("editAccount() not implemented");
 	}
 
 	/**
@@ -332,8 +338,8 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 	}
 
 	public ActiveSyncManager get(String accountKey) {
-		for(ActiveSyncManager a : this) {
-			if(a.getAccountKey().equals(accountKey))
+		for (ActiveSyncManager a : this) {
+			if (a.getAccountKey().equals(accountKey))
 				return a;
 		}
 		return null;

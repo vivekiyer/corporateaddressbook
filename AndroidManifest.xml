@@ -111,7 +111,7 @@
 					android:resource="@xml/authenticator"/>
 		</service>
 		<service
-				android:name=".ContactsSyncAdapterService"
+				android:name=".account.ContactsSyncAdapterService"
 				android:exported="true"
 				android:process=":contacts">
 			<intent-filter>

@@ -28,7 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -58,7 +58,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	private String mActiveSyncVersion = ""; //$NON-NLS-1$
 	private String mDeviceId;
 	private String accountKey = null;
-	private HashMap<String, Contact> mResults;
+	private ArrayList<Contact> mResults;
 	private int requestStatus = Parser.STATUS_NOT_SET;
 
 	public static final int ERROR_UNABLE_TO_REPROVISION = 449;
@@ -164,7 +164,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 		this.mShowPictures = mShowPictures;
 	}
 
-	public HashMap<String, Contact> getResults() {
+	public ArrayList<Contact> getResults() {
 		return mResults;
 	}
 
@@ -224,7 +224,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 
 	@Override
 	public boolean equals(Object o) {
-		if(o instanceof ActiveSyncManager) {
+		if (o instanceof ActiveSyncManager) {
 			return getAccountKey() == null ? false : getAccountKey().equals(((ActiveSyncManager) o).getAccountKey());
 		}
 		return false;
@@ -311,8 +311,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	}
 
 	/**
-	 *
-	 * @param query The name to search the GAL for
+	 * @param query     The name to search the GAL for
 	 * @param startWith
 	 * @return The status code returned from the Exchange server
 	 * @throws Exception This method searches the GAL on the Exchange server
@@ -596,7 +595,8 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 		if (accountKey == null) {
 			accountKey = mUsername.contains("@") ?
 					mUsername :
-					String.format("%1$s@%2$s", mUsername, mServerName);		} //NON-NLS
+					String.format("%1$s@%2$s", mUsername, mServerName);
+		} //NON-NLS
 		return accountKey;
 	}
 

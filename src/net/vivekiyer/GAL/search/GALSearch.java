@@ -2,19 +2,21 @@ package net.vivekiyer.GAL.search;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import net.vivekiyer.GAL.*;
+import net.vivekiyer.GAL.App;
+import net.vivekiyer.GAL.Contact;
+import net.vivekiyer.GAL.Debug;
+import net.vivekiyer.GAL.R;
 import net.vivekiyer.GAL.preferences.ConnectionChecker;
 import org.apache.http.conn.ConnectTimeoutException;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import static net.vivekiyer.GAL.preferences.ConnectionChecker.*;
 
-public class GALSearch extends AsyncTask<String, Void, Boolean>
-{
-	public interface OnSearchCompletedListener{
+public class GALSearch extends AsyncTask<String, Void, Boolean> {
+	public interface OnSearchCompletedListener {
 		void onSearchCompleted(int result, GALSearch search);
 	}
 
@@ -27,7 +29,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	private String errorDetail = ""; //$NON-NLS-1$
 	private volatile OnSearchCompletedListener onSearchCompletedListener;
 
-	HashMap<String,Contact> mContacts = null;
+	ArrayList<Contact> mContacts = null;
 
 	public void setStartWith(int startWith) {
 		this.startWith = startWith;
@@ -41,26 +43,31 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 		this.clearResults = clearResults;
 	}
 
-	public HashMap<String,Contact> getContacts() {
+	public ArrayList<Contact> getContacts() {
 		return mContacts;
 	}
+
 	public String getSearchTerm() {
 		return activeSyncManager.getSearchTerm();
 	}
+
 	public OnSearchCompletedListener getOnSearchCompletedListener() {
 		synchronized (this) {
 			return onSearchCompletedListener;
 		}
 	}
+
 	public void setOnSearchCompletedListener(
 			OnSearchCompletedListener onSearchCompletedListener) {
 		synchronized (this) {
 			this.onSearchCompletedListener = onSearchCompletedListener;
 		}
 	}
+
 	public GALSearch(ActiveSyncManager activeSyncManager) {
 		this.activeSyncManager = activeSyncManager;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -71,63 +78,63 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	@Override
 	protected Boolean doInBackground(String... params) {
 		try {
-			if(params.length > 1)
+			if (params.length > 1)
 				startWith = Integer.parseInt(params[1]);
 
 			int statusCode = 0;
 
-				do {
-					if(isCancelled())
+			do {
+				if (isCancelled())
+					return false;
+				statusCode = activeSyncManager.searchGAL(params[0], startWith);
+				if (isCancelled())
+					return false;
+				switch (statusCode) {
+					case 200:
+						// All went ok, get the results
+						switch (activeSyncManager.getRequestStatus()) {
+							case Parser.STATUS_TOO_MANY_DEVICES:
+								errorCode = Parser.STATUS_TOO_MANY_DEVICES;
+								errorMesg = App.getInstance().getString(R.string.too_many_device_partnerships_title);
+								errorDetail = App.getInstance().getString(R.string.too_many_device_partnerships_detail);
+								return false;
+							case ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION:
+								errorCode = ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION;
+								errorMesg = App.getInstance().getString(R.string.authentication_failed_title);
+								errorDetail = App.getInstance().getString(R.string.please_check_settings);
+							case Parser.STATUS_OK:
+								break;
+							default:
+								errorCode = activeSyncManager.getRequestStatus();
+								errorMesg = App.getInstance().getString(R.string.unhandled_error, activeSyncManager.getRequestStatus());
+								errorDetail = App.getInstance().getString(R.string.unhandled_error_occured);
+								return false;
+						}
+						mContacts = activeSyncManager.getResults();
+						break;
+					case 449: // RETRY AFTER PROVISIONING
+						// Looks like we need to provision again
+						activeSyncManager.provisionDevice();
+						break;
+					case 401: // UNAUTHORIZED
+						// Looks like the password expired
+						errorCode = 401;
+						errorMesg = App.getInstance().getString(R.string.authentication_failed_title);
+						errorDetail = App.getInstance().getString(R.string.authentication_failed_detail);
 						return false;
-					statusCode = activeSyncManager.searchGAL(params[0], startWith);
-					if(isCancelled())
+					case 403: // FORBIDDEN
+						// Device ID not accepted by server
+						errorCode = 403;
+						errorMesg = App.getInstance().getString(R.string.forbidden_by_server_title);
+						errorDetail = App.getInstance().getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
 						return false;
-					switch (statusCode) {
-						case 200:
-							// All went ok, get the results
-							switch(activeSyncManager.getRequestStatus()) {
-								case Parser.STATUS_TOO_MANY_DEVICES:
-									errorCode = Parser.STATUS_TOO_MANY_DEVICES;
-									errorMesg = App.getInstance().getString(R.string.too_many_device_partnerships_title);
-									errorDetail = App.getInstance().getString(R.string.too_many_device_partnerships_detail);
-									return false;
-								case ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION:
-									errorCode = ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION;
-									errorMesg = App.getInstance().getString(R.string.authentication_failed_title);
-									errorDetail = App.getInstance().getString(R.string.please_check_settings);
-								case Parser.STATUS_OK:
-									break;
-								default:
-									errorCode = activeSyncManager.getRequestStatus();
-									errorMesg = App.getInstance().getString(R.string.unhandled_error, activeSyncManager.getRequestStatus());
-									errorDetail = App.getInstance().getString(R.string.unhandled_error_occured);
-									return false;
-							}
-							mContacts = activeSyncManager.getResults();
-							break;
-						case 449: // RETRY AFTER PROVISIONING
-							// Looks like we need to provision again
-							activeSyncManager.provisionDevice();
-							break;
-						case 401: // UNAUTHORIZED
-							// Looks like the password expired
-							errorCode = 401;
-							errorMesg = App.getInstance().getString(R.string.authentication_failed_title);
-							errorDetail = App.getInstance().getString(R.string.authentication_failed_detail);
-							return false;
-						case 403: // FORBIDDEN
-							// Device ID not accepted by server
-							errorCode = 403;
-							errorMesg = App.getInstance().getString(R.string.forbidden_by_server_title);
-							errorDetail = App.getInstance().getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
-							return false;
-						default:
-							errorCode = statusCode;
-							errorMesg = App.getInstance().getString(R.string.connection_failed_title);
-							errorDetail = App.getInstance().getString(R.string.connection_failed_detail, statusCode);
-							return false;
-					}
-				} while (statusCode != 200);
+					default:
+						errorCode = statusCode;
+						errorMesg = App.getInstance().getString(R.string.connection_failed_title);
+						errorDetail = App.getInstance().getString(R.string.connection_failed_detail, statusCode);
+						return false;
+				}
+			} while (statusCode != 200);
 		} catch (final SocketTimeoutException e) {
 			errorCode = TIMEOUT;
 			errorMesg = App.getInstance().getString(R.string.timeout_title);
@@ -163,12 +170,15 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	public int getErrorCode() {
 		return errorCode;
 	}
+
 	public String getErrorMesg() {
 		return errorMesg;
 	}
+
 	public String getErrorDetail() {
 		return errorDetail;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -179,7 +189,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean>
 	@Override
 	protected void onPostExecute(Boolean result) {
 		super.onPostExecute(result);
-		if(getOnSearchCompletedListener() != null)
+		if (getOnSearchCompletedListener() != null)
 			getOnSearchCompletedListener().onSearchCompleted(result ? Activity.RESULT_OK : errorCode, this);
 	}
 

@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.SearchView;
@@ -36,7 +37,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
-import net.vivekiyer.GAL.CorporateAddressBookFragment.ContactListListener;
+import net.vivekiyer.GAL.ContactListFragment.ContactListListener;
 import net.vivekiyer.GAL.account.AccountManager;
 import net.vivekiyer.GAL.preferences.ConnectionChecker;
 import net.vivekiyer.GAL.preferences.PrefsActivity;
@@ -45,7 +46,6 @@ import net.vivekiyer.GAL.search.GALSearch;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -55,7 +55,7 @@ import java.util.Set;
  */
 public class CorporateAddressBook extends SherlockFragmentActivity
 		implements ContactListListener, GALSearch.OnSearchCompletedListener, OnChoiceDialogOptionClickListener,
-		ActionBar.OnNavigationListener, AccountManager.OnAccountsChangedListener {
+		ActionBar.OnNavigationListener, AccountManager.OnAccountsChangedListener, ViewPager.OnPageChangeListener {
 
 	private boolean listeningToAccountChanges = false;
 
@@ -85,7 +85,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	// TAG used for logging
 
 	// Stores the list of contacts returned
-	private HashMap<String, Contact> mContacts;
+	private ArrayList<Contact> mContacts;
 	private Contact selectedContact;
 	private GALSearch search;
 
@@ -93,6 +93,9 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 	private boolean isPaused = false;
 	private boolean mDualPane;
+	private ContactListFragment contactsFragment;
+	private ContactPagerFragment detailsFragment;
+	private boolean isUpdating = false;
 
 	/*
 	 * (non-Javadoc)
@@ -131,7 +134,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			listeningToAccountChanges = true;
 		}
 
-		if(!App.getAccounts().Initialize(this))
+		if (!App.getAccounts().Initialize(this))
 			return;
 		final ActionBar actionBar = getSupportActionBar();
 
@@ -187,16 +190,16 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		super.onStart();
 
 		FragmentManager fm = getSupportFragmentManager();
-		ContactPagerFragment details = (ContactPagerFragment) fm
+		detailsFragment = (ContactPagerFragment) fm
 				.findFragmentById(R.id.contact_fragment);
+		contactsFragment = (ContactListFragment) fm
+				.findFragmentById(R.id.main_fragment);
 
-		if (details != null && details.isInLayout()) {
-			CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) fm
-					.findFragmentById(R.id.main_fragment);
-			contacts.setIsSelectable(true);
-			contacts.setViewBackground(false);
+		if (detailsFragment != null && detailsFragment.isInLayout()) {
+			contactsFragment.setIsSelectable(true);
+			contactsFragment.setViewBackground(false);
 			FragmentTransaction ft = fm.beginTransaction();
-			ft.hide(details);
+			ft.hide(detailsFragment);
 			ft.commit();
 		}
 
@@ -215,7 +218,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		super.onPostCreate(savedInstanceState);
 
 		if (savedInstanceState != null && savedInstanceState.containsKey(CONTACTS)) {
-			mContacts = (HashMap<String, Contact>) savedInstanceState.get(CONTACTS);
+			mContacts = (ArrayList<Contact>) savedInstanceState.get(CONTACTS);
 			String latestSearchTerm = savedInstanceState.getString(SEARCH_TERM);
 			selectedContact = (Contact) savedInstanceState.get(SELECTED_CONTACT);
 			displaySearchResult(mContacts, latestSearchTerm);
@@ -228,8 +231,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 				if (search != null) {
 					search.setOnSearchCompletedListener(this);
 					App.taskManager.remove(searchHash);
-					CorporateAddressBookFragment frag = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
-					frag.setHeader(getString(R.string.retrievingResults), true);
+					contactsFragment.setHeader(getString(R.string.retrievingResults), true);
 				}
 			}
 		}
@@ -248,9 +250,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	}
 
 	private void selectContact(Contact selectedContact) {
-		CorporateAddressBookFragment contacts = (CorporateAddressBookFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.main_fragment);
-		contacts.setSelectedContact(selectedContact);
+		contactsFragment.setSelectedContact(selectedContact);
 		onContactSelected(selectedContact);
 	}
 
@@ -276,8 +276,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	private void performSearch(String name, ActiveSyncManager syncManager, int startWith, boolean clearResults) {
 
 		if (clearResults) {
-			CorporateAddressBookFragment frag = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
-			frag.setHeader(getString(R.string.retrievingResults), true);
+			contactsFragment.setHeader(getString(R.string.retrievingResults), true);
 		}
 
 		// Save search in recent list
@@ -294,12 +293,11 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		search.execute(name);
 	}
 
-	// Cancels the current search if there is one and return true if an actual, ongoing search was canselled
+	// Cancels the current search if there is one and return true if an actual, ongoing search was cancelled
 	boolean cancelSearch() {
 		if (this.search == null || !search.getStatus().equals(AsyncTask.Status.RUNNING))
 			return false;
-		CorporateAddressBookFragment fragment = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
-		fragment.resetHeader();
+		contactsFragment.resetHeader();
 		search.cancel(false);
 		search = null;
 		return true;
@@ -411,35 +409,35 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	private void addSearchResults(HashMap<String, Contact> contacts) {
-		mContacts.putAll(contacts);
+	private void addSearchResults(ArrayList<Contact> contacts) {
+		Collections.sort(contacts);
 
 		final FragmentManager fragmentManager = getSupportFragmentManager();
 
-		CorporateAddressBookFragment listFragment = (CorporateAddressBookFragment) fragmentManager
-				.findFragmentById(R.id.main_fragment);
-		if (listFragment == null) {
+		if (contactsFragment == null) {
 			Debug.Log("List fragment missing from main activity, discarding search result"); //$NON-NLS-1$
 			return;
 		}
-		listFragment.addResult(contacts, activeSyncManager);
+		contactsFragment.addResult(contacts, activeSyncManager);
+		if (detailsFragment.isVisible()) {
+			// To force redraw/update pager to new size of contact list
+			detailsFragment.update(-1, null);
+		}
 	}
 
 	@TargetApi(11)
-	private void displaySearchResult(HashMap<String, Contact> contacts, String searchTerm) {
+	private void displaySearchResult(ArrayList<Contact> contacts, String searchTerm) {
 
 		this.mContacts = contacts;
 		this.latestSearchTerm = searchTerm;
 
 		final FragmentManager fragmentManager = getSupportFragmentManager();
 
-		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
-				.findFragmentById(R.id.main_fragment);
-		if (list == null) {
+		if (contactsFragment == null) {
 			Debug.Log("List fragment missing from main activity, discarding search result"); //$NON-NLS-1$
 			return;
 		}
-		list.displayResult(mContacts, latestSearchTerm, this.activeSyncManager);
+		contactsFragment.displayResult(mContacts, latestSearchTerm, this.activeSyncManager);
 
 		resetAndHideDetails(fragmentManager);
 		if (searchView != null) {
@@ -451,31 +449,25 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 				throw new RuntimeException("Unknown SearchView type"); //$NON-NLS-1$
 			}
 		}
-		list.getView().requestFocus();
+		contactsFragment.getView().requestFocus();
 	}
 
 	private void resetAndHideDetails(final FragmentManager fragmentManager) {
 
-		CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
-				.findFragmentById(R.id.main_fragment);
-
-		ContactPagerFragment details = (ContactPagerFragment) fragmentManager
-				.findFragmentById(R.id.contact_fragment);
-
-		if (details != null && details.isInLayout() && !this.isPaused) {
+		if (detailsFragment != null && detailsFragment.isInLayout() && !this.isPaused) {
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
 
 			// Below does not work since it clears the detail fragment before anim starts,
 			// making it look rather weird. Better off w/o anims, unfortunately.
 			//ft.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
-			ft.hide(details);
+			ft.hide(detailsFragment);
 			ft.commit();
 			//fragmentManager.executePendingTransactions();
 			//details.clear();
 		}
 
-		list.setViewBackground(false);
+		contactsFragment.setViewBackground(false);
 		selectedContact = null;
 	}
 
@@ -509,41 +501,37 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 		final FragmentManager fragmentManager = getSupportFragmentManager();
 
-		ContactPagerFragment details = (ContactPagerFragment) fragmentManager
-				.findFragmentById(R.id.contact_fragment);
-
 		final Bundle b = new Bundle();
-		assert(mContacts != null);
-		ArrayList<Contact> contacts = new ArrayList<Contact>(mContacts.values());
-		Collections.sort(contacts);
-		int contactIndex = contacts.indexOf(contact);
+		assert (mContacts != null);
+		int contactIndex = mContacts.indexOf(contact);
 		b.putInt(getString(R.string.KEY_CONTACT_INDEX), contactIndex);
-		b.putParcelableArrayList(getString(R.string.KEY_CONTACT_LIST), contacts);
+		b.putParcelableArrayList(getString(R.string.KEY_CONTACT_LIST), mContacts);
 
-		if (details == null || !details.isInLayout()) {
+		if (detailsFragment == null || !detailsFragment.isInLayout()) {
 			// Launch the activity
 			final Intent myIntent = new Intent(this, ContactActivity.class);
 			myIntent.putExtras(b);
 			startActivity(myIntent);
 
 		} else {
-			CorporateAddressBookFragment list = (CorporateAddressBookFragment) fragmentManager
-				.findFragmentById(R.id.main_fragment);
-			list.setViewBackground(true);
+			isUpdating = true;
+			detailsFragment.update(mContacts.indexOf(contact), mContacts);
+			isUpdating = false;
 
-			details.update(b);
-
-			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-			//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-			// Below does not work since it resizes the accountKey fragment before anim starts,
-			// making it look rather weird. Better off w/o anims, unfortunately.
-			//ft.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
-			ft.replace(R.id.contact_fragment, details)
-				.show(details)
-				.setTransition(
-					FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-				.commit();
-//			details.getView().setVisibility(View.VISIBLE);
+			if (!detailsFragment.isVisible()) {
+				contactsFragment.setViewBackground(true);
+				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+				// Below does not work since it resizes the accountKey fragment before anim starts,
+				// making it look rather weird. Better off w/o anims, unfortunately.
+				//ft.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
+				ft.replace(R.id.contact_fragment, detailsFragment)
+						.show(detailsFragment)
+						.setTransition(
+								FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+						.commit();
+				//			details.getView().setVisibility(View.VISIBLE);
+			}
 		}
 	}
 
@@ -590,8 +578,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			return;
 		}
 
-		CorporateAddressBookFragment fragment = (CorporateAddressBookFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
-		fragment.resetHeader();
+		contactsFragment.resetHeader();
 
 		ChoiceDialogFragment dialogFragment;
 		String title = search.getErrorMesg();
@@ -644,5 +631,22 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	@Override
 	public void onSearchCanceled() {
 		cancelSearch();
+	}
+
+	@Override
+	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		if (!isUpdating) {
+			contactsFragment.setSelectedContact(mContacts.get(position));
+		}
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int state) {
+		//To change body of implemented methods use File | Settings | File Templates.
 	}
 }

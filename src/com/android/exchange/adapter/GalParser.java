@@ -15,12 +15,12 @@
 
 package com.android.exchange.adapter;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-
 import net.vivekiyer.GAL.Contact;
 import net.vivekiyer.GAL.Debug;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * Parse the accountName of a GAL command.
@@ -28,20 +28,20 @@ import net.vivekiyer.GAL.Debug;
 public class GalParser extends Parser {
 
 	private int numResults = 0;
-	
-	private java.util.HashMap<String,Contact> contacts;
-	
-	public int getNumResults(){
+
+	private ArrayList<Contact> contacts;
+
+	public int getNumResults() {
 		return numResults;
 	}
 
-	public HashMap<String, Contact> getResults(){
+	public ArrayList<Contact> getResults() {
 		return contacts;
 	}
-	
+
 	public GalParser(InputStream in) throws IOException {
 		super(in);
-		contacts = new java.util.HashMap<String, Contact>();
+		contacts = new java.util.ArrayList<Contact>();
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class GalParser extends Parser {
 		while (nextTag(START_DOCUMENT) != END_DOCUMENT) {
 			if (tag == Tags.SEARCH_RESPONSE) {
 				parseResponse();
-			} else if (tag == Tags.SEARCH_STATUS){
+			} else if (tag == Tags.SEARCH_STATUS) {
 				status = getValueInt();
 				Debug.Log("GAL search status: " + status); //$NON-NLS-1$
 			} else {
@@ -68,57 +68,57 @@ public class GalParser extends Parser {
 	public void parseProperties() throws IOException {
 		Contact contact = new Contact();
 		while (nextTag(Tags.SEARCH_STORE) != END) {
-			switch(tag) {
-			// Display name and email address use both legacy and new code for galData
-			case Tags.GAL_DISPLAY_NAME: 
-				contact.setDisplayName(getValue());
-				break;
-			case Tags.GAL_EMAIL_ADDRESS:
-				contact.add("EmailAddress",getValue()); //$NON-NLS-1$
-				break;
-			case Tags.GAL_PHONE:
-				contact.add("Phone",getValue()); //$NON-NLS-1$
-				break;
-			case Tags.GAL_OFFICE:
-				contact.add("Office",getValue()); //$NON-NLS-1$
-				break;
-			case Tags.GAL_TITLE:
-				contact.add("Title",getValue()); //$NON-NLS-1$
-				break;
-			case Tags.GAL_COMPANY:
-				contact.add("Company",getValue()); //$NON-NLS-1$
-				break;
-			case Tags.GAL_ALIAS:
-				contact.add("Alias",getValue()); //$NON-NLS-1$
-				break;
-			case Tags.GAL_FIRST_NAME:
-				contact.add("FirstName",getValue()); //$NON-NLS-1$
-				break;
-			case Tags.GAL_LAST_NAME:
-				contact.add("LastName",getValue()); //$NON-NLS-1$
-				break;
-			case Tags.GAL_HOME_PHONE:
-				contact.add("HomePhone",getValue()); //$NON-NLS-1$
-				break;
-			case Tags.GAL_MOBILE_PHONE:
-				contact.add("MobilePhone",getValue()); //$NON-NLS-1$
-				break;
-			case Tags.GAL_PICTURE:
-				parsePicture(contact);
-				break;
-			default:
-				Debug.Log(String.format("Skipping tag '%1$s', value '%2$s'", //$NON-NLS-1$
-						Tags.pages[Tags.GAL][tag - Tags.GAL_PAGE -4], getValue()));
-				Debug.Log(getValue());
-				skipTag();
+			switch (tag) {
+				// Display name and email address use both legacy and new code for galData
+				case Tags.GAL_DISPLAY_NAME:
+					contact.setDisplayName(getValue());
+					break;
+				case Tags.GAL_EMAIL_ADDRESS:
+					contact.add("EmailAddress", getValue()); //$NON-NLS-1$
+					break;
+				case Tags.GAL_PHONE:
+					contact.add("Phone", getValue()); //$NON-NLS-1$
+					break;
+				case Tags.GAL_OFFICE:
+					contact.add("Office", getValue()); //$NON-NLS-1$
+					break;
+				case Tags.GAL_TITLE:
+					contact.add("Title", getValue()); //$NON-NLS-1$
+					break;
+				case Tags.GAL_COMPANY:
+					contact.add("Company", getValue()); //$NON-NLS-1$
+					break;
+				case Tags.GAL_ALIAS:
+					contact.add("Alias", getValue()); //$NON-NLS-1$
+					break;
+				case Tags.GAL_FIRST_NAME:
+					contact.add("FirstName", getValue()); //$NON-NLS-1$
+					break;
+				case Tags.GAL_LAST_NAME:
+					contact.add("LastName", getValue()); //$NON-NLS-1$
+					break;
+				case Tags.GAL_HOME_PHONE:
+					contact.add("HomePhone", getValue()); //$NON-NLS-1$
+					break;
+				case Tags.GAL_MOBILE_PHONE:
+					contact.add("MobilePhone", getValue()); //$NON-NLS-1$
+					break;
+				case Tags.GAL_PICTURE:
+					parsePicture(contact);
+					break;
+				default:
+					Debug.Log(String.format("Skipping tag '%1$s', value '%2$s'", //$NON-NLS-1$
+							Tags.pages[Tags.GAL][tag - Tags.GAL_PAGE - 4], getValue()));
+					Debug.Log(getValue());
+					skipTag();
 			}
 		}
-		contacts.put(contact.getDisplayName(), contact);
+		contacts.add(contact);
 	}
 
 	public void parsePicture(Contact contact) throws IOException {
 		while (nextTag(Tags.GAL_PICTURE) != END) {
-			if(tag == Tags.GAL_STATUS) {
+			if (tag == Tags.GAL_STATUS) {
 				Debug.Log("Picture status: " + getValue()); //$NON-NLS-1$
 			} else if (tag == Tags.GAL_DATA) {
 				byte[] picData = getValueBytes();
@@ -143,11 +143,10 @@ public class GalParser extends Parser {
 		while (nextTag(Tags.SEARCH_RESPONSE) != END) {
 			if (tag == Tags.SEARCH_STORE) {
 				parseStore();
-			} else if (tag == Tags.SEARCH_STATUS){
+			} else if (tag == Tags.SEARCH_STATUS) {
 				String range = getValue();
 				Debug.Log("GAL accountName range: " + range); //$NON-NLS-1$
-			}
-			else {
+			} else {
 				skipTag();
 			}
 		}
@@ -157,9 +156,9 @@ public class GalParser extends Parser {
 		while (nextTag(Tags.SEARCH_STORE) != END) {
 			if (tag == Tags.SEARCH_RESULT) {
 				parseResult();
-			} else if (tag == Tags.SEARCH_STATUS){
-				Debug.Log("Store status = "+getValue()); //$NON-NLS-1$
-			}else if (tag == Tags.SEARCH_RANGE) {
+			} else if (tag == Tags.SEARCH_STATUS) {
+				Debug.Log("Store status = " + getValue()); //$NON-NLS-1$
+			} else if (tag == Tags.SEARCH_RANGE) {
 				// Retrieve value, even if we're not using it for debug logging
 				String range = getValue();
 				Debug.Log("GAL accountName range: " + range); //$NON-NLS-1$

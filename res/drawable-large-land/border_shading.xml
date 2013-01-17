@@ -10,11 +10,11 @@
         />
 </shape-->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient
-        android:angle="180"
-        android:centerX="0.015"
-        android:startColor="@color/contact_list_background_shaded"
-        android:centerColor="@color/contact_list_background"
-        android:endColor="@color/contact_list_background"
-        android:type="linear" />
+	<gradient
+			android:angle="180"
+			android:centerX="0.010"
+			android:startColor="@color/contact_list_background_shaded"
+			android:centerColor="@color/contact_list_background"
+			android:endColor="@color/contact_list_background"
+			android:type="linear"/>
 </shape>

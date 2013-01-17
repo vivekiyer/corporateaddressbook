@@ -15,48 +15,33 @@
 
 package net.vivekiyer.GAL.preferences;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import net.vivekiyer.GAL.account.AccountAdapter;
-import net.vivekiyer.GAL.account.AccountData;
-import net.vivekiyer.GAL.search.ActiveSyncManager;
-import net.vivekiyer.GAL.ChoiceDialogFragment;
-import net.vivekiyer.GAL.Debug;
-import net.vivekiyer.GAL.search.Parser;
-import net.vivekiyer.GAL.R;
-import net.vivekiyer.GAL.search.TaskCompleteCallback;
-import net.vivekiyer.GAL.Utility;
-import android.accounts.Account;
-import android.accounts.AccountAuthenticatorResponse;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
+import android.accounts.*;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
+import android.app.ProgressDialog;
+import android.content.*;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
-
+import android.widget.*;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import net.vivekiyer.GAL.ChoiceDialogFragment;
+import net.vivekiyer.GAL.Debug;
+import net.vivekiyer.GAL.R;
+import net.vivekiyer.GAL.Utility;
+import net.vivekiyer.GAL.account.AccountAdapter;
+import net.vivekiyer.GAL.account.AccountData;
+import net.vivekiyer.GAL.search.ActiveSyncManager;
+import net.vivekiyer.GAL.search.Parser;
+import net.vivekiyer.GAL.search.TaskCompleteCallback;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @author Vivek Iyer
@@ -126,7 +111,7 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 		else if (action.equals(getString(R.string.ACTION_PREFS_ACCOUNT_ADD))) {
 			// Enable user name lookup
 			ImageButton ib = (ImageButton) findViewById(R.id.search_username_button);
-			if(ib != null)
+			if (ib != null)
 				ib.setOnClickListener(this);
 		}
 		// Delete account
@@ -147,7 +132,7 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 				return false;
 			}
 		});
-		
+
 		if (!Utility.isPreHoneycomb()) {
 			ActionBar actionBar = getActionBar();
 			if (actionBar != null)
@@ -267,9 +252,9 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 	 */
 	@Override
 	public void onClick(View v) {
-		if(R.id.buttonSignIn == v.getId())
+		if (R.id.buttonSignIn == v.getId())
 			connect();
-		else if(R.id.search_username_button == v.getId()) {
+		else if (R.id.search_username_button == v.getId()) {
 			populateUsername(this);
 		}
 	}
@@ -279,9 +264,9 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 
 		final ArrayList<AccountData> accountData = new ArrayList<AccountData>();
 		final AccountAdapter accAdapter = new AccountAdapter(this, accountData);
-		
+
 		Builder builder;
-		if(Utility.isPreHoneycomb())
+		if (Utility.isPreHoneycomb())
 			builder = new AlertDialog.Builder(ctx);
 		else
 			builder = new AlertDialog.Builder(ctx, AlertDialog.THEME_HOLO_LIGHT);
@@ -289,10 +274,10 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 
 		builder.setSingleChoiceItems(accAdapter, -1,
 				new DialogInterface.OnClickListener() {
-					
+
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						EditText v = ((EditText)findViewById(R.id.txtDomainUserName));
+						EditText v = ((EditText) findViewById(R.id.txtDomainUserName));
 						v.setText(accountData.get(which).getName());
 						dialog.dismiss();
 					}
@@ -307,7 +292,7 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 	@SuppressLint("NewApi")
 	private void showAlert(String s) {
 		Builder builder;
-		if(Utility.isPreHoneycomb())
+		if (Utility.isPreHoneycomb())
 			builder = new AlertDialog.Builder(this);
 		else
 			builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
@@ -340,54 +325,54 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 
 		// Looks like there was an error in the settings
 		if (!taskStatus) {
-			if (Debug.Enabled) {
-				// Send the error message via email
-				Debug.sendDebugEmail(this);
-			} else {
-				try {
-					// Handle all errors we're capable of,
-					// inform user of others
-					switch (statusCode) {
-						case 200: // Successful, but obviously something went wrong
-							switch (requestStatus) {
-								case Parser.STATUS_TOO_MANY_DEVICES:
-									ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices"); //$NON-NLS-1$
-									break;
-								default:
-									ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices"); //NON-NLS
-									break;
-							}
-							break;
-						case 401: // UNAUTHORIZED
-							showAlert(getString(R.string.authentication_failed_detail));
-							break;
-						case 403: // FORBIDDEN, typically means that the DeviceID is not accepted and needs to be set in Exchange
-							String title = getString(R.string.forbidden_by_server_title);
-							String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
-							ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
-									.setListener(this)
-											//.create()
-									.show(getSupportFragmentManager(), "forbidden"); //NON-NLS
-							break;
-						case ConnectionChecker.SSL_PEER_UNVERIFIED:
-							ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.unable_to_find_matching_certificate, "\n", getString(R.string.acceptAllSllText))) //$NON-NLS-1$
-									.show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
-							break;
-						case ConnectionChecker.UNKNOWN_HOST:
-							ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
-							break;
-						case ConnectionChecker.TIMEOUT:
-							ChoiceDialogFragment.newInstance(getString(R.string.timeout_title), String.format(getString(R.string.timeout_detail), getString(R.string.useSecureSslText))).show(getSupportFragmentManager(), "Timeout"); //$NON-NLS-1$
-							break;
-						default:
-							ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
-									.show(getSupportFragmentManager(), "connError"); //NON-NLS
-							break;
-					}
-				} catch (java.lang.IllegalStateException e) {
-					Debug.Log("Server configuration window was dismissed before Connection check was finished:\n" + e.toString()); //NON-NLS
+//			if (Debug.Enabled) {
+//				// Send the error message via email
+//				Debug.sendDebugEmail(this);
+//			} else {
+			try {
+				// Handle all errors we're capable of,
+				// inform user of others
+				switch (statusCode) {
+					case 200: // Successful, but obviously something went wrong
+						switch (requestStatus) {
+							case Parser.STATUS_TOO_MANY_DEVICES:
+								ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices"); //$NON-NLS-1$
+								break;
+							default:
+								ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices"); //NON-NLS
+								break;
+						}
+						break;
+					case 401: // UNAUTHORIZED
+						showAlert(getString(R.string.authentication_failed_detail));
+						break;
+					case 403: // FORBIDDEN, typically means that the DeviceID is not accepted and needs to be set in Exchange
+						String title = getString(R.string.forbidden_by_server_title);
+						String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
+						ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
+								.setListener(this)
+										//.create()
+								.show(getSupportFragmentManager(), "forbidden"); //NON-NLS
+						break;
+					case ConnectionChecker.SSL_PEER_UNVERIFIED:
+						ChoiceDialogFragment.newInstance(getString(R.string.authentication_failed_title), getString(R.string.unable_to_find_matching_certificate, "\n", getString(R.string.acceptAllSllText))) //$NON-NLS-1$
+								.show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
+						break;
+					case ConnectionChecker.UNKNOWN_HOST:
+						ChoiceDialogFragment.newInstance(getString(R.string.invalid_server_title), getString(R.string.invalid_server_detail)).show(getSupportFragmentManager(), "SslUnverified"); //$NON-NLS-1$
+						break;
+					case ConnectionChecker.TIMEOUT:
+						ChoiceDialogFragment.newInstance(getString(R.string.timeout_title), String.format(getString(R.string.timeout_detail), getString(R.string.useSecureSslText))).show(getSupportFragmentManager(), "Timeout"); //$NON-NLS-1$
+						break;
+					default:
+						ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
+								.show(getSupportFragmentManager(), "connError"); //NON-NLS
+						break;
 				}
+			} catch (java.lang.IllegalStateException e) {
+				Debug.Log("Server configuration window was dismissed before Connection check was finished:\n" + e.toString()); //NON-NLS
 			}
+//			}
 		}
 		// All went well. Store the settings and return to the main page
 		else {
@@ -489,5 +474,5 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 				break;
 		}
 	}
-	
+
 }

@@ -1,39 +1,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout1"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="top"
-    android:orientation="horizontal"
-    tools:context=".CorporateAddressBook" >
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/LinearLayout1"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="top"
+              android:orientation="horizontal"
+              tools:context=".CorporateAddressBook">
 
-    <fragment
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/main_fragment"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        class="net.vivekiyer.GAL.CorporateAddressBookFragment"
-        tools:layout="@layout/main" >
-    </fragment>
+	<fragment
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			xmlns:tools="http://schemas.android.com/tools"
+			android:id="@+id/main_fragment"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			class="net.vivekiyer.GAL.ContactListFragment"
+			tools:layout="@layout/main">
+	</fragment>
 
 	<!--<FrameLayout-->
-			<!--android:layout_width="0px"-->
-			<!--android:layout_height="match_parent"-->
-			<!--android:id="@+id/contact_fragment"-->
-			<!--android:background="@android:color/white"-->
-			<!--android:layout_weight="1">-->
-		<fragment
-	        xmlns:android="http://schemas.android.com/apk/res/android"
-	        xmlns:tools="http://schemas.android.com/tools"
-	        android:id="@+id/contact_fragment"
-	        android:layout_width="0dp"
-	        android:layout_height="match_parent"
-	        android:layout_weight="1"
-		    android:background="@android:color/white"
-	        class="net.vivekiyer.GAL.ContactPagerFragment"
-	        tools:layout="@layout/contact_fragment" >
-	    </fragment>
+	<!--android:layout_width="0px"-->
+	<!--android:layout_height="match_parent"-->
+	<!--android:id="@+id/contact_fragment"-->
+	<!--android:background="@android:color/white"-->
+	<!--android:layout_weight="1">-->
+	<fragment
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			xmlns:tools="http://schemas.android.com/tools"
+			android:id="@+id/contact_fragment"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:background="@android:color/white"
+			class="net.vivekiyer.GAL.ContactPagerFragment"
+			tools:layout="@layout/contact_fragment">
+	</fragment>
 	<!--</FrameLayout>-->
 </LinearLayout>

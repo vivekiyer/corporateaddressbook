@@ -23,11 +23,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.widget.SearchView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+
+import java.util.ArrayList;
 
 /**
  * @author Vivek Iyer 
@@ -39,9 +42,11 @@ import com.actionbarsherlock.view.MenuItem;
 /**
  * @author vivek
  */
-public class ContactActivity extends SherlockFragmentActivity {
+public class ContactActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener {
 
-	private SearchView searchView;
+
+	private ArrayList<Contact> contacts;
+	private ContactPagerFragment pagerFragment;
 
 	@TargetApi(11)
 	@Override
@@ -50,14 +55,16 @@ public class ContactActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.contact_pager_fragment);
 
 		Bundle b = null;
-		if(savedInstanceState != null) {
-			b = savedInstanceState;
-		}
-		else {
+		if (savedInstanceState == null) {
 			b = getIntent().getExtras();
+			contacts = b.getParcelableArrayList(getString(R.string.KEY_CONTACT_LIST));
+			pagerFragment = (ContactPagerFragment) getSupportFragmentManager().findFragmentById(R.id.contact_pager_fragment);
+			pagerFragment.initialize(b);
+			int contactIndex = b.getInt(getString(R.string.KEY_CONTACT_INDEX));
+			Contact contact = contacts.get(contactIndex);
+			setTitle(contact.getDisplayName());
+
 		}
-		ContactPagerFragment pagerFragment = (ContactPagerFragment) getSupportFragmentManager().findFragmentById(R.id.contact_pager_fragment);
-		pagerFragment.update(b);
 
 		if (!Utility.isPreHoneycomb()) {
 			final ActionBar actionBar = getActionBar();
@@ -137,18 +144,34 @@ public class ContactActivity extends SherlockFragmentActivity {
 	@TargetApi(11)
 	@Override
 	public boolean onSearchRequested() {
-		if (!Utility.isPreHoneycomb()) {
-			if (searchView != null) {
-				searchView.setFocusable(true);
-				searchView.setIconified(false);
-				searchView.requestFocusFromTouch();
-				return true;
-			} else {
-				Debug.Log("Running HC+ without SearchView"); //$NON-NLS-1$
-				return false;
-			}
-		}
+//		if (!Utility.isPreHoneycomb()) {
+//			if (searchView != null) {
+//				searchView.setFocusable(true);
+//				searchView.setIconified(false);
+//				searchView.requestFocusFromTouch();
+//				return true;
+//			} else {
+//				Debug.Log("Running HC+ without SearchView"); //$NON-NLS-1$
+//				return false;
+//			}
+//		}
 		return super.onSearchRequested();
 	}
 
+	@Override
+	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		if (contacts != null) {
+			setTitle(contacts.get(position).getDisplayName());//To change body of implemented methods use File | Settings | File Templates.
+		}
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int state) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 }

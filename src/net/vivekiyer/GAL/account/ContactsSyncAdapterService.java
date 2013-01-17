@@ -1,22 +1,16 @@
-package net.vivekiyer.GAL;
+package net.vivekiyer.GAL.account;
 
 import android.accounts.Account;
 import android.accounts.OperationCanceledException;
 import android.app.Service;
 import android.content.*;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.BaseColumns;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
 
 public class ContactsSyncAdapterService extends Service {
 	private static final String TAG = "ContactsSyncAdapterService"; //NON-NLS
@@ -37,8 +31,8 @@ public class ContactsSyncAdapterService extends Service {
 
 		@Override
 		public void onPerformSync(Account account, Bundle extras,
-				String authority, ContentProviderClient provider,
-				SyncResult syncResult) {
+		                          String authority, ContentProviderClient provider,
+		                          SyncResult syncResult) {
 			try {
 				ContactsSyncAdapterService.performSync(mContext, account,
 						extras, authority, provider, syncResult);
@@ -61,50 +55,52 @@ public class ContactsSyncAdapterService extends Service {
 	}
 
 	private static void performSync(Context context, Account account,
-			Bundle extras, String authority, ContentProviderClient provider,
-			SyncResult syncResult) throws OperationCanceledException {
+	                                Bundle extras, String authority, ContentProviderClient provider,
+	                                SyncResult syncResult) throws OperationCanceledException {
 
-		mContentResolver = context.getContentResolver();
+		return;
 
-		android.os.Debug.waitForDebugger();
-
-		HashMap<String, Long> localContacts = new HashMap<String, Long>();
-
-		Uri rawContactUri = RawContacts.CONTENT_URI;
-
-		// Lets get everything but Google accounts
-		Cursor c1 = mContentResolver.query(rawContactUri, new String[] {
-				BaseColumns._ID, RawContacts.ACCOUNT_TYPE,
-				RawContacts.ACCOUNT_NAME }, null, null, null);
-
-		while (c1.moveToNext()) {
-			Log.i(TAG,
-					c1.getLong(0) + ":" + c1.getString(1) + ":"
-							+ c1.getString(2));
-			localContacts.put(c1.getString(1), c1.getLong(0));
-		}
-
-		/*
-		 * get Collection of values contained in HashMap using Collection
-		 * values() method of HashMap class
-		 */
-		Iterator<Entry<String, Long>> it = localContacts.entrySet().iterator();
-
-		// iterate through HashMap values iterator
-		while (it.hasNext()) {
-			Entry<String, Long> pairs = it.next();
-			Log.i(TAG, pairs.getKey() + " " + pairs.getValue());
-
-		}
-
-		ArrayList<ContentProviderOperation> operationList = new ArrayList<ContentProviderOperation>();
-		try {
-			if (operationList.size() > 0)
-				mContentResolver.applyBatch(ContactsContract.AUTHORITY,
-						operationList);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
+//		mContentResolver = context.getContentResolver();
+//
+//		android.os.Debug.waitForDebugger();
+//
+//		HashMap<String, Long> localContacts = new HashMap<String, Long>();
+//
+//		Uri rawContactUri = RawContacts.CONTENT_URI;
+//
+//		// Lets get everything but Google accounts
+//		Cursor c1 = mContentResolver.query(rawContactUri, new String[] {
+//				BaseColumns._ID, RawContacts.ACCOUNT_TYPE,
+//				RawContacts.ACCOUNT_NAME }, null, null, null);
+//
+//		while (c1.moveToNext()) {
+//			Log.i(TAG,
+//					c1.getLong(0) + ":" + c1.getString(1) + ":"
+//							+ c1.getString(2));
+//			localContacts.put(c1.getString(1), c1.getLong(0));
+//		}
+//
+//		/*
+//		 * get Collection of values contained in HashMap using Collection
+//		 * values() method of HashMap class
+//		 */
+//		Iterator<Entry<String, Long>> it = localContacts.entrySet().iterator();
+//
+//		// iterate through HashMap values iterator
+//		while (it.hasNext()) {
+//			Entry<String, Long> pairs = it.next();
+//			Log.i(TAG, pairs.getKey() + " " + pairs.getValue());
+//
+//		}
+//
+//		ArrayList<ContentProviderOperation> operationList = new ArrayList<ContentProviderOperation>();
+//		try {
+//			if (operationList.size() > 0)
+//				mContentResolver.applyBatch(ContactsContract.AUTHORITY,
+//						operationList);
+//		} catch (Exception e1) {
+//			e1.printStackTrace();
+//		}
 	}
 
 	@SuppressWarnings("unused")

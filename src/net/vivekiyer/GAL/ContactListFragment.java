@@ -32,12 +32,11 @@ import net.vivekiyer.GAL.search.ActiveSyncManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 /**
  * @author Vivek Iyer
- * 
+ *
  *         This class is the main entry point to the application
  */
 /**
@@ -48,21 +47,23 @@ import java.util.List;
  * @author danm
  *
  */
+
 /**
  * @author danm
- *
  */
-public class CorporateAddressBookFragment extends SherlockFragment {
+public class ContactListFragment extends SherlockFragment {
 
 
 	private ContactListAdapter listadapter;
 
 	public interface ContactListListener {
 		public void onContactSelected(Contact contact);
+
 		public void onSearchCleared();
+
 		public void onSearchCanceled();
 	}
-	
+
 	// TAG used for logging
 	// private static String TAG = "CorporateAddressBook";
 
@@ -70,10 +71,10 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 	private List<Contact> contactList;
 
 	protected ContactListListener contactListListener;
-	
+
 	private String searchTerm;
 	private String previousHeaderText;
-	
+
 	private Boolean isSelectable = false;
 	private Boolean isDualFragment = false;
 
@@ -83,7 +84,7 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 
 	public void setIsSelectable(Boolean isSelectable) {
 		this.isSelectable = isSelectable;
-	    setSelectionMode(getView(), isSelectable);
+		setSelectionMode(getView(), isSelectable);
 	}
 
 	public Boolean getIsDualFragment() {
@@ -96,10 +97,10 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 
 	private void setSelectionMode(View view, Boolean isSelectable) {
 		ListView lv = (ListView) view.findViewById(R.id.contactsListView);
-	    lv.setChoiceMode(isSelectable ? ListView.CHOICE_MODE_SINGLE : ListView.CHOICE_MODE_NONE);
+		lv.setChoiceMode(isSelectable ? ListView.CHOICE_MODE_SINGLE : ListView.CHOICE_MODE_NONE);
 	}
 
-	
+
 	// Create an anonymous implementation of OnItemClickListener
 	// that is used by the listview that displays the results
 	private final OnItemClickListener mListViewListener = new OnItemClickListener() {
@@ -118,14 +119,15 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 		public void onItemClick(AdapterView<?> a, View v, int position, long id) {
 
 			// Get the selected display name from the list view
-			final Contact selectedItem = (Contact) ((ListView)getView().findViewById(R.id.contactsListView))
+			final Contact selectedItem = (Contact) ((ListView) getView().findViewById(R.id.contactsListView))
 					.getItemAtPosition(position);
 
 			// Trigger callback so that the Activity can decide how to handle the click
-			assert(contactListListener != null);
-			contactListListener.onContactSelected(selectedItem);		
+			assert (contactListListener != null);
+			contactListListener.onContactSelected(selectedItem);
 		}
 	};
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -139,16 +141,16 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 		setHasOptionsMenu(true);
 		//setRetainInstance(true);
 	}
-	
+
 	@Override
 	public View onCreateView(android.view.LayoutInflater inflater, android.view.ViewGroup container,
-	        Bundle savedInstanceState) {
-	 
-	    View view = inflater.inflate(R.layout.main, container, false);
-	    setSelectionMode(view, isSelectable);
+	                         Bundle savedInstanceState) {
+
+		View view = inflater.inflate(R.layout.main, container, false);
+		setSelectionMode(view, isSelectable);
 		return view;
 	}
-	
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
@@ -156,40 +158,43 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 		v.setVisibility(View.GONE);
 		v.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) { if (contactListListener != null) contactListListener.onSearchCanceled(); }
+			public void onClick(View v) {
+				if (contactListListener != null) contactListListener.onSearchCanceled();
+			}
 		});
 
-	};
-	
-    /* (non-Javadoc)
-     * Overridden so that any Activity this Fragment is attached to is hooked up
-     * to the OnContactSelectedListener
-     * 
-     * @see android.app.Fragment#onAttach(android.app.Activity)
-     */
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            this.contactListListener = (ContactListListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnContactSelectedListener"); //$NON-NLS-1$
-        }
-    }
+	}
 
-    @SuppressLint("NewApi")
+	;
+
+	/* (non-Javadoc)
+	 * Overridden so that any Activity this Fragment is attached to is hooked up
+	 * to the OnContactSelectedListener
+	 *
+	 * @see android.app.Fragment#onAttach(android.app.Activity)
+	 */
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			this.contactListListener = (ContactListListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString() + " must implement OnContactSelectedListener"); //$NON-NLS-1$
+		}
+	}
+
+	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
-	protected void setViewBackground(Boolean shaded){
-		if(shaded){
-			if(Utility.isPreJellyBean()) {
+	protected void setViewBackground(Boolean shaded) {
+		if (shaded) {
+			if (Utility.isPreJellyBean()) {
 				getView().findViewById(R.id.result_header).setBackgroundDrawable(getResources().getDrawable(R.drawable.header_border_shading));
 				getView().findViewById(R.id.contactsListView).setBackgroundDrawable(getResources().getDrawable(R.drawable.border_shading));
 			} else {
 				getView().findViewById(R.id.result_header).setBackground(getResources().getDrawable(R.drawable.header_border_shading));
 				getView().findViewById(R.id.contactsListView).setBackground(getResources().getDrawable(R.drawable.border_shading));
 			}
-		}
-		else{
+		} else {
 			getView().findViewById(R.id.result_header).setBackgroundColor(getResources().getColor(R.color.header_background));
 			getView().findViewById(R.id.contactsListView).setBackgroundColor(getResources().getColor(R.color.contact_list_background));
 		}
@@ -222,11 +227,11 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.clear:
-			clearResult();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+			case R.id.clear:
+				clearResult();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
 
@@ -243,19 +248,17 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 		super.onStop();
 	}
 
-	public void displayResult(HashMap<String, Contact> mContacts, String latestSearchTerm, ActiveSyncManager syncManager) {
-		if(mContacts == null || syncManager == null)
-		{
+	public void displayResult(ArrayList<Contact> mContacts, String latestSearchTerm, ActiveSyncManager syncManager) {
+		if (mContacts == null || syncManager == null) {
 			//Toast.makeText(getActivity(), R.string.undefined_result_please_try_again, Toast.LENGTH_LONG).show();
 			return;
 		}
 		searchTerm = latestSearchTerm;
 		final int numberOfHits = mContacts.size();
 		setHeaderText(numberOfHits);
-		
+
 		// Get the accountName and sort the alphabetically
-		contactList = new ArrayList<Contact>(numberOfHits);
-		contactList.addAll(mContacts.values());
+		contactList = mContacts;
 		Collections.sort(contactList);
 
 		// Create a new array adapter and add the accountName to this
@@ -271,14 +274,14 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 	}
 
 	private void setHeaderText(final int numberOfHits) {
-		if(searchTerm == null || searchTerm.length() == 0)
+		if (searchTerm == null || searchTerm.length() == 0)
 			setHeader(String.format(getString(R.string.last_search_produced_x_results), numberOfHits), false);
 		else
 			setHeader(String.format(getString(R.string.found_x_results_for_y), numberOfHits, searchTerm), false);
 	}
 
 	void setHeader(String message, boolean isInProgress) {
-		if(message != null) {
+		if (message != null) {
 			TextView tv = (TextView) this.getView().findViewById(R.id.result_header_text);
 			previousHeaderText = tv.getText().toString();
 			tv.setText(message);
@@ -291,15 +294,17 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 
 	void resetHeader() {
 		setHeader(previousHeaderText, false);
-		if(listadapter != null) {
+		if (listadapter != null) {
 			listadapter.resetSearchNextView();
 		}
 	}
 
-	public void addResult(HashMap<String,Contact> contacts, ActiveSyncManager syncManager) {
-		listadapter.addAll(contacts.values(), contacts.size() == syncManager.getMaxResults());
+	public void addResult(ArrayList<Contact> contacts, ActiveSyncManager syncManager) {
+		listadapter.addAll(contacts, contacts.size() == syncManager.getMaxResults());
+
 		setHeaderText(this.contactList.size());
 	}
+
 	/**
 	 * Clear the results from the listview
 	 */
@@ -314,16 +319,16 @@ public class CorporateAddressBookFragment extends SherlockFragment {
 
 		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
 		lv.setAdapter(listadapter);
-		CorporateAddressBookFragment frag = (CorporateAddressBookFragment) getFragmentManager().findFragmentById(R.id.main_fragment);
-		frag.setHeader(getString(R.string.EnterSearchTerm), false);
-		
-		assert(contactListListener != null);
+		setHeader(getString(R.string.EnterSearchTerm), false);
+
+		assert (contactListListener != null);
 	}
 
 	public void setSelectedContact(Contact selectedContact) {
 		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
-		for(Contact c : contactList)
-			if(c.compareTo(selectedContact) == 0)
-				lv.setSelection(contactList.indexOf(c));
+		lv.requestFocusFromTouch();
+		int selection = contactList.indexOf(selectedContact);
+		lv.setSelection(selection);
+		lv.setItemChecked(selection, true);
 	}
 }

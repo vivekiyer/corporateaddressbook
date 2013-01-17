@@ -2,16 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:gravity="center_horizontal"
-              android:layout_width="match_parent" android:layout_height="match_parent">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
-	<com.viewpagerindicator.TitlePageIndicator
-			android:id="@+id/indicator"
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent" />
-	<android.support.v4.view.ViewPager
+	<net.vivekiyer.GAL.ContactFragmentPager
 			android:id="@+id/pager"
 			android:layout_width="match_parent"
 			android:layout_height="0px"
 			android:layout_weight="1">
-	</android.support.v4.view.ViewPager>
+	</net.vivekiyer.GAL.ContactFragmentPager>
+
+	<com.viewpagerindicator.LinePageIndicator
+			style="@style/CustomLinePageIndicator"
+			android:id="@+id/indicator"
+			android:layout_height="24dp"
+			android:layout_width="fill_parent"/>
 </LinearLayout>
