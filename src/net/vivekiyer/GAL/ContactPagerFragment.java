@@ -87,7 +87,9 @@ public class ContactPagerFragment extends SherlockFragment implements ViewPager.
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);    //To change body of overridden methods use File | Settings | File Templates.
 		if (pager != null && fragmentAdapter != null) {
-			inflater.inflate(R.menu.contact_actions_menu, menu);
+			ContactView f = fragmentAdapter.getItem(pager.getCurrentItem());
+			if(f != null)
+				f.onCreateOptionsMenu(menu, inflater);
 		}
 	}
 

@@ -1,10 +1,12 @@
 package net.vivekiyer.GAL;
 
-import android.support.v4.app.Fragment;
+import android.content.Context;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.view.View;
+import android.view.ViewGroup;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,29 +16,40 @@ import java.util.List;
  * Time: 00:50
  * To change this template use File | Settings | File Templates.
  */
-public class ContactFragmentAdapter extends FragmentStatePagerAdapter {
+public class ContactFragmentAdapter extends PagerAdapter {
 
 	final private List<Contact> contacts;
+	private final HashMap<Integer, ContactView> views = null;
 
-	public ContactFragmentAdapter(FragmentManager fm, List<Contact> contacts) {
+	public ContactFragmentAdapter(Context context, List<Contact> contacts) {
 		super(fm);
 		this.contacts = contacts;
 	}
 
 	@Override
 	public boolean isViewFromObject(View view, Object object) {
-		return super.isViewFromObject(view, object);    //To change body of overridden methods use File | Settings | File Templates.
+		return (view instanceof ContactView && ((ContactView)view).getCon)
 	}
 
 	@Override
-	public Fragment getItem(int i) {
-		ContactFragment fragment = new ContactFragment(contacts.get(i));
-		return fragment;
+	public ContactView getItem(int i) {
+		ContactView view = ContactView.newInstance(contacts.get(i));
+		return view;
 	}
 
 	@Override
 	public int getCount() {
 		return contacts.size();  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public Object instantiateItem(ViewGroup container, int position) {
+		return super.instantiateItem(container, position);    //To change body of overridden methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void destroyItem(ViewGroup container, int position, Object object) {
+		super.destroyItem(container, position, object);    //To change body of overridden methods use File | Settings | File Templates.
 	}
 
 	@Override

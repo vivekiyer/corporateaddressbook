@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+<net.vivekiyer.GAL.ContactView xmlns:tools="http://schemas.android.com/tools"
               xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:orientation="vertical"
-              tools:context=".CorporateContactRecordFragment">
+              tools:context=".ContactView">
 	<!--android:background="@color/details_list_background"-->
 
 	<!--LinearLayout
@@ -165,4 +165,4 @@
 			android:layout_margin="12dp"
 			android:gravity="center_horizontal"/>
 
-</LinearLayout>
+</net.vivekiyer.GAL.ContactView>
