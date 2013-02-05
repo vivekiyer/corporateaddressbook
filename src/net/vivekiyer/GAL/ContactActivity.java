@@ -16,19 +16,21 @@
 package net.vivekiyer.GAL;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.widget.SearchView;
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.SearchView;
 
 import java.util.ArrayList;
 
@@ -44,7 +46,7 @@ import java.util.ArrayList;
  */
 public class ContactActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener {
 
-
+	private SearchView searchView;
 	private ArrayList<Contact> contacts;
 	private ContactPagerFragment pagerFragment;
 
@@ -63,12 +65,15 @@ public class ContactActivity extends SherlockFragmentActivity implements ViewPag
 			int contactIndex = b.getInt(getString(R.string.KEY_CONTACT_INDEX));
 			Contact contact = contacts.get(contactIndex);
 			setTitle(contact.getDisplayName());
-
 		}
 
-		if (!Utility.isPreHoneycomb()) {
-			final ActionBar actionBar = getActionBar();
-			actionBar.setDisplayHomeAsUpEnabled(true);
+		final ActionBar actionBar = getSupportActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		if (Utility.isPreHoneycomb()) {
+			BitmapDrawable bg = (BitmapDrawable) getResources().getDrawable(R.drawable.actionbar_background);
+			bg.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+			actionBar.setBackgroundDrawable(bg);
+			actionBar.setSplitBackgroundDrawable(bg);
 		}
 	}
 
@@ -94,21 +99,17 @@ public class ContactActivity extends SherlockFragmentActivity implements ViewPag
 		// Get the SearchView and set the searchable configuration for FroYo
 		// and above (getSearchableInfo() not supported pre-FroYo)
 		if (!Utility.isPreFroYo()) {
+			// Get the SearchView and set the searchable configuration
 			final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 			final ComponentName component = getComponentName();
 			final SearchableInfo searchableInfo = searchManager
 					.getSearchableInfo(component);
+
 			MenuItem item = menu.findItem(
 					R.id.menu_search);
-			if (Utility.isPreHoneycomb()) {
-				com.actionbarsherlock.widget.SearchView searchView = new com.actionbarsherlock.widget.SearchView(this);
-				searchView.setSearchableInfo(searchableInfo);
-				item.setActionView(searchView);
-			} else {
-				SearchView searchView = new SearchView(this);
-				searchView.setSearchableInfo(searchableInfo);
-				item.setActionView(searchView);
-			}
+			searchView = (com.actionbarsherlock.widget.SearchView) item.getActionView();
+			searchView.setSearchableInfo(searchableInfo);
+			searchView.setIconifiedByDefault(false);
 		}
 		return super.onCreateOptionsMenu(menu);
 	}

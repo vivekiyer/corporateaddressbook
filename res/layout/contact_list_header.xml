@@ -4,7 +4,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="@drawable/shaded_background">
+              android:background="@drawable/fading_header_background">
 
 	<TextView
 			android:layout_width="fill_parent"
@@ -19,7 +19,9 @@
 
 	<ImageView
 			android:layout_width="fill_parent"
-			android:layout_height="1dp"
+			android:layout_height="2dp"
 			android:id="@+id/delimiter"
-			android:background="@color/abs__holo_blue_light"/>
+			android:background="@color/contact_list_header_delimiter"
+			/>
+	<!--android:background="@drawable/shaded_background_holo_blue"-->
 </LinearLayout>

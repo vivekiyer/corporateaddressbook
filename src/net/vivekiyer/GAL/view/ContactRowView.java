@@ -13,7 +13,7 @@ import net.vivekiyer.GAL.Utility;
 public class ContactRowView extends RelativeLayout implements Checkable {
 
 	private Boolean isChecked = false;
-	
+
 	public ContactRowView(Context context) {
 		super(context);
 	}
@@ -31,7 +31,7 @@ public class ContactRowView extends RelativeLayout implements Checkable {
 		super.onFinishInflate();
 		findViewById(R.id.selectedMark).setVisibility(View.GONE);
 	}
-	
+
 	@Override
 	public boolean isChecked() {
 		return isChecked;
@@ -39,26 +39,31 @@ public class ContactRowView extends RelativeLayout implements Checkable {
 
 	@Override
 	public void setChecked(boolean checked) {
-		if(isChecked != checked)
-			toggle();
+		if (isChecked == checked)
+			return;
+
+		if (isChecked = checked) {
+//			((TextView)findViewById(R.id.toptext)).setTextColor(android.R.color.white);
+//			((TextView)findViewById(R.id.bottomtext)).setTextColor(android.R.color.white);
+			if (Utility.isPreJellyBean()) {
+				this.setBackgroundDrawable(getResources().getDrawable(R.drawable.shaded_background_holo_blue));
+			} else {
+				this.setBackground(getResources().getDrawable(R.drawable.shaded_background_holo_blue));
+			}
+			findViewById(R.id.selectedMark).setVisibility(View.VISIBLE);
+		} else {
+//			((TextView)findViewById(R.id.toptext)).setTextColor(android.R.color.black);
+//			((TextView)findViewById(R.id.bottomtext)).setTextColor(android.R.color.black);
+			this.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+			findViewById(R.id.selectedMark).setVisibility(View.GONE);
+		}
 	}
 
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	@SuppressWarnings("deprecation")
 	@Override
 	public void toggle() {
-		isChecked = !isChecked;
-		if(isChecked){
-			if(Utility.isPreJellyBean())
-				this.setBackgroundDrawable(getResources().getDrawable(R.drawable.selected_border_shading));
-			else
-				this.setBackground(getResources().getDrawable(R.drawable.selected_border_shading));
-			findViewById(R.id.selectedMark).setVisibility(View.VISIBLE);
-		}
-		else {
-			this.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-			findViewById(R.id.selectedMark).setVisibility(View.GONE);
-		}
+		setChecked(!isChecked);
 	}
 
 }

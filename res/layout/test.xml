@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:columnCount="3">
+
+	<ImageView
+			android:layout_width="@dimen/edit_photo_size"
+			android:layout_height="@dimen/edit_photo_size"
+			android:id="@+id/imageView"
+			android:layout_row="0"
+			android:layout_column="0"
+			android:src="@drawable/ic_launcher"
+			android:minHeight="96dp"
+			android:minWidth="96dp"
+			android:layout_columnSpan="2"
+			android:layout_rowSpan="1"
+			android:layout_alignParentLeft="true"
+			android:layout_marginLeft="0dp"
+			android:layout_alignParentTop="true"
+			android:layout_marginTop="0dp"
+			android:layout_marginRight="-20dp"/>
+
+	<View
+			android:background="@drawable/picture_overlay"
+			android:id="@+id/shaded_overlay"
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:layout_alignParentTop="true"
+			android:layout_marginTop="0dp"
+			android:layout_alignBottom="@+id/imageView"
+			android:layout_toRightOf="@+id/imageView"
+			android:layout_alignRight="@+id/imageView"/>
+
+	<View
+			android:background="@color/holo_blue_dark"
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:layout_toRightOf="@+id/shaded_overlay"
+			android:layout_alignTop="@+id/shaded_overlay"
+			android:layout_alignBottom="@+id/shaded_overlay"
+			android:id="@+id/view"
+			/>
+
+	<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="@string/dummyRoleAndCompany"
+			android:layout_gravity="right"
+			android:id="@+id/textView1"
+			style="@style/TextAppearance.Sherlock.Widget.ActionMode.Subtitle.Inverse"
+			android:layout_alignBottom="@+id/imageView"
+			android:layout_alignLeft="@+id/view"
+			android:layout_margin="6dp"
+			android:layout_marginLeft="12dp"
+			android:layout_marginTop="6dp"
+			android:layout_marginRight="6dp"
+			android:layout_marginBottom="6dp"
+			android:password="false"/>
+
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/dummyContactName"
+			android:id="@+id/textView"
+			style="@style/TextAppearance.Sherlock.Widget.ActionBar.Title.Inverse"
+			android:textStyle="bold"
+			android:paddingRight="6dp"
+			android:layout_above="@+id/textView1"
+			android:layout_alignLeft="@+id/view"
+			android:layout_marginLeft="6dp"/>
+</RelativeLayout>

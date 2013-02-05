@@ -24,6 +24,7 @@ import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.*;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,6 +51,7 @@ import java.util.ArrayList;
  */
 public class Configure extends SherlockFragmentActivity implements OnClickListener, TaskCompleteCallback, ChoiceDialogFragment.OnChoiceDialogOptionClickListener {
 
+	private static final int SEND_DEBUG_EMAIL = 0x200;
 	protected SharedPreferences mPreferences;
 	protected ProgressDialog progressdialog;
 	protected ActiveSyncManager activeSyncManager;
@@ -222,7 +224,7 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 				getTextFromId(R.id.txtPassword),
 				getValueFromCheckbox(R.id.chkUseSSL),
 				getValueFromCheckbox(R.id.chkAcceptAllSSLCert),
-				"", //$NON-NLS-1$
+				"0", //$NON-NLS-1$
 				"", //$NON-NLS-1$
 				null);
 
@@ -233,6 +235,8 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 			showAlert(getString(R.string.please_check_settings));
 			return;
 		}
+
+		Debug.clear();
 
 		progressdialog = new ProgressDialog(this);
 		progressdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -325,6 +329,7 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 
 		// Looks like there was an error in the settings
 		if (!taskStatus) {
+//			statusCode = -987698; // To test debug emails
 //			if (Debug.Enabled) {
 //				// Send the error message via email
 //				Debug.sendDebugEmail(this);
@@ -336,10 +341,22 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 					case 200: // Successful, but obviously something went wrong
 						switch (requestStatus) {
 							case Parser.STATUS_TOO_MANY_DEVICES:
-								ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail)).show(getSupportFragmentManager(), "tooManyDevices"); //$NON-NLS-1$
+								ChoiceDialogFragment.newInstance(getString(R.string.too_many_device_partnerships_title), getString(R.string.too_many_device_partnerships_detail))
+										.show(getSupportFragmentManager(), "tooManyDevices"); //$NON-NLS-1$
 								break;
 							default:
-								ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured)).show(getSupportFragmentManager(), "tooManyDevices"); //NON-NLS
+								if (Debug.isEnabled()) {
+									ChoiceDialogFragment.newInstance(getString(R.string.unhandled_error, requestStatus), getString(R.string.unhandled_error_occured, ""), getString(R.string.send_debug_email), getString(R.string.close), SEND_DEBUG_EMAIL, 0)
+											.setListener(this)
+											.show(getSupportFragmentManager(), "unknownError"); //NON-NLS
+								} else {
+									ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title),
+											getString(R.string.connection_failed_detail, statusCode) + "\n" + getString(R.string.enable_debugging),
+											getString(android.R.string.yes),
+											getString(android.R.string.no), R.string.enable_debugging, 0)
+											.setListener(this)
+											.show(getSupportFragmentManager(), "connError"); //NON-NLS
+								}
 								break;
 						}
 						break;
@@ -351,7 +368,6 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 						String details = getString(R.string.forbidden_by_server_detail, activeSyncManager.getDeviceId());
 						ChoiceDialogFragment.newInstance(title, details, getString(android.R.string.ok), getString(android.R.string.copy), android.R.id.button2, android.R.id.copy)
 								.setListener(this)
-										//.create()
 								.show(getSupportFragmentManager(), "forbidden"); //NON-NLS
 						break;
 					case ConnectionChecker.SSL_PEER_UNVERIFIED:
@@ -365,8 +381,18 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 						ChoiceDialogFragment.newInstance(getString(R.string.timeout_title), String.format(getString(R.string.timeout_detail), getString(R.string.useSecureSslText))).show(getSupportFragmentManager(), "Timeout"); //$NON-NLS-1$
 						break;
 					default:
-						ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode))
-								.show(getSupportFragmentManager(), "connError"); //NON-NLS
+						if (Debug.isEnabled()) {
+							ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title), getString(R.string.connection_failed_detail, statusCode), getString(R.string.send_debug_email), getString(R.string.close), SEND_DEBUG_EMAIL, 0)
+									.setListener(this)
+									.show(getSupportFragmentManager(), "connError"); //NON-NLS
+						} else {
+							ChoiceDialogFragment.newInstance(getString(R.string.connection_failed_title),
+									getString(R.string.connection_failed_detail, statusCode) + "\n" + getString(R.string.enable_debugging),
+									getString(android.R.string.yes),
+									getString(android.R.string.no), R.string.enable_debugging, 0)
+									.setListener(this)
+									.show(getSupportFragmentManager(), "connError"); //NON-NLS
+						}
 						break;
 				}
 			} catch (java.lang.IllegalStateException e) {
@@ -408,6 +434,10 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 
 			account = new Account(accountKey,
 					getString(R.string.ACCOUNT_TYPE));
+			if (getIntent().getAction().equals(getString(R.string.ACTION_PREFS_ACCOUNT_ADD))) {
+				// Disabling sync for all accounts, otherwise a constant wakelock is created...
+				ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0);
+			}
 			am.addAccountExplicitly(account,
 					getTextFromId(R.id.txtPassword), null);
 			am.setUserData(account, getString(R.string.KEY_ACCOUNT_KEY), accountKey);
@@ -470,6 +500,12 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 			case android.R.id.empty:
 				setResult(RESULT_CANCELED);
 				finish();
+				break;
+			case SEND_DEBUG_EMAIL:
+				Debug.sendDebugEmail(this);
+				break;
+			case R.string.enable_debugging:
+				Debug.setEnabled(true);
 			default:
 				break;
 		}

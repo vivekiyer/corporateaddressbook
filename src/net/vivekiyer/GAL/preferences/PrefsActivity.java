@@ -8,11 +8,16 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.*;
+import android.preference.Preference;
+import android.preference.PreferenceCategory;
+import android.preference.PreferenceScreen;
 import android.widget.ListAdapter;
 import android.widget.Toast;
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import net.vivekiyer.GAL.App;
 import net.vivekiyer.GAL.R;
 import net.vivekiyer.GAL.Utility;
@@ -21,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -30,7 +36,7 @@ import java.util.List;
  *         <p/>
  *         Borrowed from http://www.blackmoonit.com/2012/07/all_api_prefsactivity/
  */
-public class PrefsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener, OnAccountsUpdateListener {
+public class PrefsActivity extends SherlockPreferenceActivity implements Preference.OnPreferenceClickListener, OnAccountsUpdateListener {
 	protected Method mLoadHeaders = null;
 	protected Method mHasHeaders = null;
 
@@ -78,19 +84,41 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		}
 
 		super.onCreate(aSavedState);
+
+		if (Utility.isPreHoneycomb()) {
+			BitmapDrawable bg = (BitmapDrawable) getResources().getDrawable(R.drawable.actionbar_background);
+			bg.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+			getSupportActionBar().setBackgroundDrawable(bg);
+			getSupportActionBar().setSplitBackgroundDrawable(bg);
+		}
+
 		Bundle b = getIntent().getExtras();
+		if (b != null) {
+			Set<String> keys = b.keySet();
+			Object o = b.get("account");
+			if (o instanceof Account) {
+				String accountKey = AccountManager.get(this).getUserData((Account) o, getString(R.string.KEY_ACCOUNT_KEY));
+				Intent i = new Intent(this, this.getClass())
+						.setAction(getString(R.string.ACTION_PREFS_ACCOUNTS))
+						.putExtra(getString(R.string.KEY_ACCOUNT_KEY), accountKey)
+						.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+				startActivity(i);
+				return;
+			}
+		}
 
 		String action = getIntent().getAction();
 		if (action != null && action.equals(getString(R.string.ACTION_PREFS_ACCOUNTS))) {
 			String accountKey = getIntent().getStringExtra(getString(R.string.KEY_ACCOUNT_KEY));
-			if(accountKey == null)
+			if (accountKey == null)
 				throw new IllegalArgumentException("No Account Key supplied for pref-server");
 			getPreferenceManager().setSharedPreferencesName(accountKey);
 			addPreferencesFromResource(R.xml.pref_server);
 			addServerPreference(getPreferenceScreen(), accountKey);
-
 		} else if (action != null && action.equals(getString(R.string.ACTION_PREFS_ABOUT))) {
 			addPreferencesFromResource(R.xml.pref_about);
+		} else if (action != null && action.equals(getString(R.string.ACTION_PREFS_VIEW))) {
+			addPreferencesFromResource(R.xml.pref_general);
 		} else if (!isNewV11Prefs()) {
 			addNonHeaderPrefs();
 		}
@@ -146,8 +174,8 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		try {
 			mLoadHeaders.invoke(this, new Object[]{R.xml.pref_headers, aTarget});
 			addServerHeaders(aTarget);
-				// When the saved state provides the list of headers, onBuildHeaders is not called
-				// Copy the list of Headers from the adapter, preserving their order
+			// When the saved state provides the list of headers, onBuildHeaders is not called
+			// Copy the list of Headers from the adapter, preserving their order
 			mHeaders.clear();
 			for (Header h : aTarget) {
 				mHeaders.add(h);
@@ -158,6 +186,7 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		} catch (InvocationTargetException e) {
 		}
 	}
+
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	int addServerHeaders(List<Header> aTarget) {
 		AccountManager am = AccountManager.get(this);
@@ -214,14 +243,14 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 		PreferenceCategory preferenceCategory = null;
 		PreferenceScreen screen = getPreferenceScreen();
 
-		if(screen != null)
+		if (screen != null)
 			screen.removeAll();
 		addPreferencesFromResource(R.xml.pref_headers_legacy);
 		screen = getPreferenceScreen();
 
-		for(int i = 0; i < screen.getPreferenceCount();i++) {
+		for (int i = 0; i < screen.getPreferenceCount(); i++) {
 			Preference p = screen.getPreference(i);
-			if(p != null && p instanceof PreferenceCategory && getString(R.id.server_heading).equals(p.getKey())) {
+			if (p != null && p instanceof PreferenceCategory && getString(R.id.server_heading).equals(p.getKey())) {
 				preferenceCategory = (PreferenceCategory) screen.getPreference(i);
 			}
 		}
@@ -269,8 +298,7 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 				// So that we get to know if an account is deleted - if this is a ServerPrefs activity
 				// related to that account it should be finished.
 				startActivityForResult(intents, R.string.ACTION_PREFS_ACCOUNT_DELETE);
-			}
-			else {
+			} else {
 				super.startActivity(intents);
 			}
 		} catch (ActivityNotFoundException e) {
@@ -288,8 +316,8 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 				// Make sure we switch header so that the fragment for the deleted
 				// account is discarded
 				// getFragmentManager().popBackStack() didn't work
-				for(Header h : mHeaders) {
-					if(PrefsFragment.class.getName().equals(h.fragment))
+				for (Header h : mHeaders) {
+					if (PrefsFragment.class.getName().equals(h.fragment))
 						switchToHeader(h);
 				}
 			}
@@ -299,14 +327,13 @@ public class PrefsActivity extends PreferenceActivity implements Preference.OnPr
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onAccountsUpdated(Account[] accounts) {
-		if(!Utility.isPreHoneycomb()) {
-			if(mHeaders.size() > 0) {
+		if (!Utility.isPreHoneycomb()) {
+			if (mHeaders.size() > 0) {
 				invalidateHeaders();
 				getListView().requestLayout();
 			}
-		}
-		else {
-			if(getIntent().getAction() == null)
+		} else {
+			if (getIntent().getAction() == null)
 				addNonHeaderPrefs();
 		}
 	}

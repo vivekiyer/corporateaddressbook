@@ -8,9 +8,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.preference.PreferenceManager;
+import net.vivekiyer.GAL.account.AccountAdapter;
+import net.vivekiyer.GAL.account.AccountData;
 import net.vivekiyer.GAL.account.AccountManager;
 import net.vivekiyer.GAL.search.GALSearch;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 /**
@@ -20,13 +24,22 @@ public class App extends Application {
 
 	private static App instance = null;
 	private static AccountManager accounts = null;
+	private static AccountAdapter systemAccounts = null;
 	// Version String
 	public static String VERSION_STRING;
 
 	public static final Hashtable<Integer, GALSearch> taskManager = new Hashtable<Integer, GALSearch>();
 
 	public static AccountManager getAccounts() {
+		if (accounts == null)
+			accounts = new AccountManager(App.getInstance());
 		return accounts;
+	}
+
+	public static AccountAdapter getSystemAccounts() {
+		if (systemAccounts == null)
+			systemAccounts = new AccountAdapter(App.getInstance(), new ArrayList<AccountData>());
+		return systemAccounts;
 	}
 
 	public App() {
@@ -39,7 +52,11 @@ public class App extends Application {
 		instance = this;
 		// Get the displayText string
 		App.VERSION_STRING = "CorporateAddressbook/" + getAppVersion(); //$NON-NLS-1$
-		if (Debug.Enabled && Debug.Verbose) {
+
+		boolean debugEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.PREFS_KEY_DEBUGGING_ENABLED), isDebuggable());
+		Debug.setEnabled(debugEnabled);
+
+		if (Debug.isEnabled() && Debug.isVerbose()) {
 			java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST); //$NON-NLS-1$
 			java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST); //$NON-NLS-1$
 
@@ -54,9 +71,6 @@ public class App extends Application {
 
 			java.util.logging.Logger.getLogger("httpclient.wire.content").log(java.util.logging.Level.CONFIG, "hola"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-
-		accounts = new AccountManager(this);
-
 	}
 
 	public static App getInstance() {
@@ -81,6 +95,6 @@ public class App extends Application {
 	}
 
 	public static boolean isDebuggable() {
-		return ( 0 != (getInstance().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+		return (0 != (getInstance().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
 	}
 }

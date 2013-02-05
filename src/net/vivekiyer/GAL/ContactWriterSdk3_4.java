@@ -15,7 +15,6 @@
 
 package net.vivekiyer.GAL;
 
-import android.app.Application;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -35,16 +34,16 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 	private ContentResolver contentResolver;
 
 	@Override
-	public void saveContact(Context cxt) {
+	public void saveContact() {
 		ContentValues values = new ContentValues();
 		mContact.generateFieldsFromXML();
-		
+
 		values.put(
-				People.NAME, 
-					mContact.getFirstName() + 
-					" " +  //$NON-NLS-1$
-					mContact.getLastName()
-				);
+				People.NAME,
+				mContact.getFirstName() +
+						" " +  //$NON-NLS-1$
+						mContact.getLastName()
+		);
 
 		// add it to the database
 		Uri newPerson = Contacts.People.createPersonInMyContactsGroup(
@@ -58,7 +57,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 	}
 
 	@Override
-	public void Initialize(Application appCtx, Contact contact) {
+	public void Initialize(Context appCtx, Contact contact) {
 		mContact = contact;
 		contentResolver = appCtx.getContentResolver();
 	}
@@ -78,7 +77,7 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 				//Log.d(TAG, "Failed to insert mobile phone number");
 			}
 		}
-		
+
 		if (!mContact.getOfficeLocation().equalsIgnoreCase("")) { //$NON-NLS-1$
 			ContentValues addressValues = new ContentValues();
 			Uri addressUri = Uri.withAppendedPath(newPerson,
@@ -93,13 +92,13 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			if (addressUpdate == null) {
 				//Log.d(TAG, "Failed to insert office location");
 			}
-		} 
-		
+		}
+
 //		if (!mContact.getAlias().equalsIgnoreCase("")) {
 //			values.put(People.PHONETIC_NAME, mContact.getAlias());
 //		}
 //		
-		
+
 		if (!mContact.getHomePhone().equalsIgnoreCase("")) { //$NON-NLS-1$
 			ContentValues homePhoneValues = new ContentValues();
 			Uri homePhoneUri = Uri.withAppendedPath(newPerson,
@@ -112,8 +111,8 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			if (phoneUpdate == null) {
 				//Log.d(TAG, "Failed to insert mobile phone number");
 			}
-		} 
-		
+		}
+
 		if (!mContact.getMobilePhone().equalsIgnoreCase("")) { //$NON-NLS-1$
 			ContentValues mobileValues = new ContentValues();
 			Uri mobileUri = Uri.withAppendedPath(newPerson,
@@ -124,8 +123,8 @@ public class ContactWriterSdk3_4 extends ContactWriter {
 			if (phoneUpdate == null) {
 				//Log.d(TAG, "Failed to insert mobile phone number");
 			}
-		} 
-		
+		}
+
 		if (!mContact.getEmail().equalsIgnoreCase("")) { //$NON-NLS-1$
 			ContentValues emailValues = new ContentValues();
 			Uri emailUri = Uri.withAppendedPath(newPerson,

@@ -18,8 +18,11 @@ package net.vivekiyer.GAL;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -28,6 +31,10 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
+import com.handmark.pulltorefresh.library.ILoadingLayout;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshStickyHeadersListView;
 import net.vivekiyer.GAL.search.ActiveSyncManager;
 
 import java.util.ArrayList;
@@ -53,9 +60,6 @@ import java.util.List;
  */
 public class ContactListFragment extends SherlockFragment {
 
-
-	private ContactListAdapter listadapter;
-
 	public interface ContactListListener {
 		public void onContactSelected(Contact contact);
 
@@ -66,14 +70,19 @@ public class ContactListFragment extends SherlockFragment {
 
 	// TAG used for logging
 	// private static String TAG = "CorporateAddressBook";
+	private static final String FIRST_VISIBLE_ITEM = "firstVisibleItem";
 
 	// List of names in the list view control
 	private List<Contact> contactList;
+
+	private ContactListAdapter listadapter;
+	private PullToRefreshStickyHeadersListView ptrListView;
 
 	protected ContactListListener contactListListener;
 
 	private String searchTerm;
 	private String previousHeaderText;
+	private int totalNumberOfResults;
 
 	private Boolean isSelectable = false;
 	private Boolean isDualFragment = false;
@@ -96,8 +105,7 @@ public class ContactListFragment extends SherlockFragment {
 	}
 
 	private void setSelectionMode(View view, Boolean isSelectable) {
-		ListView lv = (ListView) view.findViewById(R.id.contactsListView);
-		lv.setChoiceMode(isSelectable ? ListView.CHOICE_MODE_SINGLE : ListView.CHOICE_MODE_NONE);
+		ptrListView.getRefreshableView().setChoiceMode(isSelectable ? ListView.CHOICE_MODE_SINGLE : ListView.CHOICE_MODE_NONE);
 	}
 
 
@@ -119,14 +127,19 @@ public class ContactListFragment extends SherlockFragment {
 		public void onItemClick(AdapterView<?> a, View v, int position, long id) {
 
 			// Get the selected display name from the list view
-			final Contact selectedItem = (Contact) ((ListView) getView().findViewById(R.id.contactsListView))
-					.getItemAtPosition(position);
+			StickyListHeadersListView listView = ptrListView.getRefreshableView();
+			int headerCount = listView.getHeaderViewsCount();
+			final Contact selectedItem = (Contact) listView.getAdapter()
+					.getItem(position - headerCount);
 
 			// Trigger callback so that the Activity can decide how to handle the click
 			assert (contactListListener != null);
 			contactListListener.onContactSelected(selectedItem);
 		}
 	};
+
+	public ContactListFragment() {
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -147,13 +160,48 @@ public class ContactListFragment extends SherlockFragment {
 	                         Bundle savedInstanceState) {
 
 		View view = inflater.inflate(R.layout.main, container, false);
+		ptrListView = (PullToRefreshStickyHeadersListView) view.findViewById(R.id.contactsListView);
+
+		if (!PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.getBoolean(getString(R.string.PREFS_KEY_PTR_DEMO_SHOWN), false)) {
+			enablePtrDemo(ptrListView);
+		}
 		setSelectionMode(view, isSelectable);
+		if (savedInstanceState != null) {
+			int firstVisiblePosition = savedInstanceState.getInt(FIRST_VISIBLE_ITEM);
+			ptrListView.getRefreshableView().setSelectionFromTop(firstVisiblePosition, 0);
+		}
 		return view;
+	}
+
+	private void enablePtrDemo(final PullToRefreshStickyHeadersListView ptrListView) {
+		ptrListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				//To change body of implemented methods use File | Settings | File Templates.
+			}
+
+			// Show demo for user when he/she scrolls to the end. If shown, record into prefs so that it
+			// only happens once.
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount) {
+					if (PreferenceManager.getDefaultSharedPreferences(getActivity())
+							.getBoolean(getString(R.string.PREFS_KEY_PTR_DEMO_SHOWN), false)) {
+						if (ptrListView.demo()) {
+							PreferenceManager.getDefaultSharedPreferences(getActivity())
+									.edit().putBoolean(getString(R.string.PREFS_KEY_PTR_DEMO_SHOWN), true);
+						}
+					}
+				}
+			}
+		});
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+
 		View v = getFragmentManager().findFragmentById(R.id.main_fragment).getView().findViewById(R.id.result_header_cancel);
 		v.setVisibility(View.GONE);
 		v.setOnClickListener(new View.OnClickListener() {
@@ -164,8 +212,6 @@ public class ContactListFragment extends SherlockFragment {
 		});
 
 	}
-
-	;
 
 	/* (non-Javadoc)
 	 * Overridden so that any Activity this Fragment is attached to is hooked up
@@ -183,21 +229,26 @@ public class ContactListFragment extends SherlockFragment {
 		}
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);    //To change body of overridden methods use File | Settings | File Templates.
+		outState.putInt(FIRST_VISIBLE_ITEM, ptrListView.getRefreshableView().getFirstVisiblePosition());
+	}
+
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
 	protected void setViewBackground(Boolean shaded) {
 		if (shaded) {
 			if (Utility.isPreJellyBean()) {
-				getView().findViewById(R.id.result_header).setBackgroundDrawable(getResources().getDrawable(R.drawable.header_border_shading));
-				getView().findViewById(R.id.contactsListView).setBackgroundDrawable(getResources().getDrawable(R.drawable.border_shading));
+				getView().setBackgroundDrawable(getResources().getDrawable(R.drawable.shaded_background_white));
 			} else {
-				getView().findViewById(R.id.result_header).setBackground(getResources().getDrawable(R.drawable.header_border_shading));
-				getView().findViewById(R.id.contactsListView).setBackground(getResources().getDrawable(R.drawable.border_shading));
+				getView().setBackground(getResources().getDrawable(R.drawable.shaded_background_white));
 			}
 		} else {
-			getView().findViewById(R.id.result_header).setBackgroundColor(getResources().getColor(R.color.header_background));
-			getView().findViewById(R.id.contactsListView).setBackgroundColor(getResources().getColor(R.color.contact_list_background));
+			getView().setBackgroundColor(getResources().getColor(android.R.color.white));
 		}
+		if (listadapter != null)
+			listadapter.setHeaderBackground(getResources().getDrawable(shaded ? R.drawable.shaded_fading_header_background : R.drawable.fading_header_background));
 	}
 
 	/*
@@ -248,36 +299,75 @@ public class ContactListFragment extends SherlockFragment {
 		super.onStop();
 	}
 
-	public void displayResult(ArrayList<Contact> mContacts, String latestSearchTerm, ActiveSyncManager syncManager) {
+	public void displayResult(ArrayList<Contact> mContacts, String latestSearchTerm, final ActiveSyncManager syncManager, int totalNumberOfResults) {
 		if (mContacts == null || syncManager == null) {
 			//Toast.makeText(getActivity(), R.string.undefined_result_please_try_again, Toast.LENGTH_LONG).show();
 			return;
 		}
 		searchTerm = latestSearchTerm;
+		this.totalNumberOfResults = totalNumberOfResults;
 		final int numberOfHits = mContacts.size();
-		setHeaderText(numberOfHits);
+		setHeaderText(numberOfHits, totalNumberOfResults);
 
 		// Get the accountName and sort the alphabetically
 		contactList = mContacts;
 		Collections.sort(contactList);
+
+		boolean refreshable = totalNumberOfResults > numberOfHits;
 
 		// Create a new array adapter and add the accountName to this
 		listadapter = new ContactListAdapter(
 				this.getActivity(),
 				R.layout.contact_row,
 				contactList,
-				numberOfHits > 0 && numberOfHits % syncManager.getMaxResults() == 0 ? syncManager : null);
+				/* "Get more" functionailty disabled in favor of PullToRefresh: refreshable ? syncManager : */ null);
 
-		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
-		lv.setAdapter(listadapter);
-		lv.setOnItemClickListener(mListViewListener);
+		listadapter.setHasHeaders(
+				PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getString(R.string.PREFS_KEY_CONTACT_LIST_HEADERS), true)
+		);
+
+		StickyListHeadersListView sticky = ptrListView.getRefreshableView();
+		sticky.setDivider(getResources().getDrawable(R.color.contact_list_divider));
+		sticky.setDividerHeight(Utility.dip2Pixels(getActivity(), 1));
+		sticky.setOnItemClickListener(mListViewListener);
+		ptrListView.setAdapter(listadapter);
+		ptrListView.setMode(refreshable ? PullToRefreshBase.Mode.PULL_FROM_END : PullToRefreshBase.Mode.DISABLED);
+		ptrListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<StickyListHeadersListView>() {
+			@Override
+			public void onPullDownToRefresh(PullToRefreshBase<StickyListHeadersListView> refreshView) {
+				//To change body of implemented methods use File | Settings | File Templates.
+			}
+
+			@Override
+			public void onPullUpToRefresh(PullToRefreshBase<StickyListHeadersListView> refreshView) {
+				ptrListView.setRefreshing();
+
+				Intent i = new Intent(getActivity(), CorporateAddressBook.class);
+				i.setAction(Intent.ACTION_SEARCH);
+				i.putExtra(CorporateAddressBook.ACCOUNT_KEY, syncManager.getAccountKey());
+				i.putExtra(CorporateAddressBook.START_WITH, listadapter.getCount());
+				i.putExtra(CorporateAddressBook.REQUERY, true);
+				getActivity().startActivity(i);
+			}
+		});
+		// Set labels for PullToRefresh
+		setPtrLabels(ptrListView);
+
 	}
 
-	private void setHeaderText(final int numberOfHits) {
+	private void setPtrLabels(PullToRefreshStickyHeadersListView ListView) {
+		final ILoadingLayout loadLayout = ListView.getLoadingLayoutProxy();
+		loadLayout.setPullLabel(getString(R.string.pull_to_get_more).toUpperCase());
+		loadLayout.setReleaseLabel(getString(R.string.release_to_get_more).toUpperCase());
+		loadLayout.setRefreshingLabel(getString(R.string.retrievingResults).toUpperCase());
+		loadLayout.setBackground(getResources().getDrawable(R.drawable.refresh_background));
+	}
+
+	private void setHeaderText(final int numberOfHits, int totalNumberOfResults) {
 		if (searchTerm == null || searchTerm.length() == 0)
 			setHeader(String.format(getString(R.string.last_search_produced_x_results), numberOfHits), false);
 		else
-			setHeader(String.format(getString(R.string.found_x_results_for_y), numberOfHits, searchTerm), false);
+			setHeader(String.format(getString(R.string.showing_x_of_y_results_for_z), numberOfHits, totalNumberOfResults, searchTerm), false);
 	}
 
 	void setHeader(String message, boolean isInProgress) {
@@ -300,9 +390,14 @@ public class ContactListFragment extends SherlockFragment {
 	}
 
 	public void addResult(ArrayList<Contact> contacts, ActiveSyncManager syncManager) {
-		listadapter.addAll(contacts, contacts.size() == syncManager.getMaxResults());
 
-		setHeaderText(this.contactList.size());
+		boolean refreshable = contacts.size() == syncManager.getMaxResults();
+		listadapter.addAll(contacts, false /*refreshable*/);
+
+		ptrListView.onRefreshComplete();
+		ptrListView.setMode(refreshable ? PullToRefreshBase.Mode.PULL_FROM_END : PullToRefreshBase.Mode.DISABLED);
+
+		setHeaderText(this.contactList.size(), totalNumberOfResults);
 	}
 
 	/**
@@ -317,17 +412,17 @@ public class ContactListFragment extends SherlockFragment {
 				this.getActivity(), R.layout.contact_row,
 				contactList, null);
 
-		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
-		lv.setAdapter(listadapter);
+		ptrListView.onRefreshComplete();
+		ptrListView.getRefreshableView().setAdapter(listadapter);
 		setHeader(getString(R.string.EnterSearchTerm), false);
 
 		assert (contactListListener != null);
 	}
 
 	public void setSelectedContact(Contact selectedContact) {
-		ListView lv = (ListView) getView().findViewById(R.id.contactsListView);
+		ListView lv = ptrListView.getRefreshableView();
 		lv.requestFocusFromTouch();
-		int selection = contactList.indexOf(selectedContact);
+		int selection = contactList.indexOf(selectedContact) + lv.getHeaderViewsCount();
 		lv.setSelection(selection);
 		lv.setItemChecked(selection, true);
 	}

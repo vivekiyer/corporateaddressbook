@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <resources>
-        <style name="AppTheme" parent="@style/Theme.Sherlock.Light">
-			<item name="textColorPrimary">@color/abs__primary_text_holo_light</item>
-			<item name="textColorPrimaryInverse">@color/abs__primary_text_holo_dark</item>
-        </style>
-        <!-- style name="AppTheme" parent="@android:style/Theme.Light.NoTitleBar"></style-->
-        <style name="LargeDialog" parent="@style/Theme.Sherlock.Light"></style>
-    </resources>
+<resources>
+
+	<style name="AppTheme" parent="@style/Theme.Sherlock.Light.DarkActionBar">
+		<item name="textColorPrimary">@color/abs__primary_text_holo_light</item>
+		<item name="textColorPrimaryInverse">@color/abs__primary_text_holo_dark</item>
+		<item name="actionBarStyle">@style/MyActionBar</item>
+		<item name="android:actionBarStyle">@style/MyActionBar</item>
+	</style>
+	<!-- style name="AppTheme" parent="@android:style/Theme.Light.NoTitleBar"></style-->
+	<style name="LargeDialog" parent="@style/Theme.Sherlock.Light.DarkActionBar"></style>
+</resources>

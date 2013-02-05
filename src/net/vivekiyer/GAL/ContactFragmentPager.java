@@ -12,17 +12,22 @@ import android.util.AttributeSet;
  * To change this template use File | Settings | File Templates.
  */
 public class ContactFragmentPager extends ViewPager {
+
+	Context ctx;
+
 	public ContactFragmentPager(Context context) {
 		super(context);
+		ctx = context;
 	}
 
 	public ContactFragmentPager(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		ctx = context;
 	}
 
 	@Override
 	protected void onFinishInflate() {
 		super.onFinishInflate();    //To change body of overridden methods use File | Settings | File Templates.
-		setPageMargin(Utility.dip2Pixels(App.getInstance(), 3));
+		setPageMargin(Utility.dip2Pixels(ctx, 6));
 	}
 }

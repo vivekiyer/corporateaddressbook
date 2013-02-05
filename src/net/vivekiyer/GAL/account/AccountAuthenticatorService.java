@@ -1,19 +1,17 @@
 package net.vivekiyer.GAL.account;
 
-import net.vivekiyer.GAL.App;
-import net.vivekiyer.GAL.R;
-import net.vivekiyer.GAL.preferences.Configure;
-import android.accounts.AbstractAccountAuthenticator;
-import android.accounts.Account;
-import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.*;
 import android.accounts.AccountManager;
-import android.accounts.NetworkErrorException;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import net.vivekiyer.GAL.App;
+import net.vivekiyer.GAL.R;
+import net.vivekiyer.GAL.preferences.Configure;
+import net.vivekiyer.GAL.preferences.PrefsActivity;
 
 public class AccountAuthenticatorService extends Service {
 	private static final String TAG = "AccountAuthenticatorService"; //NON-NLS
@@ -55,8 +53,8 @@ public class AccountAuthenticatorService extends Service {
 		 */
 		@Override
 		public Bundle addAccount(AccountAuthenticatorResponse response,
-				String accountType, String authTokenType,
-				String[] requiredFeatures, Bundle options)
+		                         String accountType, String authTokenType,
+		                         String[] requiredFeatures, Bundle options)
 				throws NetworkErrorException {
 
 			Bundle result = new Bundle();
@@ -72,7 +70,7 @@ public class AccountAuthenticatorService extends Service {
 
 		@Override
 		public Bundle confirmCredentials(AccountAuthenticatorResponse response,
-				Account account, Bundle options) {
+		                                 Account account, Bundle options) {
 			// TODO Auto-generated method stub
 			Log.i(TAG, "confirmCredentials"); //NON-NLS
 			return null;
@@ -80,15 +78,18 @@ public class AccountAuthenticatorService extends Service {
 
 		@Override
 		public Bundle editProperties(AccountAuthenticatorResponse response,
-				String accountType) {
-			// TODO Auto-generated method stub
+		                             String accountType) {
 			Log.i(TAG, "editProperties"); //NON-NLS
-			return null;
+			Bundle b = new Bundle();
+			Intent i = new Intent(mContext, PrefsActivity.class);
+			i.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+			b.putParcelable(AccountManager.KEY_INTENT, i);
+			return b;
 		}
 
 		@Override
 		public Bundle getAuthToken(AccountAuthenticatorResponse response,
-				Account account, String authTokenType, Bundle options)
+		                           Account account, String authTokenType, Bundle options)
 				throws NetworkErrorException {
 			// TODO Auto-generated method stub
 			Log.i(TAG, "getAuthToken"); //NON-NLS
@@ -104,7 +105,7 @@ public class AccountAuthenticatorService extends Service {
 
 		@Override
 		public Bundle hasFeatures(AccountAuthenticatorResponse response,
-				Account account, String[] features)
+		                          Account account, String[] features)
 				throws NetworkErrorException {
 			// TODO Auto-generated method stub
 			Log.i(TAG, "hasFeatures: " + features); //NON-NLS
@@ -113,7 +114,7 @@ public class AccountAuthenticatorService extends Service {
 
 		@Override
 		public Bundle updateCredentials(AccountAuthenticatorResponse response,
-				Account account, String authTokenType, Bundle options) {
+		                                Account account, String authTokenType, Bundle options) {
 			// TODO Auto-generated method stub
 			Log.i(TAG, "updateCredentials"); //NON-NLS
 			return null;

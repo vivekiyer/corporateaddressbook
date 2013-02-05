@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 /**
  * @author Vivek Iyer
- * 
+ *         <p/>
  *         This class parcels up the Contact object so that it can be passed
  *         between two activities without loss of data. It does this by writing
  *         the display name followed by all the contacts details into the parcel
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1824471215889445550L;
 
@@ -58,37 +58,35 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 	private String mobilePhone = ""; //$NON-NLS-1$
 
 	private String email;
-	
+
 	private byte[] picture = null;
-	
+
 	// Field that stores the first non empty field
 	private String firstNonEmptyField;
-	
+
 	private boolean convertedToFields = false;
 
 	public String getDisplayName() {
 		// If the XML did not contain a display name
 		// Lets check for the first name and last name
-		if(DisplayName == null)
-		{			
+		if (DisplayName == null) {
 			DisplayName = ""; //$NON-NLS-1$
-	
+
 			generateFieldsFromXML();
 
-			if(firstName != null)
-			{
+			if (firstName != null) {
 				DisplayName += firstName;
 				DisplayName += " "; //$NON-NLS-1$
 			}
-			
-			if(lastName != null)
+
+			if (lastName != null)
 				DisplayName += lastName;
-			
+
 			// If both the first name and last name are empty
 			// Use the email address
-			if(DisplayName.equalsIgnoreCase("") && email != null) //$NON-NLS-1$
-				DisplayName = email;			
-			else if(firstNonEmptyField!=null)
+			if (DisplayName.equalsIgnoreCase("") && email != null) //$NON-NLS-1$
+				DisplayName = email;
+			else if (firstNonEmptyField != null)
 				DisplayName = firstNonEmptyField;
 		}
 		return DisplayName;
@@ -97,7 +95,7 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 	public String getWorkPhone() {
 		return workPhone;
 	}
-	
+
 	public byte[] getPicture() {
 		return picture;
 	}
@@ -107,10 +105,9 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 	}
 
 	public String getTitle() {
-		if(title == null)
-			for(KeyValuePair kvp : Details)
-			{
-				if(kvp.getKey().equalsIgnoreCase("title")) //$NON-NLS-1$
+		if (title == null)
+			for (KeyValuePair kvp : Details) {
+				if (kvp.getKey().equalsIgnoreCase("title")) //$NON-NLS-1$
 				{
 					title = kvp.getValue();
 					break;
@@ -121,10 +118,9 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 	}
 
 	public String getCompany() {
-		if(company == null)
-			for(KeyValuePair kvp : Details)
-			{
-				if(kvp.getKey().equalsIgnoreCase("Company")) //$NON-NLS-1$
+		if (company == null)
+			for (KeyValuePair kvp : Details) {
+				if (kvp.getKey().equalsIgnoreCase("Company")) //$NON-NLS-1$
 				{
 					company = kvp.getValue();
 					break;
@@ -155,10 +151,9 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 	}
 
 	public String getEmail() {
-		if(email == null)
-			for(KeyValuePair kvp : Details)
-			{
-				if(kvp.getKey().equalsIgnoreCase("email")) //$NON-NLS-1$
+		if (email == null)
+			for (KeyValuePair kvp : Details) {
+				if (kvp.getKey().equalsIgnoreCase("email")) //$NON-NLS-1$
 				{
 					email = kvp.getValue();
 					break;
@@ -216,7 +211,7 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 		}
 
 		int picLength = in.readInt();
-		if(picLength > 0) {
+		if (picLength > 0) {
 			picture = new byte[picLength];
 			in.readByteArray(picture);
 		}
@@ -250,10 +245,9 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 			dest.writeString(kvp.getValue());
 		}
 
-		if(picture == null) {
+		if (picture == null) {
 			dest.writeInt(0);
-		}
-		else {
+		} else {
 			dest.writeInt(picture.length);
 			dest.writeByteArray(picture);
 		}
@@ -262,7 +256,7 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 	public void generateFieldsFromXML() {
 		if (convertedToFields)
 			return;
-		
+
 		// Get the key value pairs from the contact
 		// and loop over each one		
 
@@ -270,8 +264,8 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 			String key = kvp.getKey();
 			String value = kvp.getValue();
 
-			if(firstNonEmptyField == null)
-				firstNonEmptyField = value;			
+			if (firstNonEmptyField == null)
+				firstNonEmptyField = value;
 
 			if (key.equalsIgnoreCase("Phone")) { //$NON-NLS-1$
 				workPhone = value;
@@ -295,12 +289,12 @@ public class Contact implements Parcelable, Comparable<Contact>, Serializable {
 				email = value;
 			}
 		}
-		
+
 		convertedToFields = true;
 	}
 
 	@Override
 	public int compareTo(Contact another) {
-		return(this.getDisplayName().compareTo(another.getDisplayName()));
+		return (this.getDisplayName().compareToIgnoreCase(another.getDisplayName()));
 	}
 }

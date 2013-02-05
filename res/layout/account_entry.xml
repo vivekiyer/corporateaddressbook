@@ -22,7 +22,7 @@
 
 	<ImageView
 			android:id="@+id/accountIcon"
-			android:layout_width="wrap_content"
+			android:layout_width="@dimen/abs__dropdownitem_icon_width"
 			android:layout_height="fill_parent"
 			android:layout_alignParentBottom="true"
 			android:layout_alignParentTop="true"

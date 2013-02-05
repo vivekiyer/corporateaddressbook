@@ -9,9 +9,10 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.SubMenu;
+import net.vivekiyer.GAL.ContactWriterSdk5;
 import net.vivekiyer.GAL.R;
 
 import java.util.ArrayList;
@@ -20,8 +21,9 @@ import java.util.ArrayList;
  * Custom adapter used to display account icons and descriptions in the
  * account spinner.
  */
-public class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccountsUpdateListener {
+public class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccountsUpdateListener, SpinnerAdapter {
 
+	public final static int FIRST_ACCOUNT = 0x300;
 	private LayoutInflater layoutInflater;
 	private Context context;
 	private ArrayList<AccountData> mAccounts;
@@ -65,11 +67,57 @@ public class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccou
 		return convertView;
 	}
 
+	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+		return getView(position, convertView, parent);
+	}
+
+	public View getDropDownView() {
+		LinearLayout container = new LinearLayout(context);
+		LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+		container.setOrientation(LinearLayout.VERTICAL);
+		for (int i = 0; i < mAccounts.size(); i++) {
+			AccountData ad = mAccounts.get(i);
+			if (!ad.getType().equals(context.getString(R.string.ACCOUNT_TYPE))) {
+				View v = getView(i, null, container);
+				container.addView(v, layout);
+			}
+		}
+		return container;
+	}
+
+	public SubMenu getMenuItems(SubMenu subMenu, final ContactWriterSdk5 contactWriter) {
+		ArrayList<MenuItem> list = new ArrayList<MenuItem>();
+		for (int i = 0; i < mAccounts.size(); i++) {
+			final AccountData ad = mAccounts.get(i);
+			if (!ad.getType().equals(context.getString(R.string.ACCOUNT_TYPE))) {
+				MenuItem mi = subMenu.add(0, FIRST_ACCOUNT + i, i, ad.getName());
+				mi.setIcon(ad.getIcon());
+				mi.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						contactWriter.createContactEntry(ad);
+						return true;  //To change body of implemented methods use File | Settings | File Templates.
+					}
+				});
+			}
+		}
+		return subMenu;
+	}
+
 	@Override
 	public void onAccountsUpdated(Account[] accounts) {
 		//Log.i(TAG, "Account list update detected");
+		updateAccountData(context, accounts, mAccounts);
+
+		// Update the account spinner
+		this.notifyDataSetChanged();
+	}
+
+	static void updateAccountData(Context context, Account[] accounts, ArrayList<AccountData> accountData) {
+
 		// Clear out any old data to prevent duplicates
-		mAccounts.clear();
+		accountData.clear();
 
 		// Get account data from system
 		AuthenticatorDescription[] accountTypes = AccountManager.get(context)
@@ -85,13 +133,9 @@ public class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccou
 				AuthenticatorDescription ad = getAuthenticatorDescription(
 						systemAccountType, accountTypes);
 				AccountData data = new AccountData(accounts[i].name, ad);
-				mAccounts.add(data);
+				accountData.add(data);
 			}
 		}
-
-		// Update the account spinner
-		this.notifyDataSetChanged();
-
 	}
 
 	/**
@@ -117,7 +161,6 @@ public class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccou
 	protected void finalize() throws Throwable {
 		// Make sure listener is un-registered when this object is destructed, will otherwise cause leak
 		AccountManager.get(context).removeOnAccountsUpdatedListener(this);
-
 		super.finalize();
 	}
 }

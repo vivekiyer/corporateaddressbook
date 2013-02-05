@@ -21,6 +21,8 @@ import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
@@ -29,8 +31,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.SearchView;
-import android.widget.SpinnerAdapter;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -67,6 +67,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 	// Used to launch the initial configuration pane
 	public static final int DISPLAY_CONFIGURATION_REQUEST = 2;
+	public static final int REPROVISION_AND_RETRY = 3;
 
 	static final String CONTACTS = "mContacts"; //$NON-NLS-1$
 	static final String SEARCH_TERM = "latestSearchTerm"; //$NON-NLS-1$
@@ -75,12 +76,13 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	static final String ACCOUNT_KEY = "accountKey";  //$NON-NLS-1$
 	static final String START_WITH = "startWith";  //$NON-NLS-1$
 	static final String REQUERY = "requery_previous"; //NON-NLS
+	static final String TOTAL_RESULT_COUNT = "totalResultCount";
 
 	// Progress bar
 	//	private ProgressDialog progressdialog;
 	// Last search term
 	private String latestSearchTerm;
-	private View searchView;
+	private com.actionbarsherlock.widget.SearchView searchView;
 
 	// TAG used for logging
 
@@ -95,7 +97,9 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	private boolean mDualPane;
 	private ContactListFragment contactsFragment;
 	private ContactPagerFragment detailsFragment;
+
 	private boolean isUpdating = false;
+	private int totalNumberOfResults;
 
 	/*
 	 * (non-Javadoc)
@@ -120,12 +124,12 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 		initializeActionBar();
 
-		// Get the intent, verify the action and get the query
-		// but not if the activity is being recreated (would cause a new search)
-		if (savedInstanceState == null || !savedInstanceState.containsKey("mContacts")) { //$NON-NLS-1$
-			final Intent intent = getIntent();
-			onNewIntent(intent);
-		}
+		FragmentManager fm = getSupportFragmentManager();
+		detailsFragment = (ContactPagerFragment) fm
+				.findFragmentById(R.id.contact_fragment);
+		contactsFragment = (ContactListFragment) fm
+				.findFragmentById(R.id.main_fragment);
+
 	}
 
 	private void initializeActionBar() {
@@ -138,11 +142,19 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			return;
 		final ActionBar actionBar = getSupportActionBar();
 
+		if (Utility.isPreHoneycomb()) {
+			BitmapDrawable bg = (BitmapDrawable) getResources().getDrawable(R.drawable.actionbar_background);
+			bg.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+			actionBar.setBackgroundDrawable(bg);
+			actionBar.setSplitBackgroundDrawable(bg);
+		}
+
 		if (App.getAccounts().size() >= 2) {
 			actionBar.setDisplayShowTitleEnabled(false);
 			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
-			SpinnerAdapter adapter = new ArrayAdapter<ActiveSyncManager>(getBaseContext(), R.layout.sherlock_spinner_dropdown_item, App.getAccounts());
+			ArrayAdapter<ActiveSyncManager> adapter = new ArrayAdapter<ActiveSyncManager>(actionBar.getThemedContext(), R.layout.sherlock_spinner_item, App.getAccounts());
+			adapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
 			actionBar.setListNavigationCallbacks(adapter, this);
 
 			if (activeSyncManager == null || !App.getAccounts().contains(activeSyncManager)) {
@@ -184,44 +196,18 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		}
 	}
 
-	// Assist user by showing search box whenever returning
-	@Override
-	protected void onStart() {
-		super.onStart();
-
-		FragmentManager fm = getSupportFragmentManager();
-		detailsFragment = (ContactPagerFragment) fm
-				.findFragmentById(R.id.contact_fragment);
-		contactsFragment = (ContactListFragment) fm
-				.findFragmentById(R.id.main_fragment);
-
-		if (detailsFragment != null && detailsFragment.isInLayout()) {
-			contactsFragment.setIsSelectable(true);
-			contactsFragment.setViewBackground(false);
-			FragmentTransaction ft = fm.beginTransaction();
-			ft.hide(detailsFragment);
-			ft.commit();
-		}
-
-		final Intent intent = getIntent();
-		if (intent != null) {
-			final Set<String> categories = intent.getCategories();
-			if ((categories != null)
-					&& categories.contains(Intent.CATEGORY_LAUNCHER)) {
-				this.onSearchRequested();
-			}
-		}
-	}
-
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
+		// A savedInstanceState means that activity is being recreated and not launched
+		// from a new Intent
 		if (savedInstanceState != null && savedInstanceState.containsKey(CONTACTS)) {
 			mContacts = (ArrayList<Contact>) savedInstanceState.get(CONTACTS);
 			String latestSearchTerm = savedInstanceState.getString(SEARCH_TERM);
+			totalNumberOfResults = savedInstanceState.getInt(TOTAL_RESULT_COUNT);
 			selectedContact = (Contact) savedInstanceState.get(SELECTED_CONTACT);
-			displaySearchResult(mContacts, latestSearchTerm);
+			displaySearchResult(mContacts, latestSearchTerm, totalNumberOfResults);
 			if (selectedContact != null) {
 				selectContact(selectedContact);
 			}
@@ -233,6 +219,38 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 					App.taskManager.remove(searchHash);
 					contactsFragment.setHeader(getString(R.string.retrievingResults), true);
 				}
+			}
+		}
+		// Not recreated; that means we've got a new Intent to deal with
+		// Get the intent, verify the action and get the query
+//		if (savedInstanceState == null || !savedInstanceState.containsKey(CONTACTS)) { //$NON-NLS-1$
+		else {
+			final Intent intent = getIntent();
+			onNewIntent(intent);
+		}
+
+	}
+
+	// Assist user by showing search box whenever returning
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		if (mDualPane) { //detailsFragment != null && detailsFragment.isInLayout()) {
+			contactsFragment.setIsSelectable(true);
+//			contactsFragment.setViewBackground(false);
+			getSupportFragmentManager()
+					.beginTransaction()
+					.hide(detailsFragment)
+					.commit();
+		}
+
+		final Intent intent = getIntent();
+		if (intent != null) {
+			final Set<String> categories = intent.getCategories();
+			if ((categories != null)
+					&& categories.contains(Intent.CATEGORY_LAUNCHER)) {
+				this.onSearchRequested();
 			}
 		}
 	}
@@ -259,6 +277,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		outState.putSerializable(CONTACTS, this.mContacts);
 		outState.putString(SEARCH_TERM, this.latestSearchTerm);
 		outState.putSerializable(SELECTED_CONTACT, this.selectedContact);
+		outState.putInt(TOTAL_RESULT_COUNT, totalNumberOfResults);
 		if (search != null && search.getStatus().equals(AsyncTask.Status.RUNNING)) {
 			outState.putInt(ONGOING_SEARCH, search.hashCode());
 			App.taskManager.put(search.hashCode(), search);
@@ -274,6 +293,8 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	}
 
 	private void performSearch(String name, ActiveSyncManager syncManager, int startWith, boolean clearResults) {
+		if (this.search != null && search.getStatus().equals(AsyncTask.Status.RUNNING))
+			return;
 
 		if (clearResults) {
 			contactsFragment.setHeader(getString(R.string.retrievingResults), true);
@@ -293,6 +314,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		search.execute(name);
 	}
 
+
 	// Cancels the current search if there is one and return true if an actual, ongoing search was cancelled
 	boolean cancelSearch() {
 		if (this.search == null || !search.getStatus().equals(AsyncTask.Status.RUNNING))
@@ -300,6 +322,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		contactsFragment.resetHeader();
 		search.cancel(false);
 		search = null;
+		supportInvalidateOptionsMenu();
 		return true;
 	}
 
@@ -340,26 +363,35 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 			MenuItem item = menu.findItem(
 					R.id.menu_search);
-			searchView = item.getActionView();
-			if (searchView instanceof com.actionbarsherlock.widget.SearchView) {
-				((com.actionbarsherlock.widget.SearchView) searchView).setSearchableInfo(searchableInfo);
-				((com.actionbarsherlock.widget.SearchView) searchView).setIconifiedByDefault(false);
-			} else if (searchView instanceof SearchView) {
-				((android.widget.SearchView) searchView).setSearchableInfo(searchableInfo);
-				((android.widget.SearchView) searchView).setIconifiedByDefault(false);
-			}
+			searchView = (com.actionbarsherlock.widget.SearchView) item.getActionView();
+			searchView.setSearchableInfo(searchableInfo);
+			searchView.setIconifiedByDefault(false);
+			searchView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					searchView.requestFocus();
+				}
+			});
+			item.setEnabled(search == null || !search.getStatus().equals(AsyncTask.Status.RUNNING));
 		}
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);    //To change body of overridden methods use File | Settings | File Templates.
+		MenuItem item = menu.findItem(R.id.menu_search);
+		item.setEnabled(search == null || search.getStatus() != AsyncTask.Status.RUNNING);
+		return true;
+	}
 
 	/*
-	 * (non-Javadoc)
-	 *
-	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-	 *
-	 * Launches the preferences pane when the user clicks the settings option
-	 */
+			 * (non-Javadoc)
+			 *
+			 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+			 *
+			 * Launches the preferences pane when the user clicks the settings option
+			 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
@@ -399,60 +431,47 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-// Now handled via onAccountsChanged() called by AccountManager
-//		switch (requestCode) {
-//			case DISPLAY_CONFIGURATION_REQUEST:
-//				// Initialize the activesync object with the validated settings
-//				//loadPreferences();
-//				break;
-//		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	private void addSearchResults(ArrayList<Contact> contacts) {
-		Collections.sort(contacts);
+		supportInvalidateOptionsMenu();
 
-		final FragmentManager fragmentManager = getSupportFragmentManager();
+		Collections.sort(contacts);
 
 		if (contactsFragment == null) {
 			Debug.Log("List fragment missing from main activity, discarding search result"); //$NON-NLS-1$
 			return;
 		}
 		contactsFragment.addResult(contacts, activeSyncManager);
-		if (detailsFragment.isVisible()) {
+		if (detailsFragment != null && detailsFragment.isVisible()) {
 			// To force redraw/update pager to new size of contact list
 			detailsFragment.update(-1, null);
 		}
 	}
 
 	@TargetApi(11)
-	private void displaySearchResult(ArrayList<Contact> contacts, String searchTerm) {
+	private void displaySearchResult(ArrayList<Contact> contacts, String searchTerm, int totalNumberOfResults) {
+		supportInvalidateOptionsMenu();
 
 		this.mContacts = contacts;
 		this.latestSearchTerm = searchTerm;
-
-		final FragmentManager fragmentManager = getSupportFragmentManager();
+		this.totalNumberOfResults = totalNumberOfResults;
 
 		if (contactsFragment == null) {
 			Debug.Log("List fragment missing from main activity, discarding search result"); //$NON-NLS-1$
 			return;
 		}
-		contactsFragment.displayResult(mContacts, latestSearchTerm, this.activeSyncManager);
+		contactsFragment.displayResult(mContacts, latestSearchTerm, this.activeSyncManager, totalNumberOfResults);
 
-		resetAndHideDetails(fragmentManager);
+		resetAndHideDetails();
 		if (searchView != null) {
-			if (searchView instanceof com.actionbarsherlock.widget.SearchView) {
-				((com.actionbarsherlock.widget.SearchView) searchView).setQuery("", false); //$NON-NLS-1$
-			} else if (searchView instanceof SearchView) {
-				((SearchView) searchView).setQuery("", false); //$NON-NLS-1$
-			} else {
-				throw new RuntimeException("Unknown SearchView type"); //$NON-NLS-1$
-			}
+			searchView.setQuery("", false); //$NON-NLS-1$
 		}
 		contactsFragment.getView().requestFocus();
 	}
 
-	private void resetAndHideDetails(final FragmentManager fragmentManager) {
+	private void resetAndHideDetails() {
 
 		if (detailsFragment != null && detailsFragment.isInLayout() && !this.isPaused) {
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -471,18 +490,6 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		selectedContact = null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see android.app.Activity#onStop()
-	 *
-	 * Called when the application is closed
-	 */
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
-
 	@Override
 	protected void onDestroy() {
 		if (search != null)
@@ -499,23 +506,19 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 		this.selectedContact = contact;
 
-		final FragmentManager fragmentManager = getSupportFragmentManager();
-
-		final Bundle b = new Bundle();
 		assert (mContacts != null);
 		int contactIndex = mContacts.indexOf(contact);
-		b.putInt(getString(R.string.KEY_CONTACT_INDEX), contactIndex);
-		b.putParcelableArrayList(getString(R.string.KEY_CONTACT_LIST), mContacts);
 
 		if (detailsFragment == null || !detailsFragment.isInLayout()) {
 			// Launch the activity
 			final Intent myIntent = new Intent(this, ContactActivity.class);
-			myIntent.putExtras(b);
+			myIntent.putExtra(getString(R.string.KEY_CONTACT_INDEX), contactIndex);
+			myIntent.putParcelableArrayListExtra(getString(R.string.KEY_CONTACT_LIST), mContacts);
 			startActivity(myIntent);
 
 		} else {
 			isUpdating = true;
-			detailsFragment.update(mContacts.indexOf(contact), mContacts);
+			detailsFragment.update(contactIndex, mContacts);
 			isUpdating = false;
 
 			if (!detailsFragment.isVisible()) {
@@ -537,7 +540,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 	@Override
 	public void onSearchCleared() {
-		resetAndHideDetails(getSupportFragmentManager());
+		resetAndHideDetails();
 	}
 
 	@TargetApi(11)
@@ -545,19 +548,9 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	public boolean onSearchRequested() {
 		if (!Utility.isPreFroYo()) {
 			if (searchView != null) {
-				if (searchView instanceof com.actionbarsherlock.widget.SearchView) {
-					com.actionbarsherlock.widget.SearchView v = (com.actionbarsherlock.widget.SearchView) searchView;
-					v.setFocusable(true);
-					v.setIconified(false);
-					v.requestFocusFromTouch();
-				} else if (searchView.getClass().toString().equals(SearchView.class.toString())) {
-					SearchView v = (SearchView) searchView;
-					v.setFocusable(true);
-					v.setIconified(false);
-					v.requestFocusFromTouch();
-				} else {
-					throw new RuntimeException("Unknown SearchView type"); //$NON-NLS-1$
-				}
+				searchView.setFocusable(true);
+				searchView.setIconified(false);
+				searchView.requestFocusFromTouch();
 				return true;
 			} else {
 				Debug.Log("Running HC+ without SearchView"); //$NON-NLS-1$
@@ -571,8 +564,9 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	public void onSearchCompleted(int result,
 	                              GALSearch search) {
 		if (result == RESULT_OK) {
+			supportInvalidateOptionsMenu();
 			if (search.getClearResults())
-				displaySearchResult(search.getContacts(), search.getSearchTerm());
+				displaySearchResult(search.getContacts(), search.getSearchTerm(), search.getTotalNumberOfResults());
 			else
 				addSearchResults(search.getContacts());
 			return;
@@ -587,9 +581,8 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		String negativeButtonText;
 		switch (result) {
 			// Errors that might be remedied by updating server settings
-			case 401:
+			case 401: // UNAUTHORIZED
 			case ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION:
-			case ConnectionChecker.TIMEOUT:
 				positiveButtonText = getString(R.string.show_settings);
 				negativeButtonText = getString(android.R.string.cancel);
 				dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, DISPLAY_CONFIGURATION_REQUEST, android.R.id.closeButton);
@@ -600,8 +593,22 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 					Debug.Log(e.getMessage());
 				}
 				break;
+			case 500:
+			case ConnectionChecker.TIMEOUT:
+				positiveButtonText = getString(R.string.retry);
+				negativeButtonText = getString(android.R.string.cancel);
+				dialogFragment = ChoiceDialogFragment.newInstance(
+						title,
+						message, positiveButtonText, negativeButtonText, REPROVISION_AND_RETRY, android.R.id.closeButton);
+				dialogFragment.setListener(this);
+				try {
+					dialogFragment.show(getSupportFragmentManager(), "reprovision"); //$NON-NLS-1$
+				} catch (java.lang.IllegalStateException e) {
+					Debug.Log(e.getMessage());
+				}
+				break;
 			// Errors that depend on external (non app-related) circumstances
-			case 403:
+			case 403: // FORBIDDEN
 				positiveButtonText = getString(android.R.string.ok);
 				negativeButtonText = getString(android.R.string.copy);
 				dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, android.R.id.closeButton, android.R.id.copy);
@@ -624,8 +631,37 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	}
 
 	public void onChoiceDialogOptionPressed(int action) {
-		if (action == DISPLAY_CONFIGURATION_REQUEST)
-			showConfiguration(this);
+		switch (action) {
+			case DISPLAY_CONFIGURATION_REQUEST:
+				showConfiguration(this);
+				break;
+			case REPROVISION_AND_RETRY:
+				AsyncTask<ActiveSyncManager, Void, Boolean> getVersionTask =
+						new AsyncTask<ActiveSyncManager, Void, Boolean>() {
+							@Override
+							protected Boolean doInBackground(ActiveSyncManager... params) {
+								try {
+									return params[0].getExchangeServerVersion() == 200;
+								} catch (Exception e) {
+									Exception ex = e;
+									return false;
+								}
+							}
+
+							@Override
+							protected void onPostExecute(Boolean requery) {
+								if (requery)
+									CorporateAddressBook.this.performSearch(latestSearchTerm);
+								else
+									showConfiguration(CorporateAddressBook.this);
+							}
+						};
+				getVersionTask.execute(activeSyncManager);
+				break;
+			default:
+				break;
+		}
+
 	}
 
 	@Override

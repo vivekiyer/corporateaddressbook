@@ -3,9 +3,9 @@
 
 	<item
 			android:id="@+id/menu_search"
-			android:actionViewClass="com.actionbarsherlock.widget.SearchView"
-			android:icon="@drawable/abs__ic_search_api_holo_light"
+			android:icon="@drawable/abs__ic_search"
 			android:showAsAction="ifRoom|withText"
+			android:actionViewClass="com.actionbarsherlock.widget.SearchView"
 			android:title="@string/searchDirectory"
 			android:titleCondensed="@string/search"
 			android:menuCategory="container"
@@ -13,7 +13,7 @@
 	</item>
 	<item
 			android:id="@+id/clearSearchHistory"
-			android:showAsAction="never|withText"
+			android:showAsAction="withText"
 			android:title="@string/clearHistory"
 			android:orderInCategory="500"
 			android:menuCategory="secondary">

@@ -17,6 +17,15 @@
 			android:id="@+id/settings_heading"
 			android:title="@string/settings"/>
 	<header
+			android:id="@+id/settings_general"
+			android:title="@string/general"
+			android:fragment="net.vivekiyer.GAL.preferences.PrefsFragment"
+			>
+		<extra
+				android:name="pref-resource"
+				android:value="pref_general"/>
+	</header>
+	<header
 			android:fragment="net.vivekiyer.GAL.preferences.PrefsFragment"
 			android:icon="@drawable/ic_action_about"
 			android:title="@string/about_app"

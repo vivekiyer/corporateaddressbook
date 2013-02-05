@@ -17,637 +17,633 @@
 
 package com.android.exchange.adapter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
 import net.vivekiyer.GAL.Debug;
+
+import java.io.*;
+import java.util.ArrayList;
 
 /**
  * Extremely fast and lightweight WBXML parser, implementing only the subset of WBXML that
  * EAS uses (as defined in the EAS specification)
- *
  */
 public abstract class Parser {
-    private static final boolean LOG_VERBOSE = Debug.Verbose;
+	private static final boolean LOG_VERBOSE = Debug.isVerbose();
 
-    // The following constants are Wbxml standard
-    public static final int START_DOCUMENT = 0;
-    public static final int DONE = 1;
-    public static final int START = 2;
-    public static final int END = 3;
-    public static final int TEXT = 4;
-    public static final int END_DOCUMENT = 3;
-    private static final int NOT_FETCHED = Integer.MIN_VALUE;
-    private static final int NOT_ENDED = Integer.MIN_VALUE;
-    private static final int EOF_BYTE = -1;
-    private boolean logging = false;
-    private boolean capture = false;
+	// The following constants are Wbxml standard
+	public static final int START_DOCUMENT = 0;
+	public static final int DONE = 1;
+	public static final int START = 2;
+	public static final int END = 3;
+	public static final int TEXT = 4;
+	public static final int END_DOCUMENT = 3;
+	private static final int NOT_FETCHED = Integer.MIN_VALUE;
+	private static final int NOT_ENDED = Integer.MIN_VALUE;
+	private static final int EOF_BYTE = -1;
+	private boolean logging = false;
+	private boolean capture = false;
 
 	// Status according to http://blogs.msdn.com/b/exchangedev/archive/2011/08/19/provisioning-policies-remote-wipe-and-abq-in-exchange-activesync.aspx
 	// In Exchange versions 12.1 and earlier, these were all summarized in the server sending a HTTP 449
 	// Versions later than 12.1 support a more fine tuned mechanism for provisioning status
 	// 142-144 are transient errors that should go away by (re)provisioning. the others are
 	// non-transient, they need config change on server to disappear.
-	public static final int STATUS_NOT_SET                                  = -1;
-	public static final int STATUS_OK                                       = 1;
-	public static final int STATUS_NO_POLICY_NEEDED							= 2;
-	public static final int STATUS_NOT_FULLY_PROVISIONABLE                  = 139;
-	public static final int STATUS_REMOTE_WIPE_REQUESTED                    = 140;
-	public static final int STATUS_LEGACY_DEVICE_ON_STRICT_POLICY           = 141;
-	public static final int STATUS_DEVICE_NOT_PROVISIONED                   = 142;
-	public static final int STATUS_POLICY_REFRESH                           = 143;
-	public static final int STATUS_INVALID_POLICY_KEY                       = 144;
-	public static final int STATUS_EXTERNALLY_MANAGED_DEVICES_NOT_ALLOWED   = 145;
-	public static final int STATUS_TOO_MANY_DEVICES							= 177;
-    
-    // It IS used...
+	public static final int STATUS_NOT_SET = -1;
+	public static final int STATUS_OK = 1;
+	public static final int STATUS_NO_POLICY_NEEDED = 2;
+	public static final int STATUS_NOT_FULLY_PROVISIONABLE = 139;
+	public static final int STATUS_REMOTE_WIPE_REQUESTED = 140;
+	public static final int STATUS_LEGACY_DEVICE_ON_STRICT_POLICY = 141;
+	public static final int STATUS_DEVICE_NOT_PROVISIONED = 142;
+	public static final int STATUS_POLICY_REFRESH = 143;
+	public static final int STATUS_INVALID_POLICY_KEY = 144;
+	public static final int STATUS_EXTERNALLY_MANAGED_DEVICES_NOT_ALLOWED = 145;
+	public static final int STATUS_TOO_MANY_DEVICES = 177;
+
+	// It IS used...
 	@SuppressWarnings("unused")
-    private String logTag;
+	private String logTag;
 
-    // Where tags start in a page
-    private static final int TAG_BASE = 5;
+	// Where tags start in a page
+	private static final int TAG_BASE = 5;
 
-    private ArrayList<Integer> captureArray;
+	private ArrayList<Integer> captureArray;
 
-    // The input stream for this parser
-    private InputStream in;
+	// The input stream for this parser
+	private InputStream in;
 
-    // The current tag depth
-    private int depth;
+	// The current tag depth
+	private int depth;
 
-    // The upcoming (saved) id from the stream
-    private int nextId = NOT_FETCHED;
+	// The upcoming (saved) id from the stream
+	private int nextId = NOT_FETCHED;
 
-    // The current tag table (i.e. the tag table for the current page)
-    private String[] tagTable;
+	// The current tag table (i.e. the tag table for the current page)
+	private String[] tagTable;
 
-    // An array of tag tables, as defined in EasTags
-    static private String[][] tagTables = new String[Tags.pages.length + 1][];
+	// An array of tag tables, as defined in EasTags
+	static private String[][] tagTables = new String[Tags.pages.length + 1][];
 
-    // The stack of names of tags being processed; used when debug = true
-    private String[] nameArray = new String[32];
+	// The stack of names of tags being processed; used when debug = true
+	private String[] nameArray = new String[32];
 
-    // The stack of tags being processed
-    private int[] startTagArray = new int[32];
+	// The stack of tags being processed
+	private int[] startTagArray = new int[32];
 
-    // The following vars are available to all to avoid method calls that represent the state of
-    // the parser at any given time
-    public int endTag = NOT_ENDED;
+	// The following vars are available to all to avoid method calls that represent the state of
+	// the parser at any given time
+	public int endTag = NOT_ENDED;
 
-    public int startTag;
+	public int startTag;
 
-    // The type of the last token read
-    public int type;
+	// The type of the last token read
+	public int type;
 
-    // The current page
-    public int page;
+	// The current page
+	public int page;
 
-    // The current tag
-    public int tag;
+	// The current tag
+	public int tag;
 
-    // The name of the current tag
-    public String name;
+	// The name of the current tag
+	public String name;
 
-    // Whether the current tag is associated with content (a value)
-    public boolean noContent;
+	// Whether the current tag is associated with content (a value)
+	public boolean noContent;
 
-    // The value read, as a String.  Only one of text or num will be valid, depending on whether the
-    // value was requested as a String or an int (to avoid wasted effort in parsing)
-    public String text;
+	// The value read, as a String.  Only one of text or num will be valid, depending on whether the
+	// value was requested as a String or an int (to avoid wasted effort in parsing)
+	public String text;
 
-    // The value read, as an int
-    public int num;
+	// The value read, as an int
+	public int num;
 
-    // The value read, as bytes
-    public byte[] bytes;
-    
-    // The status of the last stream parsed
-    protected int status = STATUS_NOT_SET;
+	// The value read, as bytes
+	public byte[] bytes;
 
-    public int getStatus() {
+	// The status of the last stream parsed
+	protected int status = STATUS_NOT_SET;
+
+	public int getStatus() {
 		return status;
 	}
 
 	/**
-     * Generated when the parser comes to EOF prematurely during parsing (i.e. in error)
-     */
-    public class EofException extends IOException {
-        private static final long serialVersionUID = 1L;
-    }
+	 * Generated when the parser comes to EOF prematurely during parsing (i.e. in error)
+	 */
+	public class EofException extends IOException {
+		private static final long serialVersionUID = 1L;
+	}
 
-    /**
-     * An EmptyStreamException is an EofException that occurs reading the first byte in the parser's
-     * input stream; in other words, the stream had no content.
-     */
-    public class EmptyStreamException extends EofException {
-        private static final long serialVersionUID = 1L;
-    }
+	/**
+	 * An EmptyStreamException is an EofException that occurs reading the first byte in the parser's
+	 * input stream; in other words, the stream had no content.
+	 */
+	public class EmptyStreamException extends EofException {
+		private static final long serialVersionUID = 1L;
+	}
 
-    public class EodException extends IOException {
-        private static final long serialVersionUID = 1L;
-    }
+	public class EodException extends IOException {
+		private static final long serialVersionUID = 1L;
+	}
 
-    public class EasParserException extends IOException {
-        private static final long serialVersionUID = 1L;
+	public class EasParserException extends IOException {
+		private static final long serialVersionUID = 1L;
 
-        EasParserException() {
-            super("WBXML format error"); //$NON-NLS-1$
-        }
+		EasParserException() {
+			super("WBXML format error"); //$NON-NLS-1$
+		}
 
-        EasParserException(String reason) {
-            super(reason);
-        }
-    }
-    
-    /*
-     * Exception class to indicate an unexpected parse accountName, ie one other than STATUS_OK. This includes
-     * HTTP errors and EAS/WBXML status tags.
-     */
-    public class EasNotSuccessfulException extends Exception {
-        private static final long serialVersionUID = 1L;
+		EasParserException(String reason) {
+			super(reason);
+		}
+	}
 
-        public int status = STATUS_NOT_SET;
-        public int httpStatus = STATUS_NOT_SET;
-        public String description = ""; //$NON-NLS-1$
-        
-        EasNotSuccessfulException() {
-        	this("Response status indicated non-successful query"); //$NON-NLS-1$
-        }
+	/*
+	 * Exception class to indicate an unexpected parse accountName, ie one other than STATUS_OK. This includes
+	 * HTTP errors and EAS/WBXML status tags.
+	 */
+	public class EasNotSuccessfulException extends Exception {
+		private static final long serialVersionUID = 1L;
 
-        EasNotSuccessfulException(String reason) {
-        	super(reason);
-        }
+		public int status = STATUS_NOT_SET;
+		public int httpStatus = STATUS_NOT_SET;
+		public String description = ""; //$NON-NLS-1$
 
-        EasNotSuccessfulException(String reason, int status) {
-        	this(reason);
-        	this.status = status;
-        }
+		EasNotSuccessfulException() {
+			this("Response status indicated non-successful query"); //$NON-NLS-1$
+		}
 
-        EasNotSuccessfulException(String reason, int status, String description) {
-        	this(reason, status);
-        	this.description = description;
-        }
-    }
+		EasNotSuccessfulException(String reason) {
+			super(reason);
+		}
 
-    public boolean parse() throws IOException{
-        return false;
-    }
+		EasNotSuccessfulException(String reason, int status) {
+			this(reason);
+			this.status = status;
+		}
 
-    /**
-     * Initialize the tag tables; they are constant
-     *
-     */
-    static {
-        String[][] pages = Tags.pages;
-        for (int i = 0; i < pages.length; i++) {
-            String[] page = pages[i];
-            if (page.length > 0) {
-                tagTables[i] = page;
-            }
-        }
-    }
+		EasNotSuccessfulException(String reason, int status, String description) {
+			this(reason, status);
+			this.description = description;
+		}
+	}
 
-    public Parser(InputStream in) throws IOException {
-        setInput(in, true);
-        logging = Debug.Enabled;
-    }
+	public boolean parse() throws IOException {
+		return false;
+	}
 
-    /**
-     * Constructor for use when switching parsers within a input stream
-     * @param parser an existing, initialized parser
-     * @throws IOException
-     */
-    public Parser(Parser parser) throws IOException {
-        setInput(parser.in, false);
-        logging = Debug.Enabled;
-    }
+	/**
+	 * Initialize the tag tables; they are constant
+	 *
+	 */
+	static {
+		String[][] pages = Tags.pages;
+		for (int i = 0; i < pages.length; i++) {
+			String[] page = pages[i];
+			if (page.length > 0) {
+				tagTables[i] = page;
+			}
+		}
+	}
 
-    /**
-     * Set the debug state of the parser.  When debugging is on, every token is logged (Log.v) to
-     * the console.
-     *
-     * @param val the desired state for debug output
-     */
-    public void setDebug(boolean val) {
-        logging = val;
-    }
+	public Parser(InputStream in) throws IOException {
+		setInput(in, true);
+		logging = Debug.isEnabled();
+	}
 
-    protected InputStream getInput() {
-        return in;
-    }
+	/**
+	 * Constructor for use when switching parsers within a input stream
+	 *
+	 * @param parser an existing, initialized parser
+	 * @throws IOException
+	 */
+	public Parser(Parser parser) throws IOException {
+		setInput(parser.in, false);
+		logging = Debug.isEnabled();
+	}
 
-    /**
-     * Set the tag used for logging.  When debugging is on, every token is logged (Log.v) to
-     * the console.
-     *
-     * @param val the logging tag
-     */
-    public void setLoggingTag(String val) {
-        logTag = val;
-    }
+	/**
+	 * Set the debug state of the parser.  When debugging is on, every token is logged (Log.v) to
+	 * the console.
+	 *
+	 * @param val the desired state for debug output
+	 */
+	public void setDebug(boolean val) {
+		logging = val;
+	}
 
-    /**
-     * Turns on data capture; this is used to create test streams that represent "live" data and
-     * can be used against the various parsers.
-     */
-    public void captureOn() {
-        capture = true;
-        captureArray = new ArrayList<Integer>();
-    }
+	protected InputStream getInput() {
+		return in;
+	}
 
-    /**
-     * Turns off data capture; writes the captured data to a specified file.
-     */
-    public void captureOff(String file) {
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            out.write(captureArray.toString().getBytes());
-            out.close();
-        } catch (FileNotFoundException e) {
-            // This is debug code; exceptions aren't interesting.
-        } catch (IOException e) {
-            // This is debug code; exceptions aren't interesting.
-        }
-    }
+	/**
+	 * Set the tag used for logging.  When debugging is on, every token is logged (Log.v) to
+	 * the console.
+	 *
+	 * @param val the logging tag
+	 */
+	public void setLoggingTag(String val) {
+		logTag = val;
+	}
 
-    /**
-     * Return the value of the current tag, as a byte array.  Note that the accountName of this call
-     * is indeterminate, and possibly null, if the value of the tag is not a byte array
-     *
-     * @return the byte array value of the current tag
-     * @throws IOException
-     */
-    public byte[] getValueBytes() throws IOException {
-        getValue();
-        return bytes;
-    }
+	/**
+	 * Turns on data capture; this is used to create test streams that represent "live" data and
+	 * can be used against the various parsers.
+	 */
+	public void captureOn() {
+		capture = true;
+		captureArray = new ArrayList<Integer>();
+	}
 
-    /**
-     * Return the value of the current tag, as a String.  Note that the accountName of this call is
-     * indeterminate, and possibly null, if the value of the tag is not an immediate string
-     *
-     * @return the String value of the current tag
-     * @throws IOException
-     */
-    public String getValue() throws IOException {
-        // The false argument tells getNext to return the value as a String
-        getNext(false);
-        // This means there was no value given, just <Foo/>; we'll return empty string for now
-        if (type == END) {
-            if (logging) {
-                log("No value for tag: " + tagTable[startTag - TAG_BASE]); //$NON-NLS-1$
-            }
-            return ""; //$NON-NLS-1$
-        }
-        // Save the value
-        String val = text;
-        // Read the next token; it had better be the end of the current tag
-        getNext(false);
-        // If not, throw an exception
-        if (type != END) {
-            throw new IOException("No END found!"); //$NON-NLS-1$
-        }
-        return val;
-    }
+	/**
+	 * Turns off data capture; writes the captured data to a specified file.
+	 */
+	public void captureOff(String file) {
+		try {
+			FileOutputStream out = new FileOutputStream(file);
+			out.write(captureArray.toString().getBytes());
+			out.close();
+		} catch (FileNotFoundException e) {
+			// This is debug code; exceptions aren't interesting.
+		} catch (IOException e) {
+			// This is debug code; exceptions aren't interesting.
+		}
+	}
 
-    /**
-     * Return the value of the current tag, as an integer.  Note that the value of this call is
-     * indeterminate if the value of this tag is not an immediate string parsed as an integer
-     *
-     * @return the integer value of the current tag
-     * @throws IOException
-     */
-   public int getValueInt() throws IOException {
-        // The true argument to getNext indicates the desire for an integer return value
-        getNext(true);
-        if (type == END) {
-            return 0;
-        }
-        // Save the value
-        int val = num;
-        // Read the next token; it had better be the end of the current tag
-        getNext(false);
-        // If not, throw an exception
-        if (type != END) {
-            throw new IOException("No END found!"); //$NON-NLS-1$
-        }
-        return val;
-    }
+	/**
+	 * Return the value of the current tag, as a byte array.  Note that the accountName of this call
+	 * is indeterminate, and possibly null, if the value of the tag is not a byte array
+	 *
+	 * @return the byte array value of the current tag
+	 * @throws IOException
+	 */
+	public byte[] getValueBytes() throws IOException {
+		getValue();
+		return bytes;
+	}
 
-    /**
-     * Return the next tag found in the stream; special tags END and END_DOCUMENT are used to
-     * mark the end of the current tag and end of document.  If we hit end of document without
-     * looking for it, generate an EodException.  The tag returned consists of the page number
-     * shifted PAGE_SHIFT bits OR'd with the tag retrieved from the stream.  Thus, all tags returned
-     * are unique.
-     *
-     * @param endingTag the tag that would represent the end of the tag we're processing
-     * @return the next tag found
-     * @throws IOException
-     */
-    public int nextTag(int endingTag) throws IOException {
-        // Lose the page information
-        endTag = endingTag &= Tags.PAGE_MASK;
-        while (getNext(false) != DONE) {
-            // If we're a start, set tag to include the page and return it
-            if (type == START) {
-                tag = page | startTag;
-                return tag;
-            // If we're at the ending tag we're looking for, return the END signal
-            } else if (type == END && startTag == endTag) {
-                return END;
-            }
-        }
-        // We're at end of document here.  If we're looking for it, return END_DOCUMENT
-        if (endTag == START_DOCUMENT) {
-            return END_DOCUMENT;
-        }
-        // Otherwise, we've prematurely hit end of document, so exception out
-        // EodException is a subclass of IOException; this will be treated as an IO error by
-        // ExchangeService
-        throw new EodException();
-    }
+	/**
+	 * Return the value of the current tag, as a String.  Note that the accountName of this call is
+	 * indeterminate, and possibly null, if the value of the tag is not an immediate string
+	 *
+	 * @return the String value of the current tag
+	 * @throws IOException
+	 */
+	public String getValue() throws IOException {
+		// The false argument tells getNext to return the value as a String
+		getNext(false);
+		// This means there was no value given, just <Foo/>; we'll return empty string for now
+		if (type == END) {
+			if (logging) {
+				log("No value for tag: " + tagTable[startTag - TAG_BASE]); //$NON-NLS-1$
+			}
+			return ""; //$NON-NLS-1$
+		}
+		// Save the value
+		String val = text;
+		// Read the next token; it had better be the end of the current tag
+		getNext(false);
+		// If not, throw an exception
+		if (type != END) {
+			throw new IOException("No END found!"); //$NON-NLS-1$
+		}
+		return val;
+	}
 
-    /**
-     * Skip anything found in the stream until the end of the current tag is reached.  This can be
-     * used to ignore stretches of xml that aren't needed by the parser.
-     *
-     * @throws IOException
-     */
-    public void skipTag() throws IOException {
-        int thisTag = startTag;
-        // Just loop until we hit the end of the current tag
-        while (getNext(false) != DONE) {
-            if (type == END && startTag == thisTag) {
-                return;
-            }
-        }
+	/**
+	 * Return the value of the current tag, as an integer.  Note that the value of this call is
+	 * indeterminate if the value of this tag is not an immediate string parsed as an integer
+	 *
+	 * @return the integer value of the current tag
+	 * @throws IOException
+	 */
+	public int getValueInt() throws IOException {
+		// The true argument to getNext indicates the desire for an integer return value
+		getNext(true);
+		if (type == END) {
+			return 0;
+		}
+		// Save the value
+		int val = num;
+		// Read the next token; it had better be the end of the current tag
+		getNext(false);
+		// If not, throw an exception
+		if (type != END) {
+			throw new IOException("No END found!"); //$NON-NLS-1$
+		}
+		return val;
+	}
 
-        // If we're at end of document, that's bad
-        throw new EofException();
-    }
+	/**
+	 * Return the next tag found in the stream; special tags END and END_DOCUMENT are used to
+	 * mark the end of the current tag and end of document.  If we hit end of document without
+	 * looking for it, generate an EodException.  The tag returned consists of the page number
+	 * shifted PAGE_SHIFT bits OR'd with the tag retrieved from the stream.  Thus, all tags returned
+	 * are unique.
+	 *
+	 * @param endingTag the tag that would represent the end of the tag we're processing
+	 * @return the next tag found
+	 * @throws IOException
+	 */
+	public int nextTag(int endingTag) throws IOException {
+		// Lose the page information
+		endTag = endingTag &= Tags.PAGE_MASK;
+		while (getNext(false) != DONE) {
+			// If we're a start, set tag to include the page and return it
+			if (type == START) {
+				tag = page | startTag;
+				return tag;
+				// If we're at the ending tag we're looking for, return the END signal
+			} else if (type == END && startTag == endTag) {
+				return END;
+			}
+		}
+		// We're at end of document here.  If we're looking for it, return END_DOCUMENT
+		if (endTag == START_DOCUMENT) {
+			return END_DOCUMENT;
+		}
+		// Otherwise, we've prematurely hit end of document, so exception out
+		// EodException is a subclass of IOException; this will be treated as an IO error by
+		// ExchangeService
+		throw new EodException();
+	}
 
-    /**
-     * Retrieve the next token from the input stream
-     *
-     * @return the token found
-     * @throws IOException
-     */
-    public int nextToken() throws IOException {
-        getNext(false);
-        return type;
-    }
+	/**
+	 * Skip anything found in the stream until the end of the current tag is reached.  This can be
+	 * used to ignore stretches of xml that aren't needed by the parser.
+	 *
+	 * @throws IOException
+	 */
+	public void skipTag() throws IOException {
+		int thisTag = startTag;
+		// Just loop until we hit the end of the current tag
+		while (getNext(false) != DONE) {
+			if (type == END && startTag == thisTag) {
+				return;
+			}
+		}
 
-    /**
-     * Initializes the parser with an input stream; reads the first 4 bytes (which are always the
-     * same in EAS, and then sets the tag table to point to page 0 (by definition, the starting
-     * page).
-     *
-     * @param in the InputStream associated with this parser
-     * @throws IOException
-     */
-    public void setInput(InputStream in, boolean initialize) throws IOException {
-        this.in = in;
-        if ((in != null) && initialize) {
-            // If we fail on the very first byte, report an empty stream
-            try {
-                readByte(); // displayText
-            } catch (EofException e) {
-                throw new EmptyStreamException();
-            }
-            readInt();  // ?
-            readInt();  // 106 (UTF-8)
-            readInt();  // string table length
-        }
-        tagTable = tagTables[0];
-    }
+		// If we're at end of document, that's bad
+		throw new EofException();
+	}
 
-    void resetInput(InputStream in) {
-        this.in = in;
-        try {
-            // Read leading zero
-            read();
-        } catch (IOException e) {
-        }
-    }
+	/**
+	 * Retrieve the next token from the input stream
+	 *
+	 * @return the token found
+	 * @throws IOException
+	 */
+	public int nextToken() throws IOException {
+		getNext(false);
+		return type;
+	}
 
-    void log(String str) {
-        int cr = str.indexOf('\n');
-        if (cr > 0) {
-            str = str.substring(0, cr);
-        }
-        Debug.Log(str);
-    }
+	/**
+	 * Initializes the parser with an input stream; reads the first 4 bytes (which are always the
+	 * same in EAS, and then sets the tag table to point to page 0 (by definition, the starting
+	 * page).
+	 *
+	 * @param in the InputStream associated with this parser
+	 * @throws IOException
+	 */
+	public void setInput(InputStream in, boolean initialize) throws IOException {
+		this.in = in;
+		if ((in != null) && initialize) {
+			// If we fail on the very first byte, report an empty stream
+			try {
+				readByte(); // displayText
+			} catch (EofException e) {
+				throw new EmptyStreamException();
+			}
+			readInt();  // ?
+			readInt();  // 106 (UTF-8)
+			readInt();  // string table length
+		}
+		tagTable = tagTables[0];
+	}
 
-    protected void pushTag(int id) {
-        page = id >> Tags.PAGE_SHIFT;
-        tagTable = tagTables[page];
-        push(id);
-    }
+	void resetInput(InputStream in) {
+		this.in = in;
+		try {
+			// Read leading zero
+			read();
+		} catch (IOException e) {
+		}
+	}
 
-    private void pop() {
-        if (logging) {
-            name = nameArray[depth];
-            log("</" + name + '>'); //$NON-NLS-1$
-        }
-        // Retrieve the now-current startTag from our stack
-        startTag = endTag = startTagArray[depth];
-        depth--;
-    }
+	void log(String str) {
+		int cr = str.indexOf('\n');
+		if (cr > 0) {
+			str = str.substring(0, cr);
+		}
+		Debug.Log(str);
+	}
 
-    private void push(int id) {
-        // The tag is in the low 6 bits
-        startTag = id & 0x3F;
-        // If the high bit is set, there is content (a value) to be read
-        noContent = (id & 0x40) == 0;
-        depth++;
-        if (logging) {
-            name = tagTable[startTag - TAG_BASE];
-            nameArray[depth] = name;
-            log("<" + name + (noContent ? '/' : "") + '>'); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        // Save the startTag to our stack
-        startTagArray[depth] = startTag;
-    }
+	protected void pushTag(int id) {
+		page = id >> Tags.PAGE_SHIFT;
+		tagTable = tagTables[page];
+		push(id);
+	}
 
-    /**
-     * Return the next piece of data from the stream.  The return value indicates the type of data
-     * that has been retrieved - START (start of tag), END (end of tag), DONE (end of stream), or
-     * TEXT (the value of a tag)
-     *
-     * @param asInt whether a TEXT value should be parsed as a String or an int.
-     * @return the type of data retrieved
-     * @throws IOException
-     */
-    private final int getNext(boolean asInt) throws IOException {
-        if (noContent) {
-            nameArray[depth--] = null;
-            type = END;
-            noContent = false;
-            return type;
-        }
+	private void pop() {
+		if (logging) {
+			name = nameArray[depth];
+			log("</" + name + '>'); //$NON-NLS-1$
+		}
+		// Retrieve the now-current startTag from our stack
+		startTag = endTag = startTagArray[depth];
+		depth--;
+	}
 
-        text = null;
-        name = null;
+	private void push(int id) {
+		// The tag is in the low 6 bits
+		startTag = id & 0x3F;
+		// If the high bit is set, there is content (a value) to be read
+		noContent = (id & 0x40) == 0;
+		depth++;
+		if (logging) {
+			name = tagTable[startTag - TAG_BASE];
+			nameArray[depth] = name;
+			log("<" + name + (noContent ? '/' : "") + '>'); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		// Save the startTag to our stack
+		startTagArray[depth] = startTag;
+	}
 
-        int id = nextId ();
-        while (id == Wbxml.SWITCH_PAGE) {
-            nextId = NOT_FETCHED;
-            // Get the new page number
-            int pg = readByte();
-            // Save the shifted page to add into the startTag in nextTag
-            page = pg << Tags.PAGE_SHIFT;
-            if (LOG_VERBOSE) {
-                log("Page: " + page); //$NON-NLS-1$
-            }
-            // Retrieve the current tag table
-            tagTable = tagTables[pg];
-            id = nextId();
-        }
-        nextId = NOT_FETCHED;
+	/**
+	 * Return the next piece of data from the stream.  The return value indicates the type of data
+	 * that has been retrieved - START (start of tag), END (end of tag), DONE (end of stream), or
+	 * TEXT (the value of a tag)
+	 *
+	 * @param asInt whether a TEXT value should be parsed as a String or an int.
+	 * @return the type of data retrieved
+	 * @throws IOException
+	 */
+	private final int getNext(boolean asInt) throws IOException {
+		if (noContent) {
+			nameArray[depth--] = null;
+			type = END;
+			noContent = false;
+			return type;
+		}
 
-        switch (id) {
-            case EOF_BYTE:
-                // End of document
-                type = DONE;
-                break;
+		text = null;
+		name = null;
 
-            case Wbxml.END:
-                type = END;
-                pop();
-                break;
+		int id = nextId();
+		while (id == Wbxml.SWITCH_PAGE) {
+			nextId = NOT_FETCHED;
+			// Get the new page number
+			int pg = readByte();
+			// Save the shifted page to add into the startTag in nextTag
+			page = pg << Tags.PAGE_SHIFT;
+			if (LOG_VERBOSE) {
+				log("Page: " + page); //$NON-NLS-1$
+			}
+			// Retrieve the current tag table
+			tagTable = tagTables[pg];
+			id = nextId();
+		}
+		nextId = NOT_FETCHED;
 
-            case Wbxml.STR_I:
-                // Inline string
-                type = TEXT;
-                if (asInt) {
-                    num = readInlineInt();
-                } else {
-                    text = readInlineString();
-                }
-                if (logging) {
-                    name = tagTable[startTag - TAG_BASE];
-                    log(name + ": " + (asInt ? Integer.toString(num) : text)); //$NON-NLS-1$
-                }
-                break;
+		switch (id) {
+			case EOF_BYTE:
+				// End of document
+				type = DONE;
+				break;
 
-            case Wbxml.OPAQUE:
-                // Integer length + opaque data
-                int length = readInt();
-                bytes = new byte[length];
-                for (int i = 0; i < length; i++) {
-                    bytes[i] = (byte)readByte();
-                }
-                if (logging) {
-                    name = tagTable[startTag - TAG_BASE];
-                    log(name + ": (opaque:" + length + ") "); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-                break;
+			case Wbxml.END:
+				type = END;
+				pop();
+				break;
 
-            default:
-                type = START;
-                push(id);
-        }
+			case Wbxml.STR_I:
+				// Inline string
+				type = TEXT;
+				if (asInt) {
+					num = readInlineInt();
+				} else {
+					text = readInlineString();
+				}
+				if (logging) {
+					name = tagTable[startTag - TAG_BASE];
+					log(name + ": " + (asInt ? Integer.toString(num) : text)); //$NON-NLS-1$
+				}
+				break;
 
-        // Return the type of data we're dealing with
-        return type;
-    }
+			case Wbxml.OPAQUE:
+				// Integer length + opaque data
+				int length = readInt();
+				bytes = new byte[length];
+				for (int i = 0; i < length; i++) {
+					bytes[i] = (byte) readByte();
+				}
+				if (logging) {
+					name = tagTable[startTag - TAG_BASE];
+					log(name + ": (opaque:" + length + ") "); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+				break;
 
-    /**
-     * Read an int from the input stream, and capture it if necessary for debugging.  Seems a small
-     * price to pay...
-     *
-     * @return the int read
-     * @throws IOException
-     */
-    private int read() throws IOException {
-        int i;
-        i = in.read();
-        if (capture) {
-            captureArray.add(i);
-        }
-        if (LOG_VERBOSE) {
-            log("Byte: " + i); //$NON-NLS-1$
-        }
-        return i;
-    }
+			default:
+				type = START;
+				push(id);
+		}
 
-    private int nextId() throws IOException {
-        if (nextId == NOT_FETCHED) {
-            nextId = read();
-        }
-        return nextId;
-    }
+		// Return the type of data we're dealing with
+		return type;
+	}
 
-    private int readByte() throws IOException {
-        int i = read();
-        if (i == EOF_BYTE) {
-            throw new EofException();
-        }
-        return i;
-    }
+	/**
+	 * Read an int from the input stream, and capture it if necessary for debugging.  Seems a small
+	 * price to pay...
+	 *
+	 * @return the int read
+	 * @throws IOException
+	 */
+	private int read() throws IOException {
+		int i;
+		i = in.read();
+		if (capture) {
+			captureArray.add(i);
+		}
+		if (LOG_VERBOSE) {
+			log("Byte: " + i); //$NON-NLS-1$
+		}
+		return i;
+	}
 
-    /**
-     * Read an integer from the stream; this is called when the parser knows that what follows is
-     * an inline string representing an integer (e.g. the Read tag in Email has a value known to
-     * be either "0" or "1")
-     *
-     * @return the integer as parsed from the stream
-     * @throws IOException
-     */
-    private int readInlineInt() throws IOException {
-        int result = 0;
+	private int nextId() throws IOException {
+		if (nextId == NOT_FETCHED) {
+			nextId = read();
+		}
+		return nextId;
+	}
 
-        while (true) {
-            int i = readByte();
-            // Inline strings are always terminated with a zero byte
-            if (i == 0) {
-                return result;
-            }
-            if (i >= '0' && i <= '9') {
-                result = (result * 10) + (i - '0');
-            } else {
-                throw new IOException("Non integer"); //$NON-NLS-1$
-            }
-        }
-    }
+	private int readByte() throws IOException {
+		int i = read();
+		if (i == EOF_BYTE) {
+			throw new EofException();
+		}
+		return i;
+	}
 
-    private int readInt() throws IOException {
-        int result = 0;
-        int i;
+	/**
+	 * Read an integer from the stream; this is called when the parser knows that what follows is
+	 * an inline string representing an integer (e.g. the Read tag in Email has a value known to
+	 * be either "0" or "1")
+	 *
+	 * @return the integer as parsed from the stream
+	 * @throws IOException
+	 */
+	private int readInlineInt() throws IOException {
+		int result = 0;
 
-        do {
-            i = readByte();
-            result = (result << 7) | (i & 0x7f);
-        } while ((i & 0x80) != 0);
+		while (true) {
+			int i = readByte();
+			// Inline strings are always terminated with a zero byte
+			if (i == 0) {
+				return result;
+			}
+			if (i >= '0' && i <= '9') {
+				result = (result * 10) + (i - '0');
+			} else {
+				throw new IOException("Non integer"); //$NON-NLS-1$
+			}
+		}
+	}
 
-        return result;
-    }
+	private int readInt() throws IOException {
+		int result = 0;
+		int i;
 
-    /**
-     * Read an inline string from the stream
-     *
-     * @return the String as parsed from the stream
-     * @throws IOException
-     */
-    private String readInlineString() throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(256);
-        while (true) {
-            int i = read();
-            if (i == 0) {
-                break;
-            } else if (i == EOF_BYTE) {
-                throw new EofException();
-            }
-            outputStream.write(i);
-        }
-        outputStream.flush();
-        String res = outputStream.toString("UTF-8"); //$NON-NLS-1$
-        outputStream.close();
-        return res;
-    }
+		do {
+			i = readByte();
+			result = (result << 7) | (i & 0x7f);
+		} while ((i & 0x80) != 0);
+
+		return result;
+	}
+
+	/**
+	 * Read an inline string from the stream
+	 *
+	 * @return the String as parsed from the stream
+	 * @throws IOException
+	 */
+	private String readInlineString() throws IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(256);
+		while (true) {
+			int i = read();
+			if (i == 0) {
+				break;
+			} else if (i == EOF_BYTE) {
+				throw new EofException();
+			}
+			outputStream.write(i);
+		}
+		outputStream.flush();
+		String res = outputStream.toString("UTF-8"); //$NON-NLS-1$
+		outputStream.close();
+		return res;
+	}
 }

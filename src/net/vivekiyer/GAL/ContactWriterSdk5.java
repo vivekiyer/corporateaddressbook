@@ -15,12 +15,9 @@
 
 package net.vivekiyer.GAL;
 
-import java.util.ArrayList;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.Application;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.Context;
@@ -28,8 +25,9 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.provider.ContactsContract;
 import android.util.Log;
-import net.vivekiyer.GAL.account.AccountAdapter;
 import net.vivekiyer.GAL.account.AccountData;
+
+import java.util.ArrayList;
 
 /**
  * An implementation of {@link ContactWriter} that uses current Contacts API.
@@ -39,38 +37,29 @@ import net.vivekiyer.GAL.account.AccountData;
 public class ContactWriterSdk5 extends ContactWriter {
 
 	private static ArrayList<AccountData> mAccounts = null;
-	private static AccountAdapter mAccountAdapter = null;
 	private Context context;
 	private Contact mContact;
 
 	// TAG used for logging
 	private static String TAG = "ContactWriterSdk5"; //$NON-NLS-1$
 
-	public ContactWriterSdk5(Application appCtx, Contact contact) {
+	public ContactWriterSdk5(Context appCtx, Contact contact) {
 		super();
 		Initialize(appCtx, contact);
 	}
-	
+
 	@Override
-	public void Initialize(Application appCtx, Contact contact) {
+	public void Initialize(Context appCtx, Contact contact) {
 		context = appCtx;
 		mContact = contact;
 
 		// TODO: Refactor into non-singelton object
-		if(mAccounts == null){
-			mAccounts = new ArrayList<AccountData>();
-			mAccountAdapter = new AccountAdapter(appCtx, mAccounts);
-	
-			// Prepare the system account manager. On registering the listener
-			// below, we also ask for
-			// an initial callback to pre-populate the account list.
-		}		
 	}
 
 	private void addContactFields(ArrayList<ContentProviderOperation> ops) {
-		
+
 		mContact.generateFieldsFromXML();
-		
+
 		// Add work phone
 		if (!mContact.getWorkPhone().equalsIgnoreCase("")) //$NON-NLS-1$
 			ops.add(ContentProviderOperation
@@ -203,7 +192,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 				.build());
 
 		// Add the alias
-		if(mContact.getAlias().length() > 0) {
+		if (mContact.getAlias().length() > 0) {
 			ops.add(ContentProviderOperation
 					.newInsert(ContactsContract.Data.CONTENT_URI)
 					.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
@@ -236,7 +225,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 	 * Creates a contact entry from the current UI values in the account named
 	 * by mSelectedAccount.
 	 */
-	protected void createContactEntry(AccountData selectedAccount) {
+	public void createContactEntry(AccountData selectedAccount) {
 
 		// Prepare contact creation request
 		//
@@ -265,11 +254,11 @@ public class ContactWriterSdk5 extends ContactWriter {
 		try {
 			ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY,
 					ops);
-			
-			for(ContentProviderResult result : results){
+
+			for (ContentProviderResult result : results) {
 				Log.i(TAG, result.uri.toString());
 			}
-			
+
 		} catch (Exception e) {
 			// Log exception
 			//Log.e(TAG, "Exceptoin encoutered while inserting contact: " + e);
@@ -282,16 +271,16 @@ public class ContactWriterSdk5 extends ContactWriter {
 	 */
 	@SuppressLint("NewApi")
 	@Override
-	public void saveContact(Context ctx) {
+	public void saveContact() {
 
 		Builder builder;
-		if(Utility.isPreHoneycomb())
-			builder = new AlertDialog.Builder(ctx);
+		if (Utility.isPreHoneycomb())
+			builder = new AlertDialog.Builder(context);
 		else
-			builder = new AlertDialog.Builder(ctx, AlertDialog.THEME_HOLO_LIGHT);
-		builder.setTitle(ctx.getString(R.string.select_account));
+			builder = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_LIGHT);
+		builder.setTitle(context.getString(R.string.select_account));
 
-		builder.setSingleChoiceItems(mAccountAdapter, -1,
+		builder.setSingleChoiceItems(App.getSystemAccounts(), -1,
 				new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -307,7 +296,7 @@ public class ContactWriterSdk5 extends ContactWriter {
 	@Override
 	public void cleanUp() {
 	}
-	
+
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();

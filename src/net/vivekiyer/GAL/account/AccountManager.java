@@ -171,7 +171,7 @@ public class AccountManager extends ArrayList<ActiveSyncManager> implements OnAc
 				String accountKey = am.getUserData(account, context.getString(R.string.KEY_ACCOUNT_KEY));
 
 				if (accountKey == null || accountKey.length() == 0) {
-					if (Debug.Enabled)
+					if (Debug.isEnabled())
 						accountKey = am.getUserData(account, "net.vivekiyer.GAL.Preferences.ACCOUNT_KEY");
 					else
 						throw new RuntimeException("Unknown account key");

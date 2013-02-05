@@ -5,7 +5,8 @@
               android:layout_height="match_parent"
               android:gravity="top"
               android:orientation="horizontal"
-              tools:context=".CorporateAddressBook">
+              tools:context=".CorporateAddressBook"
+              android:background="@color/details_list_background">
 
 	<fragment
 			xmlns:android="http://schemas.android.com/apk/res/android"
@@ -33,7 +34,10 @@
 			android:layout_weight="1"
 			android:background="@android:color/white"
 			class="net.vivekiyer.GAL.ContactPagerFragment"
-			tools:layout="@layout/contact_fragment">
+			tools:layout="@layout/contact_fragment"
+			android:layout_marginLeft="10dp"
+			android:layout_marginTop="10dp"
+			android:layout_marginBottom="10dp">
 	</fragment>
 	<!--</FrameLayout>-->
 </LinearLayout>

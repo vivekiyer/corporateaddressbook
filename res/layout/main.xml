@@ -4,6 +4,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
+	<!--android:background="@drawable/shaded_background_white"-->
 
 	<LinearLayout
 			android:id="@+id/result_header"
@@ -31,8 +32,9 @@
 				android:layout_weight="1"
 				android:gravity="center_vertical"
 				android:text="@string/startBySelectingSearch"
-				android:textAppearance="?android:attr/textAppearanceMedium"
-				android:textColor="@android:color/darker_gray"/>
+				android:textAppearance="?android:attr/panelTextAppearance"
+				/>
+		<!--android:textColor="@android:color/darker_gray"-->
 
 		<ImageButton
 				android:id="@+id/result_header_cancel"
@@ -52,16 +54,31 @@
 			android:layout_below="@+id/result_header"
 			android:background="@color/holo_blue_light" />
 	 -->
-	<com.emilsjolander.components.stickylistheaders.StickyListHeadersListView
+	<com.handmark.pulltorefresh.library.PullToRefreshStickyHeadersListView
+			xmlns:ptr="http://schemas.android.com/apk/res-auto"
 			android:id="@+id/contactsListView"
 			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
 			android:layout_below="@+id/result_header"
 			android:layout_alignParentBottom="true"
-			android:background="@drawable/border_shading"
 			android:choiceMode="singleChoice"
 			android:listSelector="@drawable/list_selector"
-			tools:listitem="@layout/contact_row">
-	</com.emilsjolander.components.stickylistheaders.StickyListHeadersListView>
+			tools:listitem="@layout/contact_row"
+			ptr:ptrMode="disabled"
+			ptr:ptrAnimationStyle="flip"
+			ptr:ptrListViewExtrasEnabled="true"
+			>
+	</com.handmark.pulltorefresh.library.PullToRefreshStickyHeadersListView>
+	<!--<com.emilsjolander.components.stickylistheaders.StickyListHeadersListView-->
+	<!--android:id="@+id/contactsListView"-->
+	<!--android:layout_height="wrap_content"-->
+	<!--android:layout_width="match_parent"-->
+	<!--android:layout_below="@+id/result_header"-->
+	<!--android:layout_alignParentBottom="true"-->
+	<!--android:background="@drawable/shaded_background_white"-->
+	<!--android:choiceMode="singleChoice"-->
+	<!--android:listSelector="@drawable/list_selector"-->
+	<!--tools:listitem="@layout/contact_row">-->
+	<!--</com.emilsjolander.components.stickylistheaders.StickyListHeadersListView>-->
 
 </RelativeLayout>

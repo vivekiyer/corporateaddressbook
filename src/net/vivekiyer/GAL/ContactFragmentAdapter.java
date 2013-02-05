@@ -3,6 +3,7 @@ package net.vivekiyer.GAL;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.View;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public class ContactFragmentAdapter extends FragmentStatePagerAdapter {
 
-	private final List<Contact> contacts;
+	final private List<Contact> contacts;
 
 	public ContactFragmentAdapter(FragmentManager fm, List<Contact> contacts) {
 		super(fm);
@@ -23,8 +24,15 @@ public class ContactFragmentAdapter extends FragmentStatePagerAdapter {
 	}
 
 	@Override
+	public boolean isViewFromObject(View view, Object object) {
+		return super.isViewFromObject(view, object);    //To change body of overridden methods use File | Settings | File Templates.
+	}
+
+	@Override
 	public Fragment getItem(int i) {
-		return new ContactFragment(contacts.get(i));	}
+		ContactFragment fragment = new ContactFragment(contacts.get(i));
+		return fragment;
+	}
 
 	@Override
 	public int getCount() {

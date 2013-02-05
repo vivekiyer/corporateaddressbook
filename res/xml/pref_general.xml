@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:title="@string/general"
+                  android:icon="@drawable/icon">
+	<PreferenceCategory
+			android:icon="@drawable/ic_action_view"
+			android:title="@string/view">
+		<CheckBoxPreference
+				android:title="@string/contactListHeadersTitle"
+				android:key="@string/PREFS_KEY_CONTACT_LIST_HEADERS"
+				android:defaultValue="true"
+				android:summary="@string/contactListHeadersDetail"/>
+	</PreferenceCategory>
+	<PreferenceCategory
+			android:icon="@drawable/ic_action_advanced"
+			android:title="@string/advanced">
+		<CheckBoxPreference
+				android:title="@string/pref_debugging_enabled_title"
+				android:key="@string/PREFS_KEY_DEBUGGING_ENABLED"
+				android:defaultValue="false"
+				android:summary="@string/pref_debugging_enabled_detail"/>
+	</PreferenceCategory>
+</PreferenceScreen>

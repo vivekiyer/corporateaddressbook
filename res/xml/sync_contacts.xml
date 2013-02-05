@@ -14,5 +14,10 @@
   -->
 
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
-    android:contentAuthority="com.android.contacts"
-    android:accountType="@string/ACCOUNT_TYPE"/>
+              android:contentAuthority="com.android.contacts"
+              android:accountType="net.vivekiyer.GAL.ACCOUNT"
+		/>
+		<!--android:supportsUploading="false"-->
+		<!--android:isAlwaysSyncable="false"-->
+		<!--android:allowParallelSyncs="false"-->
+		<!--android:userVisible="false"-->

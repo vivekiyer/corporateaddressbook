@@ -60,6 +60,7 @@
     <orderEntry type="module" module-name="devoquickaction" />
     <orderEntry type="module" module-name="ViewPagerIndicator" />
     <orderEntry type="module" module-name="StickyListHeaders" />
+    <orderEntry type="module" module-name="PullToRefresh" />
   </component>
 </module>
 

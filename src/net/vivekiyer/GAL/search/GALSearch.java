@@ -24,12 +24,16 @@ public class GALSearch extends AsyncTask<String, Void, Boolean> {
 	private boolean clearResults = true;
 	private ActiveSyncManager activeSyncManager;
 	private int errorCode = 0;
-
 	private String errorMesg = ""; //$NON-NLS-1$
 	private String errorDetail = ""; //$NON-NLS-1$
 	private volatile OnSearchCompletedListener onSearchCompletedListener;
 
 	ArrayList<Contact> mContacts = null;
+	private int mTotalNumberOfResults;
+
+	public int getTotalNumberOfResults() {
+		return mTotalNumberOfResults;
+	}
 
 	public void setStartWith(int startWith) {
 		this.startWith = startWith;
@@ -77,6 +81,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean> {
 	 */
 	@Override
 	protected Boolean doInBackground(String... params) {
+		Debug.Log("Background search: " + params[0]);
 		try {
 			if (params.length > 1)
 				startWith = Integer.parseInt(params[1]);
@@ -111,6 +116,7 @@ public class GALSearch extends AsyncTask<String, Void, Boolean> {
 								return false;
 						}
 						mContacts = activeSyncManager.getResults();
+						mTotalNumberOfResults = activeSyncManager.getTotalNumberOfResults();
 						break;
 					case 449: // RETRY AFTER PROVISIONING
 						// Looks like we need to provision again

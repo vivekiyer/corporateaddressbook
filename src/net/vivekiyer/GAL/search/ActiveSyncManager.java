@@ -43,6 +43,9 @@ import java.util.UUID;
  * @author vivek
  */
 public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+	public static final int ERROR_UNABLE_TO_REPROVISION = 449;
+
 	private String mPolicyKey = "0"; //$NON-NLS-1$
 	private String mAuthString;
 	private String mUri;
@@ -58,10 +61,10 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	private String mActiveSyncVersion = ""; //$NON-NLS-1$
 	private String mDeviceId;
 	private String accountKey = null;
+
 	private ArrayList<Contact> mResults;
 	private int requestStatus = Parser.STATUS_NOT_SET;
-
-	public static final int ERROR_UNABLE_TO_REPROVISION = 449;
+	private int mTotalNumberOfResults;
 
 	public String getSearchTerm() {
 		return mQuery;
@@ -264,6 +267,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 	public int getExchangeServerVersion() throws Exception {
 
 		// First get the options from the server
+		Debug.Log("Entering getExchangeServerVersion()");
 		CommandRequest request = new CommandRequest(mUri, mAuthString, mUseSSL,
 				mActiveSyncVersion, mAcceptAllCerts, mPolicyKey);
 
@@ -366,6 +370,9 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 				}
 			}
 			mResults = gp.getResults();
+			mTotalNumberOfResults = gp.getNumResults();
+		} else {
+			return ret;
 		}
 		return ret;
 	}
@@ -397,7 +404,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 
 			// Make sure there were no errors
 			if (resp.getStatusCode() != 200) {
-				Debug.Log(resp.getErrorString());
+				Debug.Log("Provision response indicates failure: " + resp.getErrorString());
 				return resp.getStatusCode();
 			}
 
@@ -412,6 +419,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 			Debug.Log("Policy status = " + pp.getPolicyStatus()); //$NON-NLS-1$
 
 			if (pp.getPolicyStatus() == Parser.STATUS_NO_POLICY_NEEDED) {
+				Debug.Log("NO_POLICY_NEEDED; status OK");
 				this.requestStatus = Parser.STATUS_OK;
 				return resp.getStatusCode();
 			}
@@ -605,4 +613,7 @@ public class ActiveSyncManager implements SharedPreferences.OnSharedPreferenceCh
 		reloadPreferences();
 	}
 
+	public int getTotalNumberOfResults() {
+		return mTotalNumberOfResults;
+	}
 }

@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.PageIndicator;
 
 import java.util.ArrayList;
@@ -17,7 +20,7 @@ import java.util.ArrayList;
  * Time: 01:57
  * To change this template use File | Settings | File Templates.
  */
-public class ContactPagerFragment extends SherlockFragment {
+public class ContactPagerFragment extends SherlockFragment implements ViewPager.OnPageChangeListener {
 
 	private ArrayList<Contact> contacts;
 	private ContactFragmentAdapter fragmentAdapter = null;
@@ -25,7 +28,6 @@ public class ContactPagerFragment extends SherlockFragment {
 	private Bundle args = null;
 	private PageIndicator indicator;
 
-	// TODO: Extract stuff from ContactActivity so that same swipe can be used in single and dual pane.
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);    //To change body of overridden methods use File | Settings | File Templates.
@@ -51,6 +53,7 @@ public class ContactPagerFragment extends SherlockFragment {
 		} else {
 			initialize(args);
 		}
+		setHasOptionsMenu(true);
 	}
 
 	public void initialize(Bundle arguments) {
@@ -67,9 +70,7 @@ public class ContactPagerFragment extends SherlockFragment {
 			fragmentAdapter = new ContactFragmentAdapter(getChildFragmentManager(), contacts);
 			if (pager == null) {
 				pager = (ViewPager) getView().findViewById(R.id.pager);
-				if (getActivity() instanceof ViewPager.OnPageChangeListener) {
-					indicator.setOnPageChangeListener((ViewPager.OnPageChangeListener) getActivity());
-				}
+				indicator.setOnPageChangeListener(this);
 			}
 			pager.setAdapter(fragmentAdapter);
 			indicator.setViewPager(pager, contactIndex);
@@ -83,6 +84,31 @@ public class ContactPagerFragment extends SherlockFragment {
 	}
 
 	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);    //To change body of overridden methods use File | Settings | File Templates.
+		if (pager != null && fragmentAdapter != null) {
+			inflater.inflate(R.menu.contact_actions_menu, menu);
+		}
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);    //To change body of overridden methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.saveContact:
+				ContactWriter writer = new ContactWriterSdk5(getActivity(), contacts.get(pager.getCurrentItem()));
+				writer.saveContact();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		if (pager != null) {
 			int contactIndex = pager.getCurrentItem();
@@ -90,5 +116,22 @@ public class ContactPagerFragment extends SherlockFragment {
 			outState.putParcelableArrayList(getString(R.string.KEY_CONTACT_LIST), contacts);
 		}
 		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		if (getActivity() instanceof ViewPager.OnPageChangeListener) {
+			((ViewPager.OnPageChangeListener) getActivity()).onPageSelected(position);
+		}
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int state) {
+		//To change body of implemented methods use File | Settings | File Templates.
 	}
 }

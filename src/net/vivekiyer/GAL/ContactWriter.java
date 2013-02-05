@@ -15,7 +15,6 @@
 
 package net.vivekiyer.GAL;
 
-import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 
@@ -72,7 +71,7 @@ public abstract class ContactWriter {
 			 */
 			@SuppressWarnings("deprecation")
 			int sdkVersion = Integer.parseInt(Build.VERSION.SDK); // Cupcake
-																	// style
+			// style
 			if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
 				className = "net.vivekiyer.GAL.ContactWriterSdk3_4"; //$NON-NLS-1$
 				//Log.d(TAG,"Detected pre Eclair SDK. SDK Version=" + sdkVersion);
@@ -95,7 +94,9 @@ public abstract class ContactWriter {
 		return sInstance;
 	}
 
-	public abstract void Initialize(Application appCtx, Contact contact);
+	public abstract void Initialize(Context appCtx, Contact contact);
+
 	public abstract void cleanUp();
-	public abstract void saveContact(Context ctx);
+
+	public abstract void saveContact();
 }

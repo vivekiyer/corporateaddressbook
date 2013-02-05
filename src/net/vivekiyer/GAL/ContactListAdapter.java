@@ -21,11 +21,13 @@ import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersAdapter;
@@ -33,7 +35,9 @@ import net.vivekiyer.GAL.search.ActiveSyncManager;
 import net.vivekiyer.GAL.view.ContactRowView;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is responsible for displaying the contact data in a list.
@@ -49,10 +53,14 @@ public class ContactListAdapter extends ArrayAdapter<Contact> implements StickyL
 	//private static String TAG = "ContactListAdapter";
 	private ActiveSyncManager syncManager;
 	private View searchNextView = null;
+	private boolean hasHeaders = true;
+	private Map<Integer, View> headers = null;
+	private Drawable headerBackgroundDrawable = null;
 
 	public View getSearchNextView() {
 		return searchNextView;
 	}
+
 
 	@Override
 	public int getCount() {
@@ -71,7 +79,7 @@ public class ContactListAdapter extends ArrayAdapter<Contact> implements StickyL
 	public ContactListAdapter(Context context, int textViewResourceId,
 	                          List<Contact> cs, ActiveSyncManager syncManager) {
 		super(context, textViewResourceId, cs);
-
+		headers = new HashMap<Integer, View>();
 		this.syncManager = syncManager;
 	}
 
@@ -122,7 +130,7 @@ public class ContactListAdapter extends ArrayAdapter<Contact> implements StickyL
 				qcb.setImageBitmap(bm);
 			} else {
 				if (Utility.isPreHoneycomb())
-					qcb.setImageResource(R.drawable.ic_quick);
+					qcb.setImageResource(R.drawable.ic_contact_picture);
 				else
 					qcb.setImageToDefault();
 			}
@@ -134,11 +142,10 @@ public class ContactListAdapter extends ArrayAdapter<Contact> implements StickyL
 
 	private View getNextSearchView(View convertView, ViewGroup parent) {
 		View v = convertView;
-//		if (v == null || !(v instanceof ContactRowView)) {
 		LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
 				Context.LAYOUT_INFLATER_SERVICE);
 		v = vi.inflate(R.layout.next_search, null);
-//		}
+
 		v.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -199,22 +206,58 @@ public class ContactListAdapter extends ArrayAdapter<Contact> implements StickyL
 	@Override
 	public View getHeaderView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
-		if (v == null) {
-			LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
-					Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(R.layout.contact_list_header, parent, false);
+		TextView tv;
+
+		if (!hasHeaders) {
+			if (v == null || !(v instanceof FrameLayout)) {
+				v = new FrameLayout(getContext());
+				v.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+			}
+		} else {
+			if (v == null || (tv = (TextView) v.findViewById(R.id.title)) == null) {
+				LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
+						Context.LAYOUT_INFLATER_SERVICE);
+				v = vi.inflate(R.layout.contact_list_header, parent, false);
+				tv = (TextView) v.findViewById(R.id.title);
+			}
+			final String headerText = getItem(position >= getCount() ? getCount() - 1 : position).getDisplayName().substring(0, 1).toUpperCase();
+			tv.setText(headerText);
+			if (headerBackgroundDrawable != null)
+				if (Utility.isPreJellyBean())
+					v.setBackgroundDrawable(headerBackgroundDrawable);
+				else
+					v.setBackground(headerBackgroundDrawable);
+			headers.put(position, v);
 		}
-		TextView tv = (TextView) v.findViewById(R.id.title);
-		final String headerText = getItem(position >= getCount() ? position - 1 : position).getDisplayName().substring(0, 1);
-		tv.setText(headerText);
 		return v;
 	}
 
 	@Override
 	public long getHeaderId(int position) {
-		if (position >= getCount())
-			return getHeaderId(position - 1);
-		int id = getItem(position).getDisplayName().toUpperCase().charAt(0);
-		return id;
+		if (hasHeaders) {
+			if (position >= super.getCount())
+				return getHeaderId(position - 1);
+			return Character.toUpperCase(getItem(position).getDisplayName().charAt(0));
+		} else {
+			return 0; //id;
+		}
+	}
+
+	public boolean isHasHeaders() {
+		return hasHeaders;
+	}
+
+	public void setHasHeaders(boolean hasHeaders) {
+		if (this.hasHeaders != hasHeaders) {
+			this.hasHeaders = hasHeaders;
+			notifyDataSetChanged();
+		}
+	}
+
+	public void setHeaderBackground(Drawable d) {
+		headerBackgroundDrawable = d;
+		for (View v : headers.values()) {
+			v.setBackground(d);
+		}
 	}
 }

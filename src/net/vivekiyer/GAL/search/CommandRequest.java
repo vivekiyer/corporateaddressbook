@@ -1,6 +1,9 @@
 package net.vivekiyer.GAL.search;
 
 import net.vivekiyer.GAL.App;
+import net.vivekiyer.GAL.Debug;
+import org.apache.http.Header;
+import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
@@ -61,6 +64,12 @@ public class CommandRequest {
 
 	protected String getUri() {
 		return uri;
+	}
+
+	protected String getObfuscatedUri() {
+		return uri.replaceAll(
+				"(^http[s?]://)([a-zA-Z._0-9]+)(.+)(User=)([a-zA-Z0-9_@.\\\\]+)(.+)",
+				"$1exchange.domain.com$3$4user@domain.com$6");
 	}
 
 	protected void setUri(String uri) {
@@ -167,9 +176,6 @@ public class CommandRequest {
 		if (authString == null || protocolVersion == null || uri == null)
 			throw new Exception("Not initialized correctly"); //$NON-NLS-1$
 
-		// Generate the WBXML payload
-		generateWBXMLPayload();
-
 		// Set the common headers
 		HttpPost httpPost = new HttpPost(uri);
 		httpPost.setHeader("User-Agent", App.VERSION_STRING); //$NON-NLS-1$
@@ -192,6 +198,11 @@ public class CommandRequest {
 		if (includePolicyKey)
 			httpPost.setHeader("X-MS-PolicyKey", policyKey); //$NON-NLS-1$
 
+		logHeaders(httpPost, "out");
+
+		// Generate the WBXML payload
+		generateWBXMLPayload();
+
 		// Add the XML to the request
 		if (wbxmlBytes != null) {
 			ByteArrayEntity myEntity = new ByteArrayEntity(wbxmlBytes);
@@ -202,7 +213,9 @@ public class CommandRequest {
 		// POST the request to the server
 		HttpClient client = createHttpClient();
 		HttpContext localContext = new BasicHttpContext();
-		return client.execute(httpPost, localContext);
+		HttpResponse response = client.execute(httpPost, localContext);
+		logHeaders(response, "in");
+		return response;
 	}
 
 	/**
@@ -215,17 +228,20 @@ public class CommandRequest {
 		httpOptions.setHeader("User-Agent", App.VERSION_STRING); //$NON-NLS-1$
 		httpOptions.setHeader("Authorization", getAuthString()); //$NON-NLS-1$
 
+		logHeaders(httpOptions, "out");
+
 		// Send the OPTIONS message
 		HttpClient client = createHttpClient();
 		HttpContext localContext = new BasicHttpContext();
-		return client.execute(httpOptions, localContext);
-
+		HttpResponse response = client.execute(httpOptions, localContext);
+		logHeaders(response, "in");
+		return response;
 	}
 
 	/**
+	 * Creates a HttpClient object that is used to POST messages to the Exchange server
+	 *
 	 * @return the HttpClient object
-	 *         <p/>
-	 *         Creates a HttpClient object that is used to POST messages to the Exchange server
 	 */
 	private HttpClient createHttpClient() {
 		HttpParams httpParams = new BasicHttpParams();
@@ -261,6 +277,37 @@ public class CommandRequest {
 				.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
 		return httpclient;
+	}
+
+	/**
+	 * Logs all headers using {@link net.vivekiyer.GAL.Debug#Log(String)}.
+	 * All potentially sensitive information is obfuscated to make sure
+	 * logs can be sent without compromising user credentials or server
+	 * details.
+	 *
+	 * @param httpMessage The message whose headers should be logged
+	 * @param prefix      A {@link String} with which to prefix log rows; for readability
+	 */
+	private void logHeaders(HttpMessage httpMessage, String prefix) {
+		if (Debug.isEnabled()) {
+			prefix = "[" + prefix + "] ";
+			Debug.Log(prefix + "***URI***");
+			Debug.Log(prefix + getObfuscatedUri());
+			Debug.Log(prefix + "***End URI***");
+			Debug.Log(prefix + "***Headers***");
+			for (Header h : httpMessage.getAllHeaders()) {
+				String name = h.getName();
+				String value = h.getValue();
+				if (name.equalsIgnoreCase("X-MS-PolicyKey") || name.equalsIgnoreCase("Authorization")) {
+					Debug.Log(prefix + name + ": " +
+							(value.length() < 6 ? "length=" + value.length() : value.substring(0, value.length() - 6))
+							+ "******");
+				} else {
+					Debug.Log(prefix + name + ": " + value);
+				}
+			}
+			Debug.Log(prefix + "***End headers***");
+		}
 	}
 
 	// This function generates an WBXML payload.

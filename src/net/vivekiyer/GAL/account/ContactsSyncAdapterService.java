@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
+import net.vivekiyer.GAL.Debug;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,7 @@ public class ContactsSyncAdapterService extends Service {
 		private Context mContext;
 
 		public SyncAdapterImpl(Context context) {
-			super(context, true);
+			super(context, false);
 			mContext = context;
 		}
 
@@ -34,6 +35,13 @@ public class ContactsSyncAdapterService extends Service {
 		                          String authority, ContentProviderClient provider,
 		                          SyncResult syncResult) {
 			try {
+				Debug.Log("In onPerformSync");
+				Debug.Log(account.toString());
+				Debug.Log(extras.toString());
+				Debug.Log(authority);
+				Debug.Log(provider.toString());
+				Debug.Log(syncResult.toString());
+				//android.os.Debug.waitForDebugger();
 				ContactsSyncAdapterService.performSync(mContext, account,
 						extras, authority, provider, syncResult);
 			} catch (OperationCanceledException e) {
