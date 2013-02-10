@@ -6,8 +6,8 @@
               android:gravity="top"
               android:orientation="horizontal"
               tools:context=".CorporateAddressBook"
-              android:background="@color/details_list_background">
-
+		>
+	<!--android:background="@color/details_list_background"-->
 	<fragment
 			xmlns:android="http://schemas.android.com/apk/res/android"
 			xmlns:tools="http://schemas.android.com/tools"

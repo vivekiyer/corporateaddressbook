@@ -240,12 +240,12 @@ public class ContactListFragment extends SherlockFragment {
 	protected void setViewBackground(Boolean shaded) {
 		if (shaded) {
 			if (Utility.isPreJellyBean()) {
-				getView().setBackgroundDrawable(getResources().getDrawable(R.drawable.shaded_background_white));
+				getView().setBackgroundDrawable(getResources().getDrawable(R.drawable.shaded_background_right));
 			} else {
-				getView().setBackground(getResources().getDrawable(R.drawable.shaded_background_white));
+				getView().setBackground(getResources().getDrawable(R.drawable.shaded_background_right));
 			}
 		} else {
-			getView().setBackgroundColor(getResources().getColor(android.R.color.white));
+			getView().setBackgroundDrawable(null);
 		}
 		if (listadapter != null)
 			listadapter.setHeaderBackground(getResources().getDrawable(shaded ? R.drawable.shaded_fading_header_background : R.drawable.fading_header_background));

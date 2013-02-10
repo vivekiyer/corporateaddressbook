@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<item name="main_fragment" type="layout">@layout/main_fragment_two_pane</item>
+	<item name="quickactionview" type="layout">@layout/quickactionview_two_pane</item>
+</resources>

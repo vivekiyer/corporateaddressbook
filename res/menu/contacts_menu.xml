@@ -4,7 +4,7 @@
 	<item
 			android:id="@+id/menu_search"
 			android:icon="@drawable/abs__ic_search"
-			android:showAsAction="ifRoom|withText"
+			android:showAsAction="ifRoom|withText|collapseActionView"
 			android:title="@string/searchDirectory"
 			android:titleCondensed="@string/search"
 			android:menuCategory="container"

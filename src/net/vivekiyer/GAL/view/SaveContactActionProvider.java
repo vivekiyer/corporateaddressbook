@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import com.actionbarsherlock.view.ActionProvider;
 import com.actionbarsherlock.view.SubMenu;
+import net.vivekiyer.GAL.App;
 import net.vivekiyer.GAL.Contact;
 import net.vivekiyer.GAL.ContactWriterSdk5;
 import net.vivekiyer.GAL.account.AccountAdapter;
@@ -28,7 +29,7 @@ public class SaveContactActionProvider extends ActionProvider {
 	public SaveContactActionProvider(Context context) {
 		super(context);    //To change body of overridden methods use File | Settings | File Templates.
 		this.context = context;
-		adapter = new AccountAdapter(context, accountData = new ArrayList<AccountData>());
+		adapter = App.getSystemAccounts();
 	}
 
 	@Override

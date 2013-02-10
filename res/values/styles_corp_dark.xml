@@ -26,6 +26,7 @@
 		<item name="actionDropDownStyle">@style/corp_dark_DropDownNav</item>
 		<item name="actionBarStyle">@style/corp_dark_solid_ActionBar</item>
 
+		<item name="android:windowBackground">@android:color/white</item>
 		<item name="android:actionBarItemBackground">@drawable/selectable_background_corp_dark</item>
 		<item name="android:popupMenuStyle">@style/corp_dark_PopupMenu</item>
 		<item name="android:dropDownListViewStyle">@style/corp_dark_DropDownListView</item>
@@ -39,15 +40,16 @@
 		<item name="android:actionBarWidgetTheme">@style/Theme.corp_dark.widget</item>
 
 		<!--Additional tweaks-->
-		<item name="textAppearanceLargePopupMenu">@style/MyActionMenuTextAppearance.Large</item>
-		<item name="android:textAppearanceLargePopupMenu">@style/MyActionMenuTextAppearance.Large</item>
+		<!--		<item name="textAppearanceLargePopupMenu">@style/MyActionMenuTextAppearance.Large</item>
+				<item name="android:textAppearanceLargePopupMenu">@style/MyActionMenuTextAppearance.Large</item
 
-		<item name="textAppearanceSmallPopupMenu">@style/MyActionMenuTextAppearance.Small</item>
-		<item name="android:textAppearanceSmallPopupMenu">@style/MyActionMenuTextAppearance.Small</item>
 
-		<item name="android:panelFullBackground">@drawable/popup_background</item>
-		<item name="android:panelColorBackground">@drawable/popup_background</item>
-		<item name="android:panelBackground">@drawable/popup_background</item>
+				<item name="textAppearanceSmallPopupMenu">@style/MyActionMenuTextAppearance.Small</item>
+				<item name="android:textAppearanceSmallPopupMenu">@style/MyActionMenuTextAppearance.Small</item>
+		-->
+		<item name="android:panelFullBackground">@drawable/menu_hardkey_panel_corp_dark</item>
+		<item name="android:panelColorBackground">@drawable/menu_hardkey_panel_corp_dark</item>
+		<item name="android:panelBackground">@drawable/menu_hardkey_panel_corp_dark</item>
 		<!-- TODO: next item does not bloody work! -->
 		<!--<item name="android:panelTextAppearance">@style/MyActionMenuTextAppearance.Small</item>-->
 

@@ -9,7 +9,9 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import net.vivekiyer.GAL.ContactWriterSdk5;
@@ -21,18 +23,17 @@ import java.util.ArrayList;
  * Custom adapter used to display account icons and descriptions in the
  * account spinner.
  */
-public class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccountsUpdateListener, SpinnerAdapter {
+public class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccountsUpdateListener {
 
 	public final static int FIRST_ACCOUNT = 0x300;
-	private LayoutInflater layoutInflater;
-	private Context context;
-	private ArrayList<AccountData> mAccounts;
+	protected LayoutInflater layoutInflater;
+	protected ArrayList<AccountData> mAccounts;
+	protected int layoutResource = R.layout.account_entry;
 
 	public AccountAdapter(Context context,
 	                      ArrayList<AccountData> accountData) {
 		super(context, android.R.layout.simple_list_item_1, accountData);
 		mAccounts = accountData;
-		this.context = context;
 		AccountManager.get(context).addOnAccountsUpdatedListener(this, null,
 				true);
 
@@ -60,37 +61,18 @@ public class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccou
 		secondAccountLine.setText(data.getTypeLabel());
 		Drawable icon = data.getIcon();
 		if (icon == null) {
-			icon = context.getResources().getDrawable(
+			icon = getContext().getResources().getDrawable(
 					android.R.drawable.ic_menu_search);
 		}
 		accountIcon.setImageDrawable(icon);
 		return convertView;
 	}
 
-	public View getDropDownView(int position, View convertView, ViewGroup parent) {
-		return getView(position, convertView, parent);
-	}
-
-	public View getDropDownView() {
-		LinearLayout container = new LinearLayout(context);
-		LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-		container.setOrientation(LinearLayout.VERTICAL);
-		for (int i = 0; i < mAccounts.size(); i++) {
-			AccountData ad = mAccounts.get(i);
-			if (!ad.getType().equals(context.getString(R.string.ACCOUNT_TYPE))) {
-				View v = getView(i, null, container);
-				container.addView(v, layout);
-			}
-		}
-		return container;
-	}
-
 	public SubMenu getMenuItems(SubMenu subMenu, final ContactWriterSdk5 contactWriter) {
 		ArrayList<MenuItem> list = new ArrayList<MenuItem>();
 		for (int i = 0; i < mAccounts.size(); i++) {
 			final AccountData ad = mAccounts.get(i);
-			if (!ad.getType().equals(context.getString(R.string.ACCOUNT_TYPE))) {
+			if (!ad.getType().equals(getContext().getString(R.string.ACCOUNT_TYPE))) {
 				MenuItem mi = subMenu.add(0, FIRST_ACCOUNT + i, i, ad.getName());
 				mi.setIcon(ad.getIcon());
 				mi.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -108,7 +90,7 @@ public class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccou
 	@Override
 	public void onAccountsUpdated(Account[] accounts) {
 		//Log.i(TAG, "Account list update detected");
-		updateAccountData(context, accounts, mAccounts);
+		updateAccountData(getContext(), accounts, mAccounts);
 
 		// Update the account spinner
 		this.notifyDataSetChanged();
@@ -160,7 +142,13 @@ public class AccountAdapter extends ArrayAdapter<AccountData> implements OnAccou
 	@Override
 	protected void finalize() throws Throwable {
 		// Make sure listener is un-registered when this object is destructed, will otherwise cause leak
-		AccountManager.get(context).removeOnAccountsUpdatedListener(this);
+		AccountManager.get(getContext()).removeOnAccountsUpdatedListener(this);
 		super.finalize();
+	}
+
+	@Override
+	public void setDropDownViewResource(int resource) {
+		super.setDropDownViewResource(resource);    //To change body of overridden methods use File | Settings | File Templates.
+		layoutResource = resource;
 	}
 }

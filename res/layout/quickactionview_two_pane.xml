@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/top"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="1"
+		android:orientation="horizontal"
+		>
+
+	<android.widget.ImageView
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:id="@+id/left_edge"
+			android:layout_width="wrap_content"
+			android:layout_height="fill_parent"
+			android:src="@drawable/quickaction_slider_background_left_alt"
+			android:scaleType="fitXY"
+			android:contentDescription="@string/error_detail"
+			/>
+	<!--android:src="@drawable/quickaction_slider_background_left_alt"-->
+	<!--
+	    android:src="@drawable/dummy"
+	-->
+
+	<android.widget.HorizontalScrollView
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:id="@+id/scroll"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:fadingEdgeLength="0dip"
+			android:background="@drawable/quickaction_slider_background"
+			android:scrollbars="none"
+			android:layout_weight="1"
+			android:fillViewport="true">
+
+		<android.widget.LinearLayout
+				android:id="@+id/quickaction"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:paddingBottom="4dip"
+				android:paddingTop="4dip">
+
+			<android.widget.ImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@drawable/quickaction_slider_grip_left"
+					android:contentDescription="@string/actions"/>
+
+			<android.widget.ImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@drawable/quickaction_slider_grip_right"
+					android:contentDescription="@string/actions"/>
+
+		</android.widget.LinearLayout>
+	</android.widget.HorizontalScrollView>
+</android.widget.LinearLayout>

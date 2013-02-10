@@ -321,31 +321,33 @@ public class StickyListHeadersListView extends ListView implements
 
 			for (int i = 0; i < childCount; i++) {
 				View child = super.getChildAt(i);
-				boolean childIsFooter = footerViews != null && footerViews.contains(child);
+				if (child instanceof WrapperView) {
+					boolean childIsFooter = footerViews != null && footerViews.contains(child);
 
-				int childDistance;
-				if (clippingToPadding) {
-					childDistance = child.getTop() - getPaddingTop();
-				} else {
-					childDistance = child.getTop();
-				}
+					int childDistance;
+					if (clippingToPadding) {
+						childDistance = child.getTop() - getPaddingTop();
+					} else {
+						childDistance = child.getTop();
+					}
 
-				if (childDistance < 0) {
-					continue;
-				}
+					if (childDistance < 0) {
+						continue;
+					}
 
-				if (viewToWatch == null
-						|| (!viewToWatchIsFooter && !((WrapperView) viewToWatch).hasHeader())
-						|| ((childIsFooter || ((WrapperView) child).hasHeader()) && childDistance < watchingChildDistance)) {
-					viewToWatch = child;
-					viewToWatchIsFooter = childIsFooter;
-					watchingChildDistance = childDistance;
+					if (viewToWatch == null
+							|| (!viewToWatchIsFooter && !((WrapperView) viewToWatch).hasHeader())
+							|| ((childIsFooter || ((WrapperView) child).hasHeader()) && childDistance < watchingChildDistance)) {
+						viewToWatch = child;
+						viewToWatchIsFooter = childIsFooter;
+						watchingChildDistance = childDistance;
+					}
 				}
 			}
 
 			int headerHeight = getHeaderHeight();
 
-			if (viewToWatch != null && (viewToWatch instanceof WrapperView) && (viewToWatchIsFooter || ((WrapperView) viewToWatch).hasHeader())) {
+			if (viewToWatch != null && (viewToWatchIsFooter || ((WrapperView) viewToWatch).hasHeader())) {
 
 				if (firstVisibleItem == listViewHeaderCount && super.getChildAt(0).getTop() > 0
 						&& !clippingToPadding) {

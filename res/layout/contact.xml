@@ -5,69 +5,7 @@
               android:layout_height="fill_parent"
               android:orientation="vertical"
               tools:context=".CorporateContactRecordFragment">
-	<!--android:background="@color/details_list_background"-->
 
-	<!--LinearLayout
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/contactHeader"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:background="@color/holo_blue_dark"
-			>
-
-		<ImageView
-				android:id="@+id/contactPicture"
-				android:layout_marginRight="6dp"
-				android:contentDescription="@string/contactPicture"
-				style="?android:attr/quickContactBadgeStyleWindowLarge"
-				tools:ignore="NewApi"/>
-
-		<LinearLayout
-				android:id="@+id/textContainer"
-				android:layout_width="0dp"
-				android:layout_height="fill_parent"
-				android:layout_marginRight="6dp"
-				android:layout_weight="1"
-				android:orientation="vertical">
-
-			<TextView
-					android:id="@+id/toptext"
-					android:layout_width="fill_parent"
-					android:layout_height="wrap_content"
-					android:layout_gravity="left"
-					android:singleLine="true"
-					android:text="@string/dummyContactName"
-					android:textAppearance="?android:attr/textAppearanceLarge"
-					android:textColor="@android:color/white"/>
-
-			<TextView
-					android:id="@+id/bottomtext"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:ellipsize="marquee"
-					android:singleLine="true"
-					android:text="@string/dummyRoleAndCompany"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:textColor="@android:color/primary_text_dark"/>
-		</LinearLayout>
-
-		<ImageButton
-				android:id="@+id/save_contact"
-				style="@style/flatImageButton"
-				android:layout_width="wrap_content"
-				android:layout_height="fill_parent"
-				android:layout_marginRight="6dp"
-				android:contentDescription="@string/actions"
-				android:src="@drawable/social_add_person_dark"/>
-
-		<ImageButton
-				android:id="@+id/contact_actions"
-				style="@style/flatImageButton"
-				android:layout_width="wrap_content"
-				android:layout_height="fill_parent"
-				android:contentDescription="@string/actions"
-				android:src="@drawable/ic_action_more_dark"/>
-	</LinearLayout-->
 	<RelativeLayout
 			android:id="@+id/contactHeader"
 			xmlns:android="http://schemas.android.com/apk/res/android"
@@ -79,9 +17,11 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/contactPicture"
-				android:src="@drawable/ic_launcher"
+				android:src="@drawable/ic_contact_picture"
 				android:minHeight="64dp"
 				android:minWidth="64dp"
+				android:maxHeight="96dp"
+				android:maxWidth="96dp"
 				android:layout_alignParentLeft="true"
 				android:layout_alignParentTop="true"
 				android:layout_marginLeft="0dp"
@@ -120,7 +60,9 @@
 				android:paddingRight="6dp"
 				android:layout_above="@+id/bottomtext"
 				android:layout_alignLeft="@+id/bottomtext"
-				android:layout_toLeftOf="@+id/saveContact"/>
+				android:layout_toLeftOf="@+id/saveContact"
+				android:layout_alignParentTop="true"
+				android:gravity="bottom"/>
 
 		<TextView
 				android:layout_height="wrap_content"
@@ -131,11 +73,14 @@
 				style="@style/TextAppearance.Sherlock.Widget.ActionMode.Subtitle.Inverse"
 				android:password="false"
 				android:layout_toRightOf="@+id/shaded_overlay"
-				android:layout_alignBottom="@+id/contactPicture"
 				android:layout_marginLeft="6dp"
 				android:layout_marginTop="6dp"
 				android:layout_marginBottom="6dp"
-				android:layout_toLeftOf="@id/saveContact"/>
+				android:layout_toLeftOf="@id/saveContact"
+				android:layout_alignParentBottom="false"
+				android:layout_alignBottom="@+id/view"
+				android:singleLine="true"
+				android:ellipsize="marquee"/>
 
 		<ImageButton
 				android:layout_width="wrap_content"
@@ -144,6 +89,7 @@
 				android:layout_alignRight="@+id/view"
 				android:layout_alignTop="@+id/contactPicture"
 				android:src="@drawable/ic_action_add_contact"
+				android:visibility="gone"
 				/>
 	</RelativeLayout>
 

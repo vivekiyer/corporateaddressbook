@@ -18,11 +18,12 @@ package net.vivekiyer.GAL.preferences;
 import android.accounts.*;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.*;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.KeyEvent;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.*;
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import net.vivekiyer.GAL.ChoiceDialogFragment;
 import net.vivekiyer.GAL.Debug;
@@ -135,10 +137,15 @@ public class Configure extends SherlockFragmentActivity implements OnClickListen
 			}
 		});
 
-		if (!Utility.isPreHoneycomb()) {
-			ActionBar actionBar = getActionBar();
-			if (actionBar != null)
-				actionBar.setDisplayHomeAsUpEnabled(true);
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			if (Utility.isPreHoneycomb()) {
+				BitmapDrawable bg = (BitmapDrawable) getResources().getDrawable(R.drawable.actionbar_background);
+				bg.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+				actionBar.setBackgroundDrawable(bg);
+				actionBar.setSplitBackgroundDrawable(bg);
+			}
 		}
 	}
 

@@ -1,44 +1,40 @@
-
 package net.vivekiyer.GAL.view;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import com.devoteam.quickaction.QuickActionItem;
 import net.vivekiyer.GAL.R;
 
 /**
- * A class that can display, as a popup badge, a collection 
+ * A class that can display, as a popup badge, a collection
  * of QuickActionItems
- * 
+ * <p/>
  * Based on the great work done by Mohd Faruq
- *
  */
-public class QuickActionView extends LinearLayout implements KeyEvent.Callback {
-	
+public class QuickActionView extends android.widget.LinearLayout {
+
 	private Context mContext = null;
 	private LayoutInflater mInflater = null;
-	
+
 	View contentView;
-	
+
 	private ViewGroup mTrack;
 
 	public QuickActionView(Context context) {
-		this(context, null);
+		super(context);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public QuickActionView(Context context, AttributeSet attribs) {
 		super(context, attribs);
 		initialize(context);
 	}
-	
+
 	public QuickActionView(Context context, AttributeSet attribs, int defStyle) {
 		super(context, attribs, defStyle);
 
@@ -78,10 +74,10 @@ public class QuickActionView extends LinearLayout implements KeyEvent.Callback {
 
 	/**
 	 * Adds an item to the QuickActionWindow
-	 * 
+	 *
 	 * @param drawable Icon to be shown
-	 * @param text Label to be shown below the drawable
-	 * @param l Definition for the callback to be invoked when the view is cliked
+	 * @param text     Label to be shown below the drawable
+	 * @param l        Definition for the callback to be invoked when the view is cliked
 	 */
 	public void addItem(Drawable drawable, String text, OnClickListener l) {
 		QuickActionItem view = (QuickActionItem) mInflater.inflate(R.layout.quickaction_item, mTrack, false);
@@ -89,56 +85,41 @@ public class QuickActionView extends LinearLayout implements KeyEvent.Callback {
 		view.setImageDrawable(drawable);
 		view.setText(text);
 		view.setOnClickListener(l);
-		
+
 		final int index = mTrack.getChildCount() - 1;
 		mTrack.addView(view, index);
 	}
-	
+
 	/**
 	 * Adds an item to the QuickActionWindow
-	 * 
+	 *
 	 * @param drawable Icon resource id to be shown
-	 * @param text Label to be shown below the drawable
-	 * @param l Definition for the callback to be invoked when the view is cliked
+	 * @param text     Label to be shown below the drawable
+	 * @param l        Definition for the callback to be invoked when the view is cliked
 	 */
 	public void addItem(int drawable, String text, OnClickListener l) {
 		addItem(mContext.getResources().getDrawable(drawable), text, l);
 	}
-	
+
 	/**
 	 * Adds an item to the QuickActionWindow
-	 * 
+	 *
 	 * @param drawable Icon to be shown
-	 * @param resid Label resource id to be shown below the drawable
-	 * @param l Definition for the callback to be invoked when the view is cliked
+	 * @param resid    Label resource id to be shown below the drawable
+	 * @param l        Definition for the callback to be invoked when the view is cliked
 	 */
 	public void addItem(Drawable drawable, int resid, OnClickListener l) {
 		addItem(drawable, mContext.getResources().getString(resid), l);
 	}
-	
+
 	/**
 	 * Adds an item to the QuickActionWindow
-	 * 
+	 *
 	 * @param drawable Icon resource id to be shown
-	 * @param resid Label resource id to be shown below the drawable
-	 * @param l Definition for the callback to be invoked when the view is cliked
+	 * @param resid    Label resource id to be shown below the drawable
+	 * @param l        Definition for the callback to be invoked when the view is cliked
 	 */
 	public void addItem(int drawable, int resid, OnClickListener l) {
 		addItem(mContext.getResources().getDrawable(drawable), mContext.getResources().getText(resid).toString(), l);
-	}
-
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	public boolean onKeyMultiple(int keyCode, int count, KeyEvent event) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

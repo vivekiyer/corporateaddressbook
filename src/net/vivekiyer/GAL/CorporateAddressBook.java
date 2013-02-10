@@ -206,8 +206,8 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			mContacts = (ArrayList<Contact>) savedInstanceState.get(CONTACTS);
 			String latestSearchTerm = savedInstanceState.getString(SEARCH_TERM);
 			totalNumberOfResults = savedInstanceState.getInt(TOTAL_RESULT_COUNT);
-			selectedContact = (Contact) savedInstanceState.get(SELECTED_CONTACT);
 			displaySearchResult(mContacts, latestSearchTerm, totalNumberOfResults);
+			Contact selectedContact = (Contact) savedInstanceState.get(SELECTED_CONTACT);
 			if (selectedContact != null) {
 				selectContact(selectedContact);
 			}
@@ -223,7 +223,6 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		}
 		// Not recreated; that means we've got a new Intent to deal with
 		// Get the intent, verify the action and get the query
-//		if (savedInstanceState == null || !savedInstanceState.containsKey(CONTACTS)) { //$NON-NLS-1$
 		else {
 			final Intent intent = getIntent();
 			onNewIntent(intent);
@@ -236,13 +235,8 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	protected void onStart() {
 		super.onStart();
 
-		if (mDualPane) { //detailsFragment != null && detailsFragment.isInLayout()) {
+		if (mDualPane) {
 			contactsFragment.setIsSelectable(true);
-//			contactsFragment.setViewBackground(false);
-			getSupportFragmentManager()
-					.beginTransaction()
-					.hide(detailsFragment)
-					.commit();
 		}
 
 		final Intent intent = getIntent();
@@ -450,7 +444,6 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		}
 	}
 
-	@TargetApi(11)
 	private void displaySearchResult(ArrayList<Contact> contacts, String searchTerm, int totalNumberOfResults) {
 		supportInvalidateOptionsMenu();
 
@@ -475,15 +468,8 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 
 		if (detailsFragment != null && detailsFragment.isInLayout() && !this.isPaused) {
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-			//ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-
-			// Below does not work since it clears the detail fragment before anim starts,
-			// making it look rather weird. Better off w/o anims, unfortunately.
-			//ft.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
 			ft.hide(detailsFragment);
 			ft.commit();
-			//fragmentManager.executePendingTransactions();
-			//details.clear();
 		}
 
 		contactsFragment.setViewBackground(false);
@@ -504,19 +490,19 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 		// Create a parcel with the associated contact object
 		// This parcel is used to send data to the activity
 
-		this.selectedContact = contact;
 
 		assert (mContacts != null);
 		int contactIndex = mContacts.indexOf(contact);
 
-		if (detailsFragment == null || !detailsFragment.isInLayout()) {
+		if (detailsFragment == null || !detailsFragment.isInLayout()) { //no details fragment; launch details activity
 			// Launch the activity
 			final Intent myIntent = new Intent(this, ContactActivity.class);
 			myIntent.putExtra(getString(R.string.KEY_CONTACT_INDEX), contactIndex);
 			myIntent.putParcelableArrayListExtra(getString(R.string.KEY_CONTACT_LIST), mContacts);
 			startActivity(myIntent);
 
-		} else {
+		} else { // dual frame mode; update details fragment
+			this.selectedContact = contact;
 			isUpdating = true;
 			detailsFragment.update(contactIndex, mContacts);
 			isUpdating = false;

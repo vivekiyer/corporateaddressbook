@@ -91,6 +91,7 @@ public class PrefsActivity extends SherlockPreferenceActivity implements Prefere
 			getSupportActionBar().setBackgroundDrawable(bg);
 			getSupportActionBar().setSplitBackgroundDrawable(bg);
 		}
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		Bundle b = getIntent().getExtras();
 		if (b != null) {

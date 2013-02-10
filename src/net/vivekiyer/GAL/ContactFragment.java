@@ -25,12 +25,13 @@ import android.text.ClipboardManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.internal.widget.IcsSpinner;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 /**
@@ -44,7 +45,7 @@ import com.actionbarsherlock.view.MenuItem;
  * @author vivek
  */
 @SuppressWarnings("deprecation")
-public class ContactFragment extends SherlockListFragment implements View.OnClickListener {
+public class ContactFragment extends SherlockListFragment {
 
 	private Menu fragmentMenu = null;
 	private Contact mContact = null;
@@ -95,6 +96,7 @@ public class ContactFragment extends SherlockListFragment implements View.OnClic
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		getListView().setLongClickable(true);
 		registerForContextMenu(getListView());
 
 		if (savedInstanceState != null) {
@@ -112,8 +114,8 @@ public class ContactFragment extends SherlockListFragment implements View.OnClic
 //		contactActions.setOnClickListener(this);
 //		contactActions.setVisibility(View.GONE);
 //
-		ImageButton saveContacts = (ImageButton) getView().findViewById(R.id.saveContact);
-		saveContacts.setOnClickListener(this);
+//		ImageButton saveContacts = (ImageButton) getView().findViewById(R.id.saveContact);
+//		saveContacts.setOnClickListener(this);
 		// Seems to be some logic gone wrong, no way to 
 		// save contacts exists in phone layout. Commenting
 		// this out for now.
@@ -198,7 +200,7 @@ public class ContactFragment extends SherlockListFragment implements View.OnClic
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 	                                ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
+		//super.onCreateContextMenu(menu, v, menuInfo);
 
 		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
@@ -209,42 +211,44 @@ public class ContactFragment extends SherlockListFragment implements View.OnClic
 		menu.setHeaderTitle(kvp.getValue());
 
 		// Add the default options (copy to clipboard)
-		menu.add(Menu.NONE, MENU_ID_COPY_TO_CLIPBOARD, Menu.NONE,
-				R.string.copyToClipboard).setIcon(android.R.drawable.ic_menu_view);
 
 		// Handle the special cases
 		switch (kvp.get_type()) {
 			case EMAIL:
 				menu.add(Menu.NONE, MENU_ID_EMAIL, Menu.NONE, R.string.send_email)
-						.setIcon(android.R.drawable.sym_action_email);
+						.setIcon(android.R.drawable.sym_action_email)
+						.setOnMenuItemClickListener(Listeners.getMailMenuListener(getActivity(), kvp.getValue()));
 				break;
 			case MOBILE:
-				menu.add(Menu.NONE, MENU_ID_SMS, Menu.NONE,
-						getString(R.string.send_sms_to) + kvp.getValue()).setIcon(
-						android.R.drawable.ic_menu_send);
+				menu.add(Menu.NONE, MENU_ID_SMS, Menu.NONE, getString(R.string.send_sms_to) + kvp.getValue())
+						.setIcon(android.R.drawable.ic_menu_send)
+						.setOnMenuItemClickListener(Listeners.getSmsMenuListener(getActivity(), kvp.getValue()));
 			case PHONE:
-				menu.add(Menu.NONE, MENU_ID_CALL, Menu.NONE,
-						getString(R.string.call_) + kvp.getValue()).setIcon(
-						android.R.drawable.ic_menu_call);
-				menu.add(Menu.NONE, MENU_ID_EDIT_BEFORE_CALL, Menu.NONE,
-						R.string.edit_number_before_call).setIcon(
-						android.R.drawable.ic_menu_edit);
+				menu.add(Menu.NONE, MENU_ID_CALL, Menu.NONE, getString(R.string.call_) + kvp.getValue())
+						.setIcon(android.R.drawable.ic_menu_call)
+						.setOnMenuItemClickListener(Listeners.getCallMenuListener(getActivity(), kvp.getValue()));
+//				menu.add(Menu.NONE, MENU_ID_EDIT_BEFORE_CALL, Menu.NONE,
+//						R.string.edit_number_before_call).setIcon(
+//						android.R.drawable.ic_menu_edit);
 			case OTHER:
 			case UNDEFINED:
 				break;
 		}
+		menu.add(Menu.NONE, MENU_ID_COPY_TO_CLIPBOARD, Menu.NONE, R.string.copyToClipboard)
+				.setIcon(android.R.drawable.ic_menu_view)
+				.setOnMenuItemClickListener(Listeners.getCopyMenuListener(getActivity(), kvp.getValue()));
 	}
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.saveContact:
-				saveContact(v);
-			default:
-				break;
-		}
-	}
-
+//	@Override
+//	public void onClick(View v) {
+//		switch (v.getId()) {
+//			case R.id.saveContact:
+//				saveContact(v);
+//			default:
+//				break;
+//		}
+//	}
+//
 //	@Override
 //	public boolean (MenuItem item) {
 //		switch(item.getItemId()){
@@ -308,57 +312,59 @@ public class ContactFragment extends SherlockListFragment implements View.OnClic
 	 * Displays the menu when the user clicks the Options button In our case the
 	 * menu contains only one button - save
 	 */
-//	@TargetApi(11)
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//		if(!isDualFrame) {
-		inflater.inflate(R.menu.contact_actions_menu, menu);
-		this.fragmentMenu = menu;
+////	@TargetApi(11)
+//	@Override
+//	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+////		if(!isDualFrame) {
+//		inflater.inflate(R.menu.contact_actions_menu, menu);
+//		this.fragmentMenu = menu;
+////		}
+//		setSaveMenuEnabled(this.mContact != null);
+//
+//		MenuItem search = fragmentMenu.findItem(R.id.saveContact);
+//
+//		IcsSpinner spinner = new IcsSpinner(getActivity(), null,
+//				com.actionbarsherlock.R.attr.actionDropDownStyle);
+//		spinner.setAdapter(App.getSystemAccounts());
+//		if(!App.getSystemAccounts().hasAccounts())
+//			search.setEnabled(false);
+//
+//		search.setActionView(spinner);
+//	}
+
+	//	/*
+//	 * (non-Javadoc)
+//	 *
+//	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+//	 *
+//	 * Shows the save contact option when the user clicks the save option
+//	 */
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		// Handle item selection
+//		switch (item.getItemId()) {
+//			case android.R.id.home:
+//				// app icon in action bar clicked; go home
+//				final Intent intent = new Intent(this.getActivity(),
+//						net.vivekiyer.GAL.CorporateAddressBook.class);
+//				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//				startActivity(intent);
+//				return true;
+//			case R.id.saveContact:
+//				saveContact(null);
+//				return true;
+//			default:
+//				return super.onOptionsItemSelected(item);
 //		}
-		setSaveMenuEnabled(this.mContact != null);
-
-		MenuItem search = fragmentMenu.findItem(R.id.saveContact);
-
-		IcsSpinner spinner = new IcsSpinner(getActivity(), null,
-				com.actionbarsherlock.R.attr.actionDropDownStyle);
-		spinner.setAdapter(App.getSystemAccounts());
-
-		search.setActionView(spinner);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-	 * 
-	 * Shows the save contact option when the user clicks the save option
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle item selection
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				// app icon in action bar clicked; go home
-				final Intent intent = new Intent(this.getActivity(),
-						net.vivekiyer.GAL.CorporateAddressBook.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-				return true;
-			case R.id.saveContact:
-				saveContact(null);
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}
-
-	public void saveContact(View v) {
-		contactWriter.saveContact();
-	}
-
-	/**
-	 * Called when this activity is about to be destroyed by the system.
-	 */
+//	}
+//
+//	public void saveContact(View v) {
+//		contactWriter.saveContact();
+//	}
+//
+//	/**
+//	 * Called when this activity is about to be destroyed by the system.
+//	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();

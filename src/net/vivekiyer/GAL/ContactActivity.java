@@ -109,7 +109,7 @@ public class ContactActivity extends SherlockFragmentActivity implements ViewPag
 					R.id.menu_search);
 			searchView = (com.actionbarsherlock.widget.SearchView) item.getActionView();
 			searchView.setSearchableInfo(searchableInfo);
-			searchView.setIconifiedByDefault(false);
+//			searchView.setIconifiedByDefault(false);
 		}
 		return super.onCreateOptionsMenu(menu);
 	}

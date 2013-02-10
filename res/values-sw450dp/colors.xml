@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="contact_list_background">#f0f0f0</color>
+	<color name="contact_list_background_shaded">#787878</color>
+	<color name="details_list_background">#ffffff</color>
+</resources>
+ 

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.internal.widget.IcsSpinner;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -86,9 +87,18 @@ public class ContactPagerFragment extends SherlockFragment implements ViewPager.
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);    //To change body of overridden methods use File | Settings | File Templates.
-		if (pager != null && fragmentAdapter != null) {
-			inflater.inflate(R.menu.contact_actions_menu, menu);
-		}
+
+		inflater.inflate(R.menu.contact_actions_menu, menu);
+
+		MenuItem search = menu.findItem(R.id.saveContact);
+
+		IcsSpinner spinner = new IcsSpinner(getActivity(), null,
+				com.actionbarsherlock.R.attr.actionDropDownStyle);
+		spinner.setAdapter(App.getSystemAccounts());
+		if (!App.getSystemAccounts().hasAccounts())
+			spinner.setEnabled(false);
+
+		search.setActionView(spinner);
 	}
 
 	@Override

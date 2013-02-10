@@ -76,8 +76,9 @@
 		</LinearLayout>
 	</LinearLayout>
 
-	<net.vivekiyer.GAL.view.QuickActionView
+	<ViewStub
 			android:id="@+id/details_actions"
+			android:layout="@layout/detail_row_quickactionview"
 			android:layout_width="match_parent"
 			android:layout_height="76dp"
 			android:visibility="gone"

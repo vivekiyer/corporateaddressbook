@@ -9,9 +9,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
-import net.vivekiyer.GAL.account.AccountAdapter;
 import net.vivekiyer.GAL.account.AccountData;
 import net.vivekiyer.GAL.account.AccountManager;
+import net.vivekiyer.GAL.account.SpinnerAccountAdapter;
 import net.vivekiyer.GAL.search.GALSearch;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class App extends Application {
 
 	private static App instance = null;
 	private static AccountManager accounts = null;
-	private static AccountAdapter systemAccounts = null;
+	private static SpinnerAccountAdapter systemAccounts = null;
 	// Version String
 	public static String VERSION_STRING;
 
@@ -36,9 +36,9 @@ public class App extends Application {
 		return accounts;
 	}
 
-	public static AccountAdapter getSystemAccounts() {
+	public static SpinnerAccountAdapter getSystemAccounts() {
 		if (systemAccounts == null)
-			systemAccounts = new AccountAdapter(App.getInstance(), new ArrayList<AccountData>());
+			systemAccounts = new SpinnerAccountAdapter(App.getInstance(), new ArrayList<AccountData>());
 		return systemAccounts;
 	}
 
