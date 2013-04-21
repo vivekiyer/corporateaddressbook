@@ -20,8 +20,8 @@
 				android:src="@drawable/ic_contact_picture"
 				android:minHeight="64dp"
 				android:minWidth="64dp"
-				android:maxHeight="96dp"
-				android:maxWidth="96dp"
+				android:maxHeight="96px"
+				android:maxWidth="96px"
 				android:layout_alignParentLeft="true"
 				android:layout_alignParentTop="true"
 				android:layout_marginLeft="0dp"
@@ -61,8 +61,8 @@
 				android:layout_above="@+id/bottomtext"
 				android:layout_alignLeft="@+id/bottomtext"
 				android:layout_toLeftOf="@+id/saveContact"
-				android:layout_alignParentTop="true"
-				android:gravity="bottom"/>
+				android:gravity="bottom"
+				android:layout_alignTop="@+id/contactPicture"/>
 
 		<TextView
 				android:layout_height="wrap_content"
@@ -75,12 +75,11 @@
 				android:layout_toRightOf="@+id/shaded_overlay"
 				android:layout_marginLeft="6dp"
 				android:layout_marginTop="6dp"
-				android:layout_marginBottom="6dp"
 				android:layout_toLeftOf="@id/saveContact"
-				android:layout_alignParentBottom="false"
-				android:layout_alignBottom="@+id/view"
+				android:layout_alignBottom="@+id/contactPicture"
 				android:singleLine="true"
-				android:ellipsize="marquee"/>
+				android:ellipsize="marquee"
+				android:layout_marginBottom="6dp"/>
 
 		<ImageButton
 				android:layout_width="wrap_content"

@@ -1,12 +1,11 @@
 package net.vivekiyer.GAL.account;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import net.vivekiyer.GAL.Contact;
+import net.vivekiyer.GAL.ContactWriterSdk5;
 import net.vivekiyer.GAL.R;
 
 import java.util.ArrayList;
@@ -18,10 +17,28 @@ import java.util.ArrayList;
  * Time: 10:52
  * To change this template use File | Settings | File Templates.
  */
-public class SpinnerAccountAdapter extends AccountAdapter {
+public class SpinnerAccountAdapter extends AccountAdapter implements View.OnClickListener {
 
 	protected View spinnerView;
 	protected Class parentClass = null;
+	private ContactDataProvider contactDataProvider;
+
+	public void setContactDataProvider(ContactDataProvider contactDataProvider) {
+		this.contactDataProvider = contactDataProvider;
+	}
+
+	@Override
+	public void onClick(View v) {
+		if(contactDataProvider != null) {
+			ContactWriterSdk5 writer = new ContactWriterSdk5(getContext(), contactDataProvider.getContact());
+			writer.createContactEntry((AccountData)v.getTag());
+		}
+
+	}
+
+	public interface ContactDataProvider {
+		public Contact getContact();
+	}
 
 	public SpinnerAccountAdapter(Context context, ArrayList<AccountData> accountData) {
 		super(context, accountData);
@@ -39,43 +56,52 @@ public class SpinnerAccountAdapter extends AccountAdapter {
 		return spinnerView;
 	}
 
+	public View getEmptyView(ViewGroup parent) {
+		return layoutInflater.inflate(R.layout.spinner_account_icon, parent, true);
+	}
+
 	@Override
 	public View getDropDownView(int position, View convertView, ViewGroup parent) {
 		// Inflate a view template
-		if (super.getCount() < 1)
-			return new View(getContext());
-		else if (convertView == null) {
-			convertView = super.getView(position, convertView, parent);
-		}
-		TextView firstAccountLine = (TextView) convertView
-				.findViewById(R.id.firstAccountLine);
-		TextView secondAccountLine = (TextView) convertView
-				.findViewById(R.id.secondAccountLine);
-		ImageView accountIcon = (ImageView) convertView
-				.findViewById(R.id.accountIcon);
-
-		// Populate template
-		AccountData data = getItem(position);
-		firstAccountLine.setText(data.getName());
-		secondAccountLine.setText(data.getTypeLabel());
-		Drawable icon = data.getIcon();
-		if (icon == null) {
-			icon = getContext().getResources().getDrawable(
-					android.R.drawable.ic_menu_search);
-		}
-		accountIcon.setImageDrawable(icon);
-		return convertView;
+//		if (super.getCount() < 1)
+//			return new View(getContext());
+		/*else*/
+//		if (convertView == null) {
+//			convertView = super.getView(position, convertView, parent);
+//		}
+//		TextView firstAccountLine = (TextView) convertView
+//				.findViewById(R.id.firstAccountLine);
+//		TextView secondAccountLine = (TextView) convertView
+//				.findViewById(R.id.secondAccountLine);
+//		ImageView accountIcon = (ImageView) convertView
+//				.findViewById(R.id.accountIcon);
+//
+//		// Populate template
+//		final AccountData account = getItem(position);
+//		firstAccountLine.setText(account.getName());
+//		secondAccountLine.setText(account.getTypeLabel());
+//		Drawable icon = account.getIcon();
+//		if (icon == null) {
+//			icon = getContext().getResources().getDrawable(
+//					android.R.drawable.ic_menu_search);
+//		}
+//		accountIcon.setImageDrawable(icon);
+		View v = super.getView(position, convertView, parent);
+		v.setTag(getItem(position));
+		
+//		v.setOnClickListener(this);
+		return v;
 	}
 
-	@Override
-	public int getCount() {
-		int size = super.getCount();    //To change body of overridden methods use File | Settings | File Templates.
-		if (size < 1)
-			return 1;
-		else
-			return size;
-	}
-
+//	@Override
+//	public int getCount() {
+//		int size = super.getCount();    //To change body of overridden methods use File | Settings | File Templates.
+//		if (size < 1)
+//			return 1;
+//		else
+//			return size;
+//	}
+//
 	public boolean hasAccounts() {
 		return super.getCount() > 0;
 	}

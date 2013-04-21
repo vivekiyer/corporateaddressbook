@@ -49,6 +49,10 @@
   <string name="authentication_failed_detail">Bitte überprüfen Sie ihren Benutzernamen/ihr Passwort</string>
   <string name="connection_failed_title">Verbindung fehlgeschlagen</string>
   <string name="connection_failed_detail">Die Verbindung zum Exchange-Server ist mit folgender Fehlernummer fehlgeschlagen: %1$d</string>
+  <string name="enable_debugging">Möchten Sie die Problembehandlung aktivieren?</string>
+  <string name="pref_debugging_enabled_detail">Log-Dateien sammeln, um Sie an die Entwickler zu senden</string>
+  <string name="privacy_title">Datenschutz-Hinweise</string>
+  <string name="general">Allgemein</string>
   <string name="error_detail">Fehlerdetails:\n</string>
   <string name="send_email">Email senden</string>
   <string name="send_sms_to">SMS senden</string>
@@ -72,14 +76,13 @@
   <string name="too_many_device_partnerships_detail">Löschen Sie zu erst Verbindungen auf dem Exchange Server, bevor sie fortfahren.
 \n Dies ist direkt in Outlook Web Acess (OWA) möglich oder kontaktieren Sie hierzu ihren Server Administrator</string>
   <string name="unhandled_error">%d: Unbekannter Fehler</string>
-  <string name="unhandled_error_occured">Es ist ein unerwartetes Problem aufgetreten.
-\nBitte kontaktieren Sie den Entwickler</string>
   <string name="forbidden_by_server_title">Unterbunden durch den Exchange-Server</string>
   <string name="forbidden_by_server_detail" formatted="false">Ihr Gerät darf sich nicht zum Server verbinden.%n Dies bedeutet typischerweise, dass ihr Administrator ihr Gerät mit der Geräte-ID freischalten muss.%n%n Ihre Geräte-ID lautet:%n%1$s</string>
   <string name="invalid_server_title">Ungültiger Servername</string>
   <string name="invalid_server_detail">Werden den Server konnte nicht gefunden, sind Sie sicher, dass der Name richtig ist?</string>
   <string name="timeout_title">Zeitüberschreitung bei der Verbindung</string>
   <string name="timeout_detail">Zeitüberschreitung bei der Verbindung. Dies könnte entweder durch eine unzuverlässige Netzwerkverbindung oder durch den Zugriff über eine nicht erlaubte Methode verursacht worden sein.\n Bitte versuchen Sie es erneut oder überprüfen Sie, ob die Einstellung \'%1$s\' aktiviert ist.</string>
+  <string name="retry">Wiederholen</string>
   <string name="no_response_from_server">Keine Antwort vom Server empfangen</string>
   <string name="server_responded_x">Serverantwort %1$d</string>
   <string name="text_copied_to_clipboard">Text in Zwischenablage kopiert</string>
@@ -95,8 +98,26 @@
   <string name="title">Titel</string>
   <string name="company">Unternehmen</string>
   <string name="migratingSettings">Einstellungen werden migriert...</string>
-  <string name="confirmDelete">Sind Sie sicher, dass Sie das Konto löschen wollen?\'</string>
+  <string name="confirmDelete">Sind Sie sicher, dass Sie das Konto löschen wollen \'</string>
   <string name="cantFindApp">Es konnte keine geeignete Anwendung gefunden werden</string>
   <string name="deviceIdCopied">Geräte-ID in die Zwischenablage kopiert</string>
   <string name="notSet">[Nicht festgelegt]</string>
+  <string name="contactAuthorsTitle">Autoren kontaktieren</string>
+  <string name="crowdinDetails">Hilf uns, die App zu übersetzen</string>
+  <string name="crowdinTitle">Corporate Addressbook bei Crowdin</string>
+  <string name="links">Links</string>
+  <string name="googlecodeDetails">Downloads, Bugtracker und Wiki</string>
+  <string name="googlecodeTitle">Corporate Addressbook auf Google Code</string>
+  <string name="deviceId">Geräte-ID</string>
+  <string name="copyDeviceIdQuestion">Möchten Sie die Geräte-ID in die Zwischenablage zu kopieren?</string>
+  <string name="version">Version</string>
+  <string name="about">Über</string>
+  <string name="addAccount">Konto hinzufügen</string>
+  <string name="maxNumberOfResults">Maximale Anzahl von Ergebnissen</string>
+  <string name="contactPictures">Kontaktfotos</string>
+  <string name="contactPicturesWarning">Das Anzeigen von Kontaktfotos könnte die Suche verlangsamen</string>
+  <string name="view">Ansicht</string>
+  <string name="pull_to_get_more">Ziehen, um mehr zu laden</string>
+  <string name="close">Schließen</string>
+  <string name="advanced">Erweitert</string>
 </resources>
