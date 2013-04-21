@@ -16,6 +16,7 @@
 package net.vivekiyer.GAL;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
@@ -39,6 +40,7 @@ import com.actionbarsherlock.view.MenuItem;
 import net.vivekiyer.GAL.ChoiceDialogFragment.OnChoiceDialogOptionClickListener;
 import net.vivekiyer.GAL.ContactListFragment.ContactListListener;
 import net.vivekiyer.GAL.account.AccountManager;
+import net.vivekiyer.GAL.preferences.Configure;
 import net.vivekiyer.GAL.preferences.ConnectionChecker;
 import net.vivekiyer.GAL.preferences.PrefsActivity;
 import net.vivekiyer.GAL.search.ActiveSyncManager;
@@ -68,6 +70,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	// Used to launch the initial configuration pane
 	public static final int DISPLAY_CONFIGURATION_REQUEST = 2;
 	public static final int REPROVISION_AND_RETRY = 3;
+	public static final int DISPLAY_ACCOUNT_SETTINGS = 4;
 
 	static final String CONTACTS = "mContacts"; //$NON-NLS-1$
 	static final String SEARCH_TERM = "latestSearchTerm"; //$NON-NLS-1$
@@ -76,28 +79,28 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	static final String ACCOUNT_KEY = "accountKey";  //$NON-NLS-1$
 	static final String START_WITH = "startWith";  //$NON-NLS-1$
 	static final String REQUERY = "requery_previous"; //NON-NLS
-	static final String TOTAL_RESULT_COUNT = "totalResultCount";
 
+	static final String TOTAL_RESULT_COUNT = "totalResultCount";
 	// Progress bar
 	//	private ProgressDialog progressdialog;
 	// Last search term
 	private String latestSearchTerm;
+
 	private com.actionbarsherlock.widget.SearchView searchView;
 
 	// TAG used for logging
-
 	// Stores the list of contacts returned
 	private ArrayList<Contact> mContacts;
 	private Contact selectedContact;
+
 	private GALSearch search;
 
 	public static final int AuthEx = 2;
-
 	private boolean isPaused = false;
 	private boolean mDualPane;
 	private ContactListFragment contactsFragment;
-	private ContactPagerFragment detailsFragment;
 
+	private ContactPagerFragment detailsFragment;
 	private boolean isUpdating = false;
 	private int totalNumberOfResults;
 
@@ -409,8 +412,18 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 	/**
 	 * Launches the preferences activity
 	 */
-	public static void showConfiguration(SherlockFragmentActivity parentActivity) {
+	public static void showConfiguration(Activity parentActivity) {
 		parentActivity.startActivityForResult(new Intent(parentActivity, PrefsActivity.class), DISPLAY_CONFIGURATION_REQUEST);
+	}
+
+	/**
+	 * Launches the preferences activity
+	 */
+	public static void showAccountSettings(Activity parentActivity, ActiveSyncManager syncManager) {
+		Intent i = new Intent(parentActivity, Configure.class);
+		i.setAction(parentActivity.getString(R.string.ACTION_PREFS_ACCOUNT_EDIT));
+		i.putExtra(parentActivity.getString(R.string.KEY_ACCOUNT_KEY), syncManager.getAccountKey());
+		parentActivity.startActivityForResult(i, DISPLAY_CONFIGURATION_REQUEST);
 	}
 
 	/*
@@ -571,7 +584,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			case ActiveSyncManager.ERROR_UNABLE_TO_REPROVISION:
 				positiveButtonText = getString(R.string.show_settings);
 				negativeButtonText = getString(android.R.string.cancel);
-				dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, DISPLAY_CONFIGURATION_REQUEST, android.R.id.closeButton);
+				dialogFragment = ChoiceDialogFragment.newInstance(title, message, positiveButtonText, negativeButtonText, DISPLAY_ACCOUNT_SETTINGS, android.R.id.closeButton);
 				dialogFragment.setListener(this);
 				try {
 					dialogFragment.show(getSupportFragmentManager(), "reprovision"); //$NON-NLS-1$
@@ -621,6 +634,9 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 			case DISPLAY_CONFIGURATION_REQUEST:
 				showConfiguration(this);
 				break;
+			case DISPLAY_ACCOUNT_SETTINGS:
+				showAccountSettings(this, activeSyncManager);
+				break;
 			case REPROVISION_AND_RETRY:
 				AsyncTask<ActiveSyncManager, Void, Boolean> getVersionTask =
 						new AsyncTask<ActiveSyncManager, Void, Boolean>() {
@@ -639,7 +655,7 @@ public class CorporateAddressBook extends SherlockFragmentActivity
 								if (requery)
 									CorporateAddressBook.this.performSearch(latestSearchTerm);
 								else
-									showConfiguration(CorporateAddressBook.this);
+									showAccountSettings(CorporateAddressBook.this, activeSyncManager);
 							}
 						};
 				getVersionTask.execute(activeSyncManager);

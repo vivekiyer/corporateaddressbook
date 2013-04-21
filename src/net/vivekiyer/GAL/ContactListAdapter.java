@@ -257,7 +257,7 @@ public class ContactListAdapter extends ArrayAdapter<Contact> implements StickyL
 	public void setHeaderBackground(Drawable d) {
 		headerBackgroundDrawable = d;
 		for (View v : headers.values()) {
-			v.setBackground(d);
+			v.setBackgroundDrawable(d);
 		}
 	}
 }

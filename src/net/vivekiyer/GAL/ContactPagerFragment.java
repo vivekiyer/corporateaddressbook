@@ -6,11 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.internal.widget.IcsAdapterView;
 import com.actionbarsherlock.internal.widget.IcsSpinner;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.PageIndicator;
+import net.vivekiyer.GAL.account.AccountData;
+import net.vivekiyer.GAL.account.SpinnerAccountAdapter;
 
 import java.util.ArrayList;
 
@@ -21,13 +24,14 @@ import java.util.ArrayList;
  * Time: 01:57
  * To change this template use File | Settings | File Templates.
  */
-public class ContactPagerFragment extends SherlockFragment implements ViewPager.OnPageChangeListener {
+public class ContactPagerFragment extends SherlockFragment implements ViewPager.OnPageChangeListener, IcsAdapterView.OnItemSelectedListener, SpinnerAccountAdapter.ContactDataProvider {
 
 	private ArrayList<Contact> contacts;
 	private ContactFragmentAdapter fragmentAdapter = null;
 	private ViewPager pager = null;
 	private Bundle args = null;
 	private PageIndicator indicator;
+	private IcsSpinner spinner;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -90,15 +94,19 @@ public class ContactPagerFragment extends SherlockFragment implements ViewPager.
 
 		inflater.inflate(R.menu.contact_actions_menu, menu);
 
-		MenuItem search = menu.findItem(R.id.saveContact);
+		MenuItem saveMenu = menu.findItem(R.id.saveContact);
 
-		IcsSpinner spinner = new IcsSpinner(getActivity(), null,
+		final IcsSpinner spinner = new IcsSpinner(getActivity(), null,
 				com.actionbarsherlock.R.attr.actionDropDownStyle);
-		spinner.setAdapter(App.getSystemAccounts());
-		if (!App.getSystemAccounts().hasAccounts())
-			spinner.setEnabled(false);
+		spinner.setAdapter(new SpinnerAccountAdapter(getActivity(), new ArrayList<AccountData>()));
+		//spinner.setAdapter(App.getSystemAccounts());
+		//View v = App.getSystemAccounts().getEmptyView(spinner);
+		//spinner.setEmptyView(v);
+		//spinner.setOnItemSelectedListener(this);
+//		if (!App.getSystemAccounts().hasAccounts())
+//			spinner.setEnabled(false);
 
-		search.setActionView(spinner);
+		saveMenu.setActionView(spinner);
 	}
 
 	@Override
@@ -142,6 +150,21 @@ public class ContactPagerFragment extends SherlockFragment implements ViewPager.
 
 	@Override
 	public void onPageScrollStateChanged(int state) {
-		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public void onItemSelected(IcsAdapterView<?> parent, View view, int position, long id) {
+		AccountData account = ((SpinnerAccountAdapter) spinner.getAdapter()).getItem(position);
+		ContactWriterSdk5 contactWriter = new ContactWriterSdk5(getActivity(), contacts.get(pager.getCurrentItem()));
+		contactWriter.createContactEntry(account);
+	}
+
+	@Override
+	public void onNothingSelected(IcsAdapterView<?> parent) {
+	}
+
+	@Override
+	public Contact getContact() {
+		return contacts.get(pager.getCurrentItem());
 	}
 }

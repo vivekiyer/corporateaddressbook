@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.SpinnerAdapter;
 import com.actionbarsherlock.internal.widget.IcsSpinner;
+import net.vivekiyer.GAL.account.AccountAdapter;
+import net.vivekiyer.GAL.account.SpinnerAccountAdapter;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,10 +27,12 @@ public class SaveContactSpinner extends IcsSpinner {
 	@Override
 	public void setAdapter(SpinnerAdapter adapter) {
 		super.setAdapter(adapter);    //To change body of overridden methods use File | Settings | File Templates.
-//		if(adapter instanceof AccountAdapter)
-//			setEnabled(((SpinnerAccountAdapter) adapter).hasAccounts());
-//		else
-//			throw new IllegalArgumentException(this.getClass().getSimpleName() + " requires adapter of type " +
-//				AccountAdapter.class.getSimpleName());
+		if (adapter instanceof AccountAdapter)
+			setEnabled(((SpinnerAccountAdapter) adapter).hasAccounts());
+		else
+			throw new IllegalArgumentException(this.getClass().getSimpleName() + " requires adapter of type " +
+					AccountAdapter.class.getSimpleName());
 	}
+
+
 }
