@@ -10,18 +10,18 @@ Download the app from the [Android Marketplace](https://market.android.com/detai
 * Thanks to [Crowdin.net](http://crowdin.net/) for hosting our [translation](http://crowdin.net/project/corporate-addressbook/) effort
 
 * Contact Icon (contact-new.svg) by Tango Project
-    * License - [http://openclipart.org/detail/32131/tango-contact-new-by-warszawianka](Public Domain)
+    > License - [http://openclipart.org/detail/32131/tango-contact-new-by-warszawianka](Public Domain)
 
 * contact_256.png by Custom Icon Design Studio (http://www.customicondesign.com)
-    * License - [http://www.gettyicons.com/free-icon/103/pretty-office-2-icon-set/free-contact-icon-png/](Free for commercial and non-commercial use)
+    > License - [http://www.gettyicons.com/free-icon/103/pretty-office-2-icon-set/free-contact-icon-png/](Free for commercial and non-commercial use)
 
 * server_icon.png and info_icon.png by WPZOOM 
-    * License - [http://icons.lisisoft.com/author/wpzoom.html](CC-BY-SA 3.0)
+    > License - [http://icons.lisisoft.com/author/wpzoom.html](CC-BY-SA 3.0)
 
 * Uses DevoQuickAction
-    * License - [http://code.google.com/p/devoquickaction/](GNU GPL v3)
+    > License - [http://code.google.com/p/devoquickaction/](GNU GPL v3)
 
-* Uses code from http://www.blackmoonit.com/2012/07/all_api_prefsactivity/
+* Uses code from [http://www.blackmoonit.com/2012/07/all_api_prefsactivity/](Howling at the Black Moon)
 
 * App icon (CorporateAddressbook.svg)
-    * License - CC-BY-SA 3.0
+    > License - CC-BY-SA 3.0
