@@ -1,12 +1,14 @@
 corporate-addressbook
 =====================
 
-The Global Address List (GAL) lookup available on Android is limited in functionality. It only looks up the email address and does not provide other information that is available in the GAL. This application looks up the GAL and returns ALL data that is available on the Exchange server for the query.
+The Global Address List (GAL) lookup available on Android is limited in functionality. It only looks up the email address and does not provide other information that is available in the GAL. This application looks up the GAL and returns ALL data that is available on the Exchange server for the query. 
 
-Download the app from the [Android Marketplace](https://market.android.com/details?id=net.vivekiyer.GAL).
+[![Android Marketplace][2]][1]
+
+### Old home
+This project was previously hosted on [Google code](https://code.google.com/p/corporateaddressbook/). All issues and source has since been ported over to Github.
 
 ### Credits
-* A big thank you to the folks at [Jet Brains](http://www.jetbrains.com/) for providing us a Open Source Project License for IntelliJ IDEA, an awesome IDE for Android development.
 * Thanks to [Crowdin.net](http://crowdin.net/) for hosting our [translation](http://crowdin.net/project/corporate-addressbook/) effort
 
 * Contact Icon (contact-new.svg) by Tango Project
@@ -25,3 +27,6 @@ Download the app from the [Android Marketplace](https://market.android.com/detai
 
 * App icon (CorporateAddressbook.svg)
     > License - CC-BY-SA 3.0
+
+[1]: https://market.android.com/details?id=net.vivekiyer.GAL
+[2]: http://www.android.com/images/brand/60_avail_market_logo2.png
